@@ -1,0 +1,115 @@
+{
+  "tts_emocional": {
+    "aberturas": {
+      "emocao": "excited",
+      "intensidade": "high",
+      "velocidade": "1.1",
+      "pitch": "medium",
+      "observacao": "Sempre alegre e animado para começar o programa"
+    },
+    "noticias_serias": {
+      "emocao": "conversational",
+      "intensidade": "medium",
+      "velocidade": "0.9",
+      "pitch": "low",
+      "observacao": "Tom respeitoso para assuntos sérios"
+    },
+    "noticias_positivas": {
+      "emocao": "excited",
+      "intensidade": "medium",
+      "velocidade": "1.05",
+      "pitch": "medium",
+      "observacao": "Animado mas não exagerado"
+    },
+    "cultura_regional": {
+      "emocao": "excited",
+      "intensidade": "high",
+      "velocidade": "1.2",
+      "pitch": "high",
+      "observacao": "Máxima empolgação para Parintins, bois, etc."
+    },
+    "interacao_personagens": {
+      "emocao": "conversational",
+      "intensidade": "medium",
+      "velocidade": "1.0",
+      "pitch": "medium",
+      "sarcasmo": true,
+      "observacao": "Tom brincalhão e levemente sarcástico para interações"
+    },
+    "interacao_ouvintes": {
+      "emocao": "conversational",
+      "intensidade": "medium",
+      "velocidade": "1.0",
+      "pitch": "medium",
+      "observacao": "Tom acolhedor e próximo"
+    },
+    "esportes": {
+      "emocao": "excited",
+      "intensidade": "medium",
+      "velocidade": "1.1",
+      "pitch": "medium",
+      "observacao": "Animado mas pode variar conforme resultado"
+    }
+  },
+  "piadas_regionais": {
+    "triggers": {
+      "clima": ["chuva", "calor", "tempo", "sol", "nublado", "aguaceiro", "quentura"],
+      "transito_manaus": ["trânsito", "constantino nery", "torquato", "congestionamento", "djalma batista"],
+      "onibus_manaus": ["ônibus", "coletivo", "lotado", "cheio", "transporte público"],
+      "problemas_urbanos": ["buraco", "alagamento", "enchente", "cratera", "água na rua"],
+      "bairros_perigosos": ["compensa", "zona leste", "violência", "segurança", "crime"],
+      "pontos_turisticos": ["ponta negra", "meeting das águas", "mercado municipal", "teatro amazonas"],
+      "comida": ["açaí", "tucumã", "tambaqui", "pirarucu", "cupuaçu"],
+      "cultura": ["parintins", "boi", "garantido", "caprichoso", "festival"],
+      "lugares": ["manaus", "centro", "ponta negra", "mercado", "porto", "presidente figueiredo", "rio preto da eva", "parintins"]
+    },
+    "tipos_piada": {
+      "comparacao_regional": "Compara situação com elementos da região",
+      "giria_contextual": "Usa gírias de forma engraçada no contexto",
+      "referencia_cultural": "Faz referência a elementos culturais locais",
+      "situacao_cotidiana": "Brinca com situações do dia a dia amazonense",
+      "sarcasmo_manauara": "Ironia sobre problemas urbanos de Manaus",
+      "interacao_brincalhona": "Provocações amigáveis entre apresentadores"
+    }
+  },
+  "palavras_chave_tom": {
+    "serias": [
+      "acidente", "morte", "morreu", "faleceu", "tragédia", "crime",
+      "violência", "prisão", "problema", "crise", "desemprego",
+      "enchente", "desastre", "emergência", "hospital", "doença"
+    ],
+    "positivas": [
+      "festa", "festival", "show", "celebração", "inauguração",
+      "sucesso", "vitória", "prêmio", "melhoria", "crescimento",
+      "cultura", "arte", "música", "diversão", "esporte"
+    ],
+    "problemas_manaus": [
+      "buraco", "alagamento", "ônibus lotado", "trânsito", "calor",
+      "chuva forte", "compensa", "zona leste", "ponta negra suja"
+    ],
+    "regionais_especiais": [
+      "parintins", "boi-bumbá", "garantido", "caprichoso",
+      "festival", "carimbó", "amazônia", "rio negro", "solimões"
+    ]
+  },
+  "configuracoes_personagem": {
+    "taina": {
+      "base_emocional": "excited",
+      "tendencia_piada": "alta",
+      "estilo_humor": "comparações engraçadas",
+      "sarcasmo": "direto e animado",
+      "pitch_base": "medium",
+      "velocidade_base": "1.05",
+      "girias_preferidas": ["oxe", "cabra danada", "meu pai eterno"]
+    },
+    "iray": {
+      "base_emocional": "conversational",
+      "tendencia_piada": "media",
+      "estilo_humor": "observações irônicas",
+      "sarcasmo": "sutil e reflexivo",
+      "pitch_base": "low",
+      "velocidade_base": "1.0",
+      "girias_preferidas": ["vichi", "rapaz", "é bem assim mesmo"]
+    }
+  }
+}

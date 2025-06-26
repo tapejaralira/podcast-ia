@@ -1,0 +1,56 @@
+{
+  "eventos": [
+    {
+      "id": 1,
+      "data": "2025-06-26",
+      "tipo": "local",
+      "titulo": "Festival de Verão de Manaus",
+      "descricao": "Festival com shows de música regional e comida típica no Centro Cultural",
+      "relevancia": "alta",
+      "tags": ["música", "cultura", "manaus"]
+    },
+    {
+      "id": 2,
+      "data": "2025-06-27",
+      "tipo": "esporte",
+      "titulo": "Clássico Re-Pa no futebol amazonense",
+      "descricao": "Nacional FC vs Manaus FC - final do campeonato estadual",
+      "relevancia": "média",
+      "tags": ["futebol", "campeonato", "rivalidade"]
+    }
+  ],
+  "comentarios_ouvintes": [
+    {
+      "id": 1,
+      "nome": "João da Silva",
+      "cidade": "Manaus",
+      "comentario": "Vocês poderiam falar mais sobre os times locais!",
+      "data": "2025-06-25",
+      "topico": "esporte"
+    },
+    {
+      "id": 2,
+      "nome": "Maria Ferreira",
+      "cidade": "Parintins",
+      "comentario": "Adoro quando vocês falam sobre as festas juninas da região",
+      "data": "2025-06-24",
+      "topico": "cultura"
+    }
+  ],
+  "sugestoes_pautas": [
+    {
+      "id": 1,
+      "sugestao": "Fazer uma série sobre lendas amazônicas modernas",
+      "autor": "Carlos Ribeiro",
+      "votos": 15,
+      "status": "em_analise"
+    },
+    {
+      "id": 2,
+      "sugestao": "Entrevistar músicos de carimbó da nova geração",
+      "autor": "Ana Santos",
+      "votos": 23,
+      "status": "aprovada"
+    }
+  ]
+}

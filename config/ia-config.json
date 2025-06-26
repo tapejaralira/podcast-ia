@@ -1,0 +1,45 @@
+{
+  "openai": {
+    "api_key": "sua_openai_key_aqui",
+    "modelo": "gpt-3.5-turbo",
+    "temperatura": 0.7,
+    "max_tokens": 1000
+  },
+  "tts": {
+    "servico_ativo": "elevenlabs",
+    "elevenlabs": {
+      "api_key": "sk_6bae55e1b3f4cf8cde82b4ee77c5149b83b96ee6d043a758",
+      "voice_taina": "33B4UnXyTNbgLmdEDh5P",
+      "voice_irai": "UPTmB6OygMADpd4LOwE5",
+      "modelo": "eleven_multilingual_v2",
+      "stability": 0.5,
+      "similarity_boost": 0.8,
+      "style": 0.3,
+      "use_speaker_boost": true
+    }
+  },
+  "configuracoes_gerais": {
+    "diretorio_audios": "./audios",
+    "formato_audio": "mp3",
+    "qualidade": "alta",
+    "debug_mode": true,
+    "taxa_compressao": 192,
+    "pausas_naturais": true
+  },
+  "configuracoes_personagens": {
+    "taina": {
+      "personalidade": "animada",
+      "velocidade_fala": 1.1,
+      "pitch_adjustment": 0.1,
+      "pause_after_girias": 0.3,
+      "emphasis_level": "strong"
+    },
+    "irai": {
+      "personalidade": "reflexiva",
+      "velocidade_fala": 0.95,
+      "pitch_adjustment": -0.1,
+      "pause_after_girias": 0.2,
+      "emphasis_level": "moderate"
+    }
+  }
+}

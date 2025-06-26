@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-06-26T02:47:45.666Z",
+  "episodio_numero": 1,
+  "metricas_automaticas": {
+    "palavras_total": 651,
+    "girias_detectadas": 7,
+    "referencias_locais": 13,
+    "interacoes_entre_personagens": 20,
+    "blocos_detectados": 13
+  },
+  "pontos_verificacao": {
+    "introducao_consistente": true,
+    "slogan_presente": false,
+    "interacao_espontanea": true,
+    "referencias_manaus": true,
+    "tom_adequado": true
+  },
+  "alertas_automaticos": [],
+  "sugestoes_melhoria": [
+    "💡 Incluir chamada para interação com audiência"
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "podcast_info": {
+    "nome_oficial": "BubuiA News",
+    "slogan": "Notícia quente direto do igarapé.",
+    "aberturas_padrao": [
+      "Fala maninho, tá começando mais um BubuiA News!",
+      "Fala curumím, tá começando mais um BubuiA News!"
+    ],
+    "encerramento_padrao": "E lembrem: aqui é BubuiA News, notícia quente direto do igarapé!",
+    "duracao_media": "25-30 minutos",
+    "frequencia": "diário",
+    "horario_sugerido": "07:00",
+    "publico_alvo": "Amazonenses, brasileiros interessados na região Norte"
+  },
+  "vinhetas": {
+    "abertura": {
+      "texto": "🎵 BubuiA News - Notícia quente direto do igarapé! 🎵",
+      "duracao": "5-8 segundos",
+      "estilo": "carimbó instrumental com efeitos de água/igarapé"
+    },
+    "transicao": {
+      "texto": "🎵 Vinheta de transição 🎵",
+      "duracao": "3-5 segundos",
+      "estilo": "percussão leve amazônica"
+    },
+    "encerramento": {
+      "texto": "🎵 BubuiA News - Até a próxima! 🎵",
+      "duracao": "8-10 segundos",
+      "estilo": "carimbó com fade out"
+    }
+  },
+  "frases_de_efeito": {
+    "taina": [
+      "Oxe, essa notícia tá quente mesmo!",
+      "Meu pai eterno, que história é essa?",
+      "Cabra danada, olha só isso!",
+      "Rapaz, aqui no BubuiA News a gente não perde nada!",
+      "Fala maninho, essa aí é importante!",
+      "Curumím, olha só que coisa!"
+    ],
+    "iray": [
+      "Vichi, tem que ficar ligado mesmo!",
+      "É bem assim mesmo, caboco!",
+      "Pois é, aqui no igarapé a notícia chega rapidinho!",
+      "Essa aí é pra ninguém botar defeito!",
+      "Fala curumím, é isso mesmo!",
+      "Maninho, a coisa tá séria!"
+    ],
+    "ambos": [
+      "Aqui é BubuiA News, gente!",
+      "Notícia quente direto do igarapé!",
+      "A galera do Amazonas sempre bem informada!",
+      "Do coração da Amazônia pra vocês!"
+    ]
+  },
+  "referencias_locais": {
+    "lugares": [
+      "Ponta Negra", "Teatro Amazonas", "Mercado Municipal",
+      "Ponte Rio Negro", "Centro de Manaus", "Parintins",
+      "Rio Negro", "Rio Solimões", "Encontro das Águas",
+      "Porto de Manaus", "Arena da Amazônia"
+    ],
+    "eventos_regionais": [
+      "Festival de Parintins", "Boi Garantido", "Boi Caprichoso",
+      "Festival de Inverno de Bonito", "Feira da Banana",
+      "Carnaval de Manaus", "Festival Amazonas de Jazz"
+    ],
+    "comidas_tipicas": [
+      "tucumã", "açaí", "pirarucu", "tambaqui",
+      "cupuaçu", "guaraná", "tacacá", "pato no tucumã"
+    ]
+  },
+  "meteorologia": {
+    "termos_locais": {
+      "chuva_forte": "aguaceiro danado",
+      "sol_forte": "quentura absurda", 
+      "tempo_bom": "tempo massa",
+      "vento": "ventania boa",
+      "nublado": "céu carregado"
+    }
+  },
+  "configuracoes_producao": {
+    "tom_geral": "descontraído, informativo, regional",
+    "ritmo": "dinâmico mas não apressado",
+    "interacao": "conversacional entre apresentadores",
+    "humor": "leve, natural, sem forçar piadas",
+    "regionalismo": "forte, mas compreensível para todo Brasil"
+  }
+}

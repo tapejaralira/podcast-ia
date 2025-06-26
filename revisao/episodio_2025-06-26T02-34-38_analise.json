@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-06-26T02:34:38.651Z",
+  "episodio_numero": 1,
+  "metricas_automaticas": {
+    "palavras_total": 570,
+    "girias_detectadas": 3,
+    "referencias_locais": 6,
+    "interacoes_entre_personagens": 21,
+    "blocos_detectados": 17
+  },
+  "pontos_verificacao": {
+    "introducao_consistente": true,
+    "slogan_presente": false,
+    "interacao_espontanea": true,
+    "referencias_manaus": true,
+    "tom_adequado": false
+  },
+  "alertas_automaticos": [
+    "⚠️ Poucas gírias regionais detectadas"
+  ],
+  "sugestoes_melhoria": [
+    "💡 Incluir chamada para interação com audiência"
+  ]
+}
