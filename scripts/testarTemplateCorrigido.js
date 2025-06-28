@@ -62,7 +62,7 @@ function testarTemplateCorrigido() {
 
         linhas.forEach((linha, i) => {
             const match = linha.match(/\*\*(Tainá|Iraí):\*\*\s*(.+)/);
-            if (match && match[2].trim().length > 0) {
+            if (match && match[2].trim()) {
                 falas.push({
                     linha: i + 1,
                     personagem: match[1],

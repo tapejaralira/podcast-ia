@@ -1,14 +1,15 @@
 <!-- =============================================== -->
 <!-- ARQUIVO PARA SUAS CORREÇÕES - BUBUIA NEWS -->
 <!-- =============================================== -->
-<!-- 
+<!--
 INSTRUÇÕES PARA CORREÇÃO:
 
 1. 📝 EDITE O TEXTO ABAIXO conforme necessário
 2. 🏷️ MARQUE SUAS CORREÇÕES usando os comentários:
    <!-- CORRIGIDO: [categoria] - [explicação] -->
-   
+
 3. 📚 CATEGORIAS DISPONÍVEIS:
+
    - girias: Ajustes em gírias e expressões
    - tom: Mudanças no tom de voz/emoção
    - referencias_locais: Correções em referências de Manaus/Amazonas
@@ -23,7 +24,7 @@ INSTRUÇÕES PARA CORREÇÃO:
    Texto corrigido: "Oxe, tá um aguaceiro danado!" <!-- CORRIGIDO: girias - Tainá usa mais "oxe" que "vichi" -->
 
 5. ✅ SALVE E EXECUTE: npm run processar-correcao [nome-arquivo]
--->
+   -->
 
 <!-- METADADOS DE REVISÃO -->
 <!-- Data: 25/06/2025, 22:18:24 -->
@@ -49,7 +50,7 @@ _"Notícia quente direto do igarapé."_
 
 ## 🎙️ INTRODUÇÃO OFICIAL
 
-**Tainá:** Fala, maninho! Tá começando mais um *BubuiA News*...
+**Tainá:** Fala, maninho! Tá começando mais um _BubuiA News_...
 
 **Iray:** ...o podcast que te traz a notícia de dentro da rede!
 
@@ -59,8 +60,6 @@ _"Notícia quente direto do igarapé."_
 
 **Tainá:** Bora te contar o que rolou — e o que ainda vai dar o que falar — aqui no Amazonas e arredores.
 
-
-
 ---
 
 ## 💬 INTERAÇÃO ESPONTÂNEA (EDITOR)
@@ -69,8 +68,6 @@ _"Notícia quente direto do igarapé."_
 
 **Iray:** Editor, bota uma trilha aí pra animar!
 
-
-
 ---
 
 ## 🔄 TRANSIÇÃO PARA CARDÁPIO
@@ -78,8 +75,6 @@ _"Notícia quente direto do igarapé."_
 **Tainá:** Bom, chega de papo furado...
 
 **Iray:** É isso aí! Vamos ver o que temos no cardápio hoje!
-
-
 
 ---
 
@@ -145,7 +140,7 @@ _"Notícia quente direto do igarapé."_
 
 **Curiosidade:** Você sabia que o Meeting das Águas pode ser visto do espaço?
 
-****Iraí:** Conta aí sobre essas tradições de Parintins, Tai.\n**Tainá:** Eita! É muita história bonita do meu povo!**
+\***\*Iraí:** Conta aí sobre essas tradições de Parintins, Tai.\n**Tainá:** Eita! É muita história bonita do meu povo!\*\*
 
 ---
 
@@ -193,10 +188,9 @@ _[Esta seção será preenchida dinamicamente se houver eventos próximos]_
 
 _Roteiro gerado automaticamente em 2025-06-26T02:18:24.420Z_
 
-
 <!-- =============================================== -->
 <!-- FEEDBACK OPCIONAL: -->
-<!-- 
+<!--
 Deixe comentários aqui sobre:
 - O que funcionou bem
 - O que precisa melhorar

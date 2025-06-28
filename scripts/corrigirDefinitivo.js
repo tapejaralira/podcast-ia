@@ -268,13 +268,13 @@ function corrigirGerarRoteiro() {
 `;
 
         // Inserir no local correto
-        const novoConteudo = conteudo.slice(0, ultimaLinhaClasse) + 
-                            implementacoes + 
+        const novoConteudo = conteudo.slice(0, ultimaLinhaClasse) +
+                            implementacoes +
                             conteudo.slice(ultimaLinhaClasse);
-        
+
         // Salvar arquivo corrigido
         fs.writeFileSync(geradorPath, novoConteudo);
-        
+
         console.log('✅ Arquivo gerarRoteiro.js corrigido com sucesso!');
         console.log('📊 30 métodos implementados corretamente');
         console.log('🎯 Agora execute: npm run teste-episodio');

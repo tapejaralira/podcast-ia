@@ -86,10 +86,9 @@ function corrigirArquivosEstrutura() {
             const caminhoArquivo = path.join(__dirname, '..', arquivo);
             if (fs.existsSync(caminhoArquivo)) {
                 const conteudo = fs.readFileSync(caminhoArquivo, 'utf8');
-                const linhasUndefined = conteudo.split('\n').filter(linha => 
-                    linha.includes('undefined') || linha.includes('${') && !linha.includes('${')
+                const linhasUndefined = conteudo.split('\n').filter(linha =>
+                    linha.includes('undefined')
                 );
-                
                 if (linhasUndefined.length > 0) {
                     console.log(`  ⚠️ ${arquivo}: ${linhasUndefined.length} possíveis problemas`);
                 }

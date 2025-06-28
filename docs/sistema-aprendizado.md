@@ -48,9 +48,9 @@ npm run gerar-episodio
 
 ### **2. Arquivos Gerados:**
 
-- **`*_original.md`** - Versão original do sistema
-- **`*_corrigido.md`** - Para suas edições (**ESTE você edita**)
-- **`*_analise.json`** - Análise automática do sistema
+- **`/revisao/originais/*_original.md`** - Versão original do sistema
+- **`/revisao/corrigidos/*_corrigido.md`** - Para suas edições (**ESTE você edita**)
+- **`/revisao/*_analise.json`** - Análise automática do sistema
 
 ### **3. Como Marcar Correções:**
 
@@ -76,6 +76,7 @@ Texto corrigido: "Oxe, tá um aguaceiro danado!" <!-- CORRIGIDO: girias - Tainá
 
 ```bash
 npm run processar-correcao episodio_2024-12-19T10-30-00
+# (executa scripts/processarCorrecoes.js)
 ```
 
 ---

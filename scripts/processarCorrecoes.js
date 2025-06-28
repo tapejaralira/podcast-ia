@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const SistemaRevisao = require('./sistemaRevisao');
+const SistemaRevisao = require('../sistemaRevisao');
 
 // Script para processar correções
 const nomeArquivo = process.argv[2];

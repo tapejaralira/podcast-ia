@@ -80,20 +80,37 @@ npm run adicionar-evento "Festival de Verão" "Grande festa na Ponta Negra" "202
 ## 📁 Estrutura do Projeto
 
 ```
-/bubuia-news
-├── /data
-│   ├── personagens.json        # Perfis da Tainá e Iray
-│   ├── eventos.json           # Eventos detectados e manuais
-│   └── girias.json           # Gírias e expressões regionais
-├── /templates
-│   └── roteiro-template.md   # Template base do roteiro
-├── /audios                   # Áudios gerados
-├── /config
-│   └── ia-config.json       # Configurações de APIs
-├── gerarRoteiro.js          # Script principal
-├── gerenciadorEventos.js    # Sistema de eventos
-├── integracaoIA.js          # Integração TTS/IA
-└── adicionarEvento.js       # Adicionar eventos manuais
+/podcast-ia
+├── core/
+│   ├── gerarRoteiro.js
+│   ├── integracaoIA.js
+│   ├── dialogosEspontaneos.js
+│   ├── sistemaRevisao.js
+│   ├── classificadorContextual.js
+│   ├── comentariosContextuais.js
+│   ├── gerenciadorEventos.js
+│   ├── mixadorAutomatico.js
+│   ├── geradorFalasIA.js
+│   └── integradorElevenLabs.js
+├── data/
+│   ├── personagens.json
+│   ├── eventos.json
+│   └── girias.json
+├── config/
+│   ├── ia-config.json
+│   ├── tts-emocional.json
+│   └── revisao-config.json
+├── scripts/
+│   ├── processarCorrecoes.js
+│   ├── verificarImportacoes.js
+│   └── ... outros scripts
+├── templates/
+├── episodios/
+├── audios/
+├── temp_audio/
+├── revisao/
+├── docs/
+└── logs/
 ```
 
 ---
@@ -117,6 +134,48 @@ Iray: "E aí, pessoal! Vichi, tô aqui também no BubuiA News! Notícia quente d
 ## 🎵 ENCERRAMENTO
 
 Ambos: "E lembrem: aqui é BubuiA News, notícia quente direto do igarapé!"
+```
+
+---
+
+## 🗂️ Diagrama de Classes (Mermaid)
+
+```mermaid
+classDiagram
+    class GeradorRoteiro {
+        +gerar(eventos)
+        +aplicarPersonagem(personagem)
+    }
+    class IntegracaoIA {
+        +enviarTexto(texto)
+        +receberAudio()
+    }
+    class GerenciadorEventos {
+        +adicionarEvento(evento)
+        +detectarEventos()
+        +listarEventos()
+    }
+    class SistemaComentarios {
+        +receberComentario(comentario)
+        +listarComentarios()
+    }
+    class Personagem {
+        +nome
+        +girias
+        +perfil
+    }
+    class Evento {
+        +titulo
+        +descricao
+        +data
+        +categoria
+    }
+
+    GeradorRoteiro --> Personagem
+    GeradorRoteiro --> Evento
+    GeradorRoteiro --> IntegracaoIA
+    GerenciadorEventos --> Evento
+    SistemaComentarios --> Personagem
 ```
 
 ---

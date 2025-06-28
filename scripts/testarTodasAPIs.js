@@ -149,7 +149,7 @@ async function testarSistemaCompleto(resultados) {
         console.log('🔍 Testando geração de episódio...');
         
         // Simular geração rápida
-        const GeradorRoteiro = require('../gerarRoteiro');
+        const GeradorRoteiro = require('../core/gerarRoteiro');
         const gerador = new GeradorRoteiro();
         
         console.log('   📝 Gerando roteiro de teste...');
@@ -247,28 +247,28 @@ async function testarFFmpeg() {
 
 function exibirRelatorioFinal(resultados) {
     console.log('\n📊 === RELATÓRIO FINAL DAS APIS ===\n');
-    
-    const emoji = (status) => status ? '✅' : '❌';
-    
+
+    const emoji = status => status ? '✅' : '❌';
+
     console.log(`🗣️ Text-to-Speech: ${emoji(resultados.tts.status)} ${resultados.tts.servico}`);
     console.log(`   ${resultados.tts.detalhes}`);
-    
+
     console.log(`\n🧠 Inteligência Artificial: ${emoji(resultados.ia.status)} ${resultados.ia.servico}`);
     console.log(`   ${resultados.ia.detalhes}`);
-    
+
     console.log(`\n📰 Notícias: ${emoji(resultados.noticias.status)} ${resultados.noticias.servico}`);
     console.log(`   ${resultados.noticias.detalhes}`);
-    
+
     console.log(`\n🎵 Processamento de Áudio: ${emoji(resultados.audio.status)} ${resultados.audio.servico}`);
     console.log(`   ${resultados.audio.detalhes}`);
-    
+
     // Análise geral
     const totalOK = Object.values(resultados).filter(r => r.status).length;
     const percentual = Math.round((totalOK / 4) * 100);
-    
+
     console.log(`\n🎯 === ANÁLISE GERAL ===`);
     console.log(`📊 APIs funcionando: ${totalOK}/4 (${percentual}%)`);
-    
+
     if (percentual >= 75) {
         console.log('🎉 SISTEMA PRONTO PARA PRODUÇÃO!');
         console.log('💡 Execute: npm run gerar-episodio-completo');
@@ -279,26 +279,18 @@ function exibirRelatorioFinal(resultados) {
         console.log('❌ Sistema precisa de configurações adicionais');
         console.log('💡 Configure pelo menos TTS e IA para melhor experiência');
     }
-    
-    console.log('\n🔧 === PRÓXIMOS PASSOS ===');
-    
-    // Próximos passos
-    if (!resultados.tts.status) {
-        console.log('🗣️ Configure ElevenLabs para vozes mais naturais');
-    }
 
-    if (!resultados.ia.status) {
+    console.log('\n🔧 === PRÓXIMOS PASSOS ===');
+
+    if (!resultados.tts.status)
+        console.log('🗣️ Configure ElevenLabs para vozes mais naturais');
+    if (!resultados.ia.status)
         console.log('🧠 Configure OpenAI para comentários únicos e personalizados');
-    }
-    
-    if (!resultados.noticias.status || resultados.noticias.servico === 'rss') {
+    if (!resultados.noticias.status || resultados.noticias.servico === 'rss')
         console.log('📰 Configure NewsAPI para acesso a mais fontes de notícias');
-    }
-    
-    if (!resultados.audio.status) {
+    if (!resultados.audio.status)
         console.log('🎵 Instale FFmpeg para processamento de áudio completo');
-    }
-    
+
     console.log('\n🎙️ BubuiA News - Sistema de configuração concluído!');
 }
 

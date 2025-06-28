@@ -6,12 +6,12 @@ _"Notícia quente direto do igarapé."_
 
 **Status: 100% IMPLEMENTADO**
 
-- ✅ Estrutura de pastas criada (/data, /templates, /audios, /config, /scripts)
+- ✅ Estrutura de pastas criada (/data, /templates, /audios, /config, /scripts, /revisao, /docs)
 - ✅ personagens.json com perfis do Iray e da Tainá
 - ✅ eventos.json com sistema dinâmico de eventos
 - ✅ girias.json com bordões e expressões por personagem
 - ✅ roteiro-template.md com placeholders e estrutura diária completa
-- ✅ Scripts Node.js: gerarRoteiro.js, gerenciadorEventos.js, integracaoIA.js
+- ✅ Scripts Node.js: gerarRoteiro.js, gerenciadorEventos.js, integracaoIA.js, scripts/processarCorrecoes.js, scripts/verificarImportacoes.js
 - 🔄 **NOVA FUNCIONALIDADE:** Sistema automático de detecção de eventos
 - 🔄 **NOVA FUNCIONALIDADE:** Script para adicionar eventos manuais
 

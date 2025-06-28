@@ -4,12 +4,12 @@ const fs = require('fs');
 const path = require('path');
 
 const arquivosPrincipais = [
-    'gerarRoteiro.js',
-    'classificadorContextual.js',
-    'integradorElevenLabs.js',
-    'integracaoIA.js',
-    'integracaoIAExtendida.js',
-    'geradorFalasIA.js',
+    'core/gerarRoteiro.js',
+    'core/classificadorContextual.js',
+    'core/integradorElevenLabs.js',
+    'core/integracaoIA.js',
+    'core/integracaoIAExtendida.js',
+    'core/geradorFalasIA.js',
     'scripts/gerarEpisodioComIA.js',
     'scripts/gerarEpisodioAudioReal.js',
     'scripts/gerarEpisodioSimples.js',
@@ -18,11 +18,11 @@ const arquivosPrincipais = [
     'scripts/verificarOpenAI.js',
     'scripts/adicionarOpenAI.js',
     'scripts/instalarFFmpeg.js',
-    'comentariosContextuais.js',
-    'mixadorAutomatico.js',
-    'gerenciadorEventos.js',
-    'dialogosEspontaneos.js',
-    'sistemaRevisao.js'
+    'core/comentariosContextuais.js',
+    'core/mixadorAutomatico.js',
+    'core/gerenciadorEventos.js',
+    'core/dialogosEspontaneos.js',
+    'core/sistemaRevisao.js'
 ];
 
 const pastasPrincipais = [
@@ -31,12 +31,14 @@ const pastasPrincipais = [
     'episodios',
     'audios',
     'temp_audio',
-    'config'
+    'config',
+    'revisao',
+    'scripts',
+    'docs'
 ];
 
 function checarArquivo(arquivo) {
-    const caminho = path.join(__dirname, arquivo);
-    return fs.existsSync(caminho);
+    return fs.existsSync(path.join(__dirname, arquivo));
 }
 
 function checarPasta(pasta) {
@@ -102,4 +104,5 @@ if (arquivosOk === arquivosPrincipais.length && pastasOk === pastasPrincipais.le
     console.log('\n⚠️ Há arquivos ou pastas faltando. Corrija antes de rodar o sistema completo.');
 }
 
+console.log('\n🧩 Diagnóstico concluído.');
 console.log('\n🧩 Diagnóstico concluído.');

@@ -83,23 +83,15 @@ class ClassificadorContextual {
     }
 
     classificarPorRegras(titulo) {
-        if (!titulo || typeof titulo !== 'string') {
-            return 'geral';
-        }
+        if (!titulo || typeof titulo !== 'string') return 'geral';
 
         const pontuacoes = {};
-        
-        // Analisar cada contexto
         for (const [contexto, config] of Object.entries(this.contextos)) {
             pontuacoes[contexto] = this.analisarPalavrasChave(titulo, config.palavrasChave, config.peso);
         }
-        
-        // Encontrar contexto com maior pontuação
-        const melhorContexto = Object.keys(pontuacoes).reduce((a, b) => 
+        const melhorContexto = Object.keys(pontuacoes).reduce((a, b) =>
             pontuacoes[a] > pontuacoes[b] ? a : b
         );
-        
-        // Se pontuação muito baixa, usar contexto geral
         return pontuacoes[melhorContexto] > 0 ? melhorContexto : 'geral';
     }
 
