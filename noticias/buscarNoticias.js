@@ -1,7 +1,6 @@
-// noticias/buscarNoticias.js - VERSÃO FINAL CORRIGIDA
+// noticias/buscarNoticias.js
 import fs from 'fs/promises';
 import path from 'path';
-// Importamos a função adicional 'pathToFileURL'
 import { fileURLToPath, pathToFileURL } from 'url'; 
 
 // --- Lógica para descobrir o caminho absoluto do diretório atual ---
@@ -26,11 +25,7 @@ async function buscarNoticias() {
       .filter(file => file.endsWith('.js'))
       .map(file => {
         const fullPath = path.join(COLLECTORS_DIR, file);
-        
-        // AQUI ESTÁ A CORREÇÃO: Convertemos o caminho do arquivo para uma URL válida
         const fileURL = pathToFileURL(fullPath);
-        
-        // Agora importamos a URL, que é o formato que o Node.js espera
         return import(fileURL);
       });
 
@@ -43,8 +38,14 @@ async function buscarNoticias() {
           console.log(`Buscando em: ${coletor.sourceName}...`);
           const artigos = await coletor.fetch();
           
+          // **NOVA LINHA:** Exibe a contagem de artigos encontrados para esta fonte
+          console.log(`  -> Encontrados: ${artigos.length} artigos recentes.`);
+          
           for (const artigo of artigos) {
             if (artigo && artigo.link && !linksProcessados.has(artigo.link)) {
+              // **MELHORIA:** Remove o campo 'id' redundante antes de salvar.
+              delete artigo.id;
+              
               todosOsArtigos.push(artigo);
               linksProcessados.add(artigo.link);
             }
@@ -53,7 +54,6 @@ async function buscarNoticias() {
           console.error(`❌ Falha ao processar a fonte ${coletor.sourceName}:`, error.message);
         }
       } else if (resultado.status === 'rejected') {
-        // Logamos o erro de importação que vimos antes, caso ele persista
         console.error('❌ Erro ao importar um módulo coletor:', resultado.reason);
       }
     }
