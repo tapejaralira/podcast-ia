@@ -42,11 +42,14 @@
     "gerar-episodio-audio": "node scripts/gerarEpisodioComAudio.js"
   },
   "dependencies": {
-    "axios": "^1.6.0",
+    "axios": "^1.10.0",
+    "cheerio": "^1.1.0",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "^16.3.1",
+    "fluent-ffmpeg": "^2.1.2",
     "node-fetch": "^3.3.2",
     "openai": "^4.0.0",
-    "fluent-ffmpeg": "^2.1.2"
+    "rss-parser": "^3.13.0"
   },
   "keywords": [
     "podcast",
