@@ -12,21 +12,19 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CAMINHOS CORRIGIDOS PARA A NOVA ESTRUTURA
 const PAUTA_FILE = path.join(__dirname, '..', 'data', 'episodio-do-dia.json');
 const PERSONAGENS_FILE = path.join(__dirname, '..', 'data', 'personagens.json');
 const TEMPLATE_FILE = path.join(__dirname, 'roteiro-template.md');
 const OUTPUT_DIR = path.join(__dirname, '..', 'episodios');
 
-// MAPA DE TRILHAS ATUALIZADO PARA A PAUTA 2.0
 const TRILHA_MAP = {
-    "⚫️": "trilha_tensao_leve.mp3",      // Segurança & BOs de Impacto
-    "🟡": "trilha_informativa_neutra.mp3", // Política de Baré
-    "🔴": "trilha_reflexiva.mp3",          // Perrengues da Cidade
-    "🚀": "trilha_tecnologica_upbeat.mp3", // Tecnologia & Inovação
-    "🎬": "trilha_divertida_pop.mp3",      // Cultura Pop & Geek
-    "🎭": "trilha_cultural_regional.mp3",  // Rolê Cultural
-    "👽": "trilha_misteriosa_humor.mp3"    // Bizarrices da Bubuia
+    "⚫️": "trilha_tensao_leve.mp3",
+    "🟡": "trilha_informativa_neutra.mp3",
+    "🔴": "trilha_reflexiva.mp3",
+    "🚀": "trilha_tecnologica_upbeat.mp3",
+    "🎬": "trilha_divertida_pop.mp3",
+    "�": "trilha_cultural_regional.mp3",
+    "👽": "trilha_misteriosa_humor.mp3"
 };
 
 // --- Funções Principais ---
@@ -61,13 +59,19 @@ Use os perfis dos personagens para guiar a reação: Tainá (jovem, curiosa), Ir
 Responda APENAS com o diálogo. Comece com "Tainá:".`;
             break;
         case 'noticia_principal':
-            prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo natural entre Tainá e Iraí sobre a notícia abaixo.
+            prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo natural e conciso (4 a 6 falas) entre Tainá e Iraí sobre a notícia abaixo.
 - Perfis: Tainá (${personagens.taina.perfil_geral}), Iraí (${personagens.irai.perfil_geral}).
-- Formas como Tainá chama Iraí: ${personagens.taina.formas_de_chamar_o_outro.join(', ')}.
-- Formas como Iraí chama Tainá: ${personagens.irai.formas_de_chamar_o_outro.join(', ')}.
 - Tom da Notícia: ${noticia.classification.description}
-- Conteúdo Completo (combinado de várias fontes): ${noticia.texto_completo}
-Instruções: Comece com um dos apresentadores introduzindo o assunto. O diálogo deve ter entre 4 a 6 falas. Adapte o tom e as reações à classificação da notícia e ao perfil de cada um. Incorpore SSML para pausas, como <break time="0.5s"/>.
+- Conteúdo: ${noticia.texto_completo}
+Instruções: Incorpore o jeito de falar e as gírias de cada um. Comece com um dos apresentadores. Inclua pausas <break time="0.5s"/> para naturalidade.
+Responda APENAS com o diálogo.`;
+            break;
+        case 'super_noticia_principal':
+            prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo APROFUNDADO (6 a 8 falas) entre Tainá e Iraí sobre a notícia abaixo, que foi o evento mais comentado do dia.
+- Perfis: Tainá (${personagens.taina.perfil_geral}), Iraí (${personagens.irai.perfil_geral}).
+- Tom da Notícia: ${noticia.classification.description}
+- Conteúdo Completo (COMBINADO DE VÁRIAS FONTES): ${noticia.texto_completo}
+Instruções: Dê mais profundidade à análise. Permita que eles reajam e comentem sobre os diferentes detalhes apresentados pelas fontes. Incorpore o jeito de falar e as gírias de cada um. Inclua pausas <break time="0.5s"/>.
 Responda APENAS com o diálogo.`;
             break;
         case 'cardapio':
@@ -127,6 +131,7 @@ async function gerarRoteiro() {
         roteiroFinal = roteiroFinal.replace('{{CARDAPIO_NOTICIAS}}', 'Iraí: Eita, maninha, parece que hoje a rede veio vazia! Vamos ver o que tem de bom por aqui mesmo assim.');
     }
 
+    // CORREÇÃO: Processando notícias em sequência para evitar rate limit
     for (let i = 0; i < 4; i++) {
         const noticia = pauta.noticiasPrincipais[i];
         let dialogo = "// Sem notícia para este bloco.";
@@ -140,7 +145,9 @@ async function gerarRoteiro() {
             noticia.texto_completo = textosCompletos.filter(t => t).join('\n\n---\n\n');
             
             if (noticia.texto_completo) {
-                dialogo = await gerarDialogo({ tipo: 'noticia_principal', noticia, personagens });
+                const tipoDialogo = noticia.isSuperNoticia ? 'super_noticia_principal' : 'noticia_principal';
+                console.log(`  -> Gerando diálogo (Tipo: ${tipoDialogo})`);
+                dialogo = await gerarDialogo({ tipo: tipoDialogo, noticia, personagens });
             } else {
                 dialogo = "// Não foi possível buscar o texto completo para esta notícia.";
             }
@@ -151,6 +158,11 @@ async function gerarRoteiro() {
         roteiroFinal = roteiroFinal.replace(`{{NOTICIA_${i + 1}_TITULO}}`, titulo);
         roteiroFinal = roteiroFinal.replace(`{{NOTICIA_${i + 1}_DIALOGO}}`, dialogo);
         roteiroFinal = roteiroFinal.replace(`{{NOTICIA_${i + 1}_TRILHA}}`, trilha);
+
+        // Pausa de 1 segundo entre cada notícia para não sobrecarregar a API
+        if(i < 3) { // Não precisa pausar depois da última
+             await new Promise(resolve => setTimeout(resolve, 1000));
+        }
     }
     
     const dataDeHoje = new Date().toISOString().split('T')[0];

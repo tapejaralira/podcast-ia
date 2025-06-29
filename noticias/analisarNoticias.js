@@ -13,10 +13,35 @@ const __dirname = path.dirname(__filename);
 const INPUT_FILE = path.join(__dirname, '..', 'data', 'noticias-recentes.json');
 const OUTPUT_FILE = path.join(__dirname, '..', 'data', 'episodio-do-dia.json');
 
-const KEYWORDS_RELEVANCIA = ["manaus", "amazonas", "prefeitura", "governo", "polícia", "festival", "ponte rio negro", "zona franca", "Wilson Lima", "David Almeida", "cheia", "seca", "parintins", "br-319", "tecnologia", "startup", "games", "cinema"];
-const SOURCE_WEIGHTS = { 'G1 Amazonas': 10, 'A Crítica': 8, 'D24AM': 7, 'Portal do Holanda': 6 };
+// LISTAS DE RELEVÂNCIA ATUALIZADAS E BALANCEADAS
+const KEYWORDS_RELEVANCIA = [
+  // Cultura Pop & Geek (Peso Alto)
+  "cinema", "série", "game", "e-sports", "anime", "geek", "nerd", "estreia", "lançamento", "cosplay", "evento geek",
+  
+  // Tecnologia & Inovação (Peso Alto)
+  "tecnologia", "startup", "aplicativo", "inovação", "inteligência artificial",
 
-// NOVO GUIA DE PAUTA 2.0
+  // Rolê Cultural & Bizarrices (Peso Médio)
+  "festival", "show", "exposição", "gratuito", "parintins", "lenda", "bizarro", "mistério", "inusitado", "gastronomia",
+  
+  // Impacto Direto e Serviços (Peso Alto para Relevância)
+  "manaus", "amazonas", "concurso", "transporte público", "tarifa", "saúde", "educação", "semed", "semsa", "água", "energia",
+  
+  // Nomes de Grande Relevância
+  "Wilson Lima", "David Almeida",
+
+  // Eventos Naturais de Grande Impacto
+  "cheia", "seca", "br-319", "queimadas"
+];
+
+const SOURCE_WEIGHTS = { 
+  'G1 Amazonas': 10,       
+  'A Crítica': 8,          
+  'D24AM': 7,              
+  'Portal do Holanda': 9   
+};
+
+
 const CLASSIFICATION_GUIDE_MAP = {
     "⚫️ 1": "Segurança & BOs de Impacto",
     "🟡 2": "Política de Baré",
@@ -26,8 +51,17 @@ const CLASSIFICATION_GUIDE_MAP = {
     "🎭 6": "Rolê Cultural",
     "👽 7": "Bizarrices da Bubuia"
 };
-const CLASSIFICATION_GUIDE_TEXT = Object.entries(CLASSIFICATION_GUIDE_MAP)
-    .map(([key, value]) => `* **${key}**: ${value}`).join('\n');
+
+// ATUALIZAÇÃO: Refinando a descrição para a IA
+const CLASSIFICATION_GUIDE_TEXT = `
+* **⚫️ 1**: Segurança & BOs de Impacto: Apenas notícias de grande impacto na segurança pública.
+* **🟡 2**: Política de Baré: Apenas decisões políticas com impacto direto e visível na vida do cidadão.
+* **🔴 3**: Perrengues da Cidade: Apenas problemas que causam um grande impacto no cotidiano de um bairro ou da cidade.
+* **🚀 4**: Tecnologia & Inovação do Igarapé: Novidades de tecnologia, startups e e-sports com conexão local.
+* **🎬 5**: Cultura Pop & Geek de Rede: Eventos de cinema, séries, games e cultura geek que acontecem em Manaus ou no Amazonas, ou que tenham uma conexão direta com a região.
+* **� 6**: Rolê Cultural: Eventos culturais locais, shows, festivais e dicas do que fazer.
+* **👽 7**: Bizarrices da Bubuia: Fatos inusitados e bizarros que só acontecem na nossa região.
+`;
 
 // --- Funções Principais ---
 
@@ -35,29 +69,17 @@ async function chamarIAparaClassificar(article) {
   console.log(`  -> Classificando com OpenAI: "${article.title.substring(0, 40)}..."`);
   try {
     const prompt = `
-      Você é o **editor-chefe** do "Bubuia News", um podcast de notícias de ÁUDIO que cobre **Manaus e os principais acontecimentos do estado do Amazonas**, sempre com uma pegada **regional, humana e bem-humorada**. Seu público quer saber o que **impacta o dia a dia**, o que gera **conversa na beira do igarapé** e as histórias que só acontecem aqui.
+      Você é o **editor-chefe** do "Bubuia News", um podcast de notícias de ÁUDIO de Manaus. Seu objetivo é criar uma pauta **balanceada**: informativa e relevante para o cidadão, mas com a nossa pegada jovem e de cultura pop.
 
-      ---
       ### Guia de Curadoria Editorial (REGRAS)
+      - **REGRA 1: CONEXÃO LOCAL É OBRIGATÓRIA.** Para a categoria "Cultura Pop & Geek", a notícia SÓ é relevante se o evento ou fato acontecer em Manaus/Amazonas ou tiver uma clara conexão com a região. Uma estreia de filme nacional, por exemplo, não é relevante, a menos que a notícia seja sobre a "reação dos cinemas de Manaus".
+      - **REGRA 2: SEM CONTEÚDO VISUAL.** Se o título ou resumo contiver "veja fotos", "assista ao vídeo", "galeria de imagens", ou a palavra "VÍDEO:", o conteúdo é INADEQUADO.
+      - **REGRA 3: SEM AUTOPROMOÇÃO.** Se o conteúdo for sobre o próprio telejornal (ex: "Jornal do Amazonas de hoje"), é INADEQUADO.
+      - **REGRA 4: SEM RELEVÂNCIA.** Se for uma notícia hiperlocal sem impacto para o resto da cidade, ou uma não-notícia (nota de falecimento, agenda interna), é INADEQUADO.
 
-      **Critérios de Interesse (o que torna uma notícia BOA):**
-      - **Impacto Local:** Afeta diretamente a vida, o bolso ou a rotina do morador de Manaus.
-      - **Relevância Estadual:** Notícias do interior do Amazonas são ótimas, DESDE QUE tenham um impacto claro ou gerem interesse para quem vive em Manaus (ex: o Festival de Parintins, grandes operações ambientais na BR-319).
-      - **Elemento Humano:** Histórias de pessoas, superação, conquistas ou problemas de um morador local.
-      - **Curiosidade Amazônica:** Fatos inusitados sobre nossa fauna, flora e cultura.
-
-      **Critérios de Exclusão (o que torna uma notícia RUIM):**
-      - **Visual:** Se o título ou resumo contiver "veja fotos", "assista ao vídeo", "galeria de imagens", o conteúdo é INADEQUADO.
-      - **Promocional:** Se o conteúdo for sobre o próprio telejornal (ex: "Jornal do Amazonas de hoje"), é INADEQUADO.
-      - **Hiperlocal sem impacto:** Notícias de cidades pequenas que não têm relevância para o público de Manaus (ex: a troca de um secretário em um município distante).
-      - **Não-Notícia:** Notas de falecimento simples, agenda interna de órgãos públicos.
-      - **Perrengues Pequenos:** "Um buraco na rua" ou "um acidente" só são relevantes se interditarem uma via principal e afetarem a rotina de um bairro inteiro.
-
-      ---
       ### TAREFA
-
       Analise o artigo abaixo e retorne um objeto JSON com DUAS chaves:
-      1.  \`classification_id\`: Uma string contendo APENAS o ID da categoria do guia (ex: "🚀 4").
+      1.  \`classification_id\`: A string do ID da categoria do guia que melhor se encaixa (ex: "🚀 4").
       2.  \`is_adequate\`: Um booleano ('true' se for adequado para áudio e não violar as regras, 'false' caso contrário).
 
       #### Guia de Classificação de Conteúdo
@@ -102,32 +124,27 @@ function calcularRelevanceScore(article, classification) {
         if (title.includes(keyword)) score += 5;
     }
     
-    // Lógica de Score ajustada para as novas categorias
+    // LÓGICA DE SCORE REBALANCEADA
     const classificationId = (classification.id && typeof classification.id === 'string') ? classification.id.split(' ')[0] : '';
-    if (['⚫️', '🟡', '🔴'].includes(classificationId)) score += 7; // Hard News com peso menor
-    if (['🚀', '🎬', '🎭'].includes(classificationId)) score += 12;   // Interesse Jovem/Cultural com peso maior
-    if (['👽'].includes(classificationId)) score += 15; // Candidato principal ao Cold Open
+    if (['⚫️', '🟡', '🔴'].includes(classificationId)) score += 9;  // Hard News com peso maior
+    if (['🚀', '🎬'].includes(classificationId)) score += 12;      // Tecnologia e Cultura Pop continuam com prioridade alta
+    if (['🎭'].includes(classificationId)) score += 8;            // Rolê Cultural com peso um pouco menor
+    if (['👽'].includes(classificationId)) score += 14;           // Bizarrices continuam com peso alto para o Cold Open
     
     return score;
 }
 
-// A função de agrupar notícias permanece a mesma
 function agruparNoticias(noticias) {
-    // ... (código da função agruparNoticias sem alterações) ...
     console.log('\n[LOG] Fase de agrupamento iniciada...');
     const grupos = {};
-
     for (const noticia of noticias) {
         const categoria = noticia.classification.id;
-        if (!grupos[categoria]) {
-            grupos[categoria] = [];
-        }
+        if (!grupos[categoria]) grupos[categoria] = [];
         grupos[categoria].push(noticia);
     }
 
     const superNoticias = [];
     const processados = new Set();
-
     for (const categoria in grupos) {
         const grupoCategoria = grupos[categoria];
         while (grupoCategoria.length > 0) {
@@ -136,12 +153,10 @@ function agruparNoticias(noticias) {
 
             const grupoSimilar = [noticiaBase];
             const palavrasBase = new Set(noticiaBase.title.toLowerCase().split(' ').filter(p => p.length > 3));
-            
             for (let i = grupoCategoria.length - 1; i >= 0; i--) {
                 const noticiaComparar = grupoCategoria[i];
                 const palavrasComparar = new Set(noticiaComparar.title.toLowerCase().split(' '));
                 const intersecao = new Set([...palavrasBase].filter(p => palavrasComparar.has(p)));
-                
                 if ((intersecao.size / palavrasBase.size) > 0.4) {
                     grupoSimilar.push(noticiaComparar);
                     grupoCategoria.splice(i, 1);
@@ -151,7 +166,6 @@ function agruparNoticias(noticias) {
             grupoSimilar.sort((a, b) => b.relevanceScore - a.relevanceScore);
             const noticiaPrincipal = grupoSimilar[0];
             processados.add(noticiaPrincipal.link);
-
             superNoticias.push({
                 isSuperNoticia: grupoSimilar.length > 1,
                 titulo_principal: noticiaPrincipal.title,
@@ -184,7 +198,6 @@ async function analisarEselecionarNoticias() {
     }
 
     console.log(`\n[LOG] ${todasAsNoticias.length} artigos brutos encontrados. Iniciando classificação com a nova pauta...`);
-
     let noticiasAnalisadas = [];
     for (const article of todasAsNoticias) {
         const classification = await chamarIAparaClassificar(article);
@@ -192,21 +205,19 @@ async function analisarEselecionarNoticias() {
         if (relevanceScore > -100) {
             noticiasAnalisadas.push({ ...article, relevanceScore, classification });
         }
+        await new Promise(resolve => setTimeout(resolve, 200)); 
     }
     console.log(`[LOG] ${noticiasAnalisadas.length} notícias foram consideradas adequadas após a classificação da IA.`);
-
 
     const pautaAgrupada = agruparNoticias(noticiasAnalisadas);
     pautaAgrupada.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
     let coldOpenNoticia = null;
-    // Lógica de Cold Open ajustada para a nova categoria
     const candidatosColdOpen = pautaAgrupada.filter(n => {
         const id = n.classification.id.split(' ')[0];
         return ['👽'].includes(id);
     });
     console.log(`\n[LOG] Fase de seleção iniciada. Encontrados ${candidatosColdOpen.length} candidatos para o Cold Open.`);
-
 
     let pautaRestante = pautaAgrupada;
     if (candidatosColdOpen.length > 0) {
@@ -216,13 +227,30 @@ async function analisarEselecionarNoticias() {
         console.log(`[LOG] ${pautaRestante.length} notícias restantes para o bloco principal.`);
     }
 
-    const noticiasPrincipais = pautaRestante.slice(0, 4);
-    console.log(`[LOG] Selecionadas ${noticiasPrincipais.length} notícias para o bloco principal.`);
+    const noticiasPrincipais = [];
+    const categoriasUsadas = new Set();
+    for (const noticia of pautaRestante) {
+        if (noticiasPrincipais.length >= 4) break;
+        if (!categoriasUsadas.has(noticia.classification.id)) {
+            noticiasPrincipais.push(noticia);
+            categoriasUsadas.add(noticia.classification.id);
+        }
+    }
+    
+    if (noticiasPrincipais.length < 4) {
+        for (const noticia of pautaRestante) {
+            if (noticiasPrincipais.length >= 4) break;
+            if (!noticiasPrincipais.some(n => n.titulo_principal === noticia.titulo_principal)) {
+                noticiasPrincipais.push(noticia);
+            }
+        }
+    }
 
+    console.log(`[LOG] Selecionadas ${noticiasPrincipais.length} notícias para o bloco principal.`);
 
     const pautaJSON = {
         coldOpen: coldOpenNoticia,
-        noticiasPrincipais: noticiasPrincipais,
+        noticiasPrincipais: noticiasPrincipais.slice(0, 4), 
     };
 
     await fs.writeFile(OUTPUT_FILE, JSON.stringify(pautaJSON, null, 2));
