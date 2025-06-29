@@ -1,132 +1,49 @@
 {
   "podcast": {
     "nome": "BubuiA News",
-    "slogan": "Notícia quente direto do igarapé",
-    "formato": "conversacional",
-    "duracao_media": "15-20 minutos",
-    "publico_alvo": "Manauaras e amazonenses"
+    "slogan": "Notícia quente de dentro da rede",
+    "identidade": "Um podcast de notícias com uma pegada regional, humana e bem-humorada, focado no que impacta a vida do amazonense."
   },
-  "personagens": [
+  "dinamica_geral": {
+    "brincadeiras_recorrentes": [
+      "Tainá tentando converter Iraí para o Boi Garantido.",
+      "Iraí contando diferenças culturais entre o Sul e o Norte.",
+      "Tainá imitando o sotaque gaúcho de Iraí de forma exagerada.",
+      "Comparações divertidas entre chimarrão e açaí ou tacacá.",
+      "Debates sobre frio versus o calor amazônico."
+    ]
+  },
+  "apresentadores": [
     {
       "nome": "Tainá Oliveira",
-      "voz": "feminina",
-      "personalidade": "animada",
-      "sotaque": "parintinense",
-      "idade": "28",
-      "origem": "Parintins - AM",
-      "bairro_atual": "Cidade Nova - Manaus",
-      "profissao": "apresentadora e produtora cultural",
-      "background": "Nasceu e cresceu em Parintins, terra do Festival Folclórico. Mudou-se para Manaus há alguns anos para trabalhar na mídia, mas mantém forte conexão com suas raízes. Tem ancestralidade indígena da qual tem muito orgulho. Conhece profundamente a cultura amazônica e sempre faz questão de valorizar as tradições locais.",
-      "ancestralidade": "indígena",
-      "paixoes": [
-        "Festival Folclórico de Parintins",
-        "Boi Garantido",
-        "Cultura indígena amazônica",
-        "Tradições ancestrais",
-        "Música regional"
-      ],
-      "caracteristicas": [
-        "Orgulhosa das raízes indígenas",
-        "Defensora da cultura amazônica",
-        "Energética e espontânea",
-        "Conectada com a natureza",
-        "Fala com propriedade sobre tradições locais"
-      ],
-      "girias_preferidas": [
-        "eita",
-        "meu povo", 
-        "maninho",
-        "curumim",
-        "caboco",
-        "rapaz",
-        "né",
-        "massa"
-      ],
-      "frases_marca": [
-        "Fala, maninho! Direto de Parintins!",
-        "Eita, meu povo!",
-        "O sangue indígena não deixa mentir!",
-        "Garantido no coração!",
-        "A floresta ensina quem sabe escutar!"
-      ],
-      "temas_especialidade": [
-        "cultura amazônica",
-        "festival de parintins", 
-        "tradições indígenas",
-        "eventos culturais",
-        "vida cotidiana em manaus"
-      ],
-      "estilo_comunicacao": "Calorosa e autêntica, sempre traz referências culturais amazônicas e tem orgulho visível de suas origens"
+      "perfil_geral": "Jovem produtora cultural de 24 anos, nascida e criada em Parintins, mas que hoje vive no bairro Cidade Nova em Manaus. Tem muito orgulho de sua ancestralidade indígena e é uma defensora apaixonada da cultura amazônica. É energética, espontânea e conhece profundamente as tradições locais, sempre fazendo questão de valorizá-las em suas falas. Ela é o coração pulsante e a raiz cultural do programa.",
+      "tom_de_voz": "Energético, rápido, caloroso e autêntico.",
+      "girias": ["tipo assim", "mano", "tá ligado?", "top", "viralizou", "deu ruim", "partiu"],
+      "formas_de_chamar_o_outro": ["Curumím", "Parente", "Caboco véi"],
+      "relacao_com_outro_personagem": "Vê o Iraí como um tio mais velho. Gosta de brincar com o sotaque misto dele e com o fato de ele ter 'quase virado gaúcho'. Tem curiosidade sobre como foi viver longe da Amazônia e tenta 'convertê-lo' para o lado do Boi Garantido.",
+      "paixoes_e_especialidades": ["Festival de Parintins (torcedora do Garantido)", "Cultura indígena", "Música regional", "Tradições ancestrais"],
+      "reacoes_emocionais": {
+        "alegre": "Comemora de forma expansiva, 'Eita, meu povo, que notícia massa!'",
+        "triste": "Usa um tom mais sério e respeitoso, 'É de cortar o coração, né?'",
+        "curiosa": "Mostra empolgação, 'Olha só isso, maninho! Que história!'"
+      }
     },
     {
       "nome": "Iraí Santos",
-      "voz": "masculina", 
-      "personalidade": "reflexivo",
-      "sotaque": "manauara autêntico",
-      "idade": "32",
-      "origem": "Manaus - AM",
-      "bairro_atual": "Adrianópolis - Manaus",
-      "profissao": "jornalista",
-      "background": "Nasceu e cresceu em Manaus, é manauara raiz que conhece bem a cidade e seus problemas. Saiu para estudar jornalismo no Sul do país por 3 anos, onde absorveu apenas algumas expressões gaúchas que usa esporadicamente. Voltou recentemente para Manaus e trabalha com comunicação. Continua sendo essencialmente amazonense, mas com uma perspectiva ampliada por ter conhecido outras culturas.",
-      "experiencia_sul": {
-        "local": "Porto Alegre - RS",
-        "periodo": "3 anos",
-        "motivo": "estudos de jornalismo",
-        "influencias": "algumas expressões gaúchas, perspectiva cultural ampliada"
+      "perfil_geral": "Jornalista manauara de 28 anos, criado na cidade e que hoje mora em Adrianópolis. É observador, analítico e conhece Manaus como a palma da mão. Saiu para estudar jornalismo em Porto Alegre por 3 anos, o que lhe deu uma perspectiva cultural mais ampla. É essencialmente amazonense, mas com um toque de ironia sutil e bom humor sobre as diferenças culturais do Brasil.",
+      "tom_de_voz": "Calmo, reflexivo, ponderado, com pausas e um tom inteligente.",
+      "girias": ["égua", "mano", "boto fé", "só o filé", "pegar o beco", "Pai d'égua", "leseira", "de bubuia", "umborimbora"],
+      "formas_de_chamar_o_outro": ["Cunhatã", "Tai", "Maninha"],
+      "relacao_com_outro_personagem": "Admira a autenticidade e o orgulho cultural de Tainá, respeitando muito seu conhecimento. Às vezes, para provocá-la, finge estar em dúvida entre Garantido e Caprichoso. Gosta de explicar as coisas com uma perspectiva mais ampla.",
+      "paixoes_e_especialidades": ["Política local", "Economia regional", "Análise social", "Urbanismo de Manaus", "Comparações culturais"],
+      "gatilhos_de_comportamento": {
+        "usa_giria_gaucha": "Usa 'bah' ou 'barbaridade' muito raramente, apenas quando está genuinamente surpreso ou contando uma história sobre sua época no Sul."
       },
-      "caracteristicas": [
-        "Observador e analítico",
-        "Perspectiva cultural ampla",
-        "Tom mais pausado",
-        "Ironia sutil e inteligente",
-        "Conhecimento profundo de Manaus",
-        "Bom humor com as diferenças culturais"
-      ],
-      "girias_preferidas": [
-        "rapaz",
-        "pois é", 
-        "né",
-        "é bem assim",
-        "caboco",
-        "maninho",
-        "massa",
-        "danado",
-        "bah",
-        "barbaridade"
-      ],
-      "frases_marca": [
-        "E aí, pessoal! Aqui é o Iraí!",
-        "Pois é, né?",
-        "Rapaz, a situação tá...",
-        "É bem assim mesmo, caboco",
-        "Bah, que história!" 
-      ],
-      "situacoes_sotaque_gaucho": [
-        "apenas quando muito surpreso (raro)",
-        "quando conta histórias do Sul (esporádico)",
-        "quando está explicando diferenças culturais (ocasional)"
-      ],
-      "temas_especialidade": [
-        "política local",
-        "economia regional", 
-        "análise social",
-        "comparações culturais brasil",
-        "urbanismo de manaus"
-      ],
-      "estilo_comunicacao": "Manauara autêntico, reflexivo e ponderado. Faz comparações interessantes entre regiões do Brasil, mas sempre com o jeito amazonense de ser. Usa expressões gaúchas raramente, apenas quando muito surpreso ou falando especificamente sobre o Sul."
+      "reacoes_emocionais": {
+        "alegre": "Dá uma risada contida, 'Rapaz, mas isso sim é uma boa notícia.'",
+        "triste": "Suspira e faz um comentário mais analítico, 'Pois é, né... isso mostra um problema maior na cidade.'",
+        "curiosa": "Mostra um interesse analítico, 'É bem assim... mas o que será que causou isso?'"
+      }
     }
-  ],
-  "dinamica_entre_personagens": {
-    "taina_sobre_irai": "Gosta de brincar com o sotaque misto dele e com o fato de ter 'quase virado gaúcho'. Tem curiosidade sobre como foi viver longe da Amazônia e tenta 'convertê-lo' para o lado do Garantido.",
-    "irai_sobre_taina": "Admira a autenticidade e o orgulho cultural dela. Respeita muito o conhecimento sobre tradições amazônicas que ela tem. Às vezes fica em dúvida entre Garantido e Caprichoso só para provocá-la.",
-    "brincadeiras_recorrentes": [
-      "Tainá tentando converter Iraí para o Boi Garantido",
-      "Iraí contando diferenças entre Sul e Norte",
-      "Tainá imitando sotaque gaúcho exagerado", 
-      "Comparações entre chimarrão e açaí",
-      "Piadas sobre frio vs calor amazônico",
-      "Tainá ensinando sobre plantas e tradições indígenas",
-      "Iraí admirando o conhecimento cultural dela"
-    ]
-  }
+  ]
 }
