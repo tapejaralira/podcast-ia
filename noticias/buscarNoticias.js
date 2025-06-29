@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CAMINHOS CORRIGIDOS: Apontam para a pasta 'data' na raiz do projeto
+// Caminhos ajustados para a nova estrutura de pastas
 const COLLECTORS_DIR = path.join(__dirname, 'collectors');
 const OUTPUT_FILE = path.join(__dirname, '..', 'data', 'noticias-recentes.json');
 const ESTADO_FILE = path.join(__dirname, '..', 'data', 'estado_coleta.json'); 

@@ -7,27 +7,24 @@ const G1_AM_FEED_URL = 'https://g1.globo.com/rss/g1/am/amazonas/';
 const SOURCE_NAME = 'G1 Amazonas';
 const TIMEZONE = 'America/Manaus';
 
-// Função para verificar se a data da notícia é de hoje ou de ontem
-function isTodayOrYesterday(isoDate) {
-    if (!isoDate) return false;
-    const now = new Date();
-    const today = toDate(now, { timeZone: TIMEZONE });
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const articleDate = toDate(new Date(isoDate), { timeZone: TIMEZONE });
-    const todayStr = today.toISOString().split('T')[0];
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-    const articleDateStr = articleDate.toISOString().split('T')[0];
-    return articleDateStr === todayStr || articleDateStr === yesterdayStr;
+// **LÓGICA CORRIGIDA:** Usando o filtro dinâmico
+function isAfterStartTime(isoDate, startTime) {
+    if (!isoDate || !startTime) return false;
+    try {
+        // Compara a data da notícia com a data da última coleta
+        return new Date(isoDate) > new Date(startTime);
+    } catch (e) {
+        return false;
+    }
 }
 
-async function fetchFromG1AM() {
+// **LÓGICA CORRIGIDA:** A função agora aceita o parâmetro { startTime }
+async function fetchFromG1AM({ startTime }) {
   try {
     const feed = await parser.parseURL(G1_AM_FEED_URL);
     
     // Mapeia os itens do feed para o nosso formato padrão
     const allItems = feed.items.map(item => ({
-      id: item.guid || item.link, 
       title: item.title,
       link: item.link,
       source: SOURCE_NAME,
@@ -35,8 +32,8 @@ async function fetchFromG1AM() {
       summary: item.contentSnippet || item.content?.replace(/<[^>]*>?/gm, '') || ''
     }));
 
-    // **NOVA LÓGICA:** Aplica o filtro para manter apenas notícias de hoje e ontem
-    const recentItems = allItems.filter(item => isTodayOrYesterday(item.publishedDate));
+    // Aplica o novo filtro dinâmico para pegar notícias desde a última coleta
+    const recentItems = allItems.filter(item => isAfterStartTime(item.publishedDate, startTime));
 
     return recentItems;
 
