@@ -12,6 +12,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// CAMINHOS CORRIGIDOS PARA A NOVA ESTRUTURA
 const PAUTA_FILE = path.join(__dirname, '..', 'data', 'episodio-do-dia.json');
 const PERSONAGENS_FILE = path.join(__dirname, '..', 'data', 'personagens.json');
 const TEMPLATE_FILE = path.join(__dirname, 'roteiro-template.md');
@@ -38,6 +39,7 @@ const CENAS_DE_DIALOGO = [
     "Comece com um dos apresentadores dizendo que recebeu uma mensagem de um ouvinte (fictício) sobre o tema para iniciar o debate."
 ];
 
+
 // --- Funções Principais ---
 
 async function fetchFullText(url) {
@@ -45,12 +47,16 @@ async function fetchFullText(url) {
         const { data: html } = await axios.get(url, { headers: { 'User-Agent': 'BubuiaNews-Bot/1.0' }});
         const $ = cheerio.load(html);
         let articleBody = '';
+        
+        // Seletor específico para 'A Crítica'
         const acriticaBody = $('div.ceRPNp'); 
         if (acriticaBody.length > 0) {
             acriticaBody.find('p[class*="styled__Paragraph"]').each((i, el) => {
                 articleBody += $(el).text() + ' ';
             });
         }
+
+        // Se o seletor específico falhar, tenta os genéricos
         if (!articleBody) {
              articleBody = 
                 $('div[itemprop="articleBody"]').text() || 
@@ -58,6 +64,7 @@ async function fetchFullText(url) {
                 $('div.editorianoticia').text() ||
                 $('article').text();
         }
+        
         return articleBody.replace(/\s\s+/g, ' ').trim();
     } catch (error) {
         console.error(`  [ERRO] Falha ao buscar texto completo de: ${url}`);
@@ -69,7 +76,6 @@ async function gerarDialogo(promptData) {
     const { tipo, noticia, personagens, direcao_cena } = promptData;
     let prompt;
 
-    // Define o tom da cena com base na classificação da notícia
     let tom_cena = "de forma neutra e informativa.";
     if (noticia && noticia.classification) {
         const id = noticia.classification.id.split(' ')[0];

@@ -1,201 +1,159 @@
-# 🎙️ BUBUIA NEWS - Podcast Automatizado
+# 🎙️ Bubuia News - Podcast Automatizado
 
-_"Notícia quente direto do igarapé."_
-
-## 📻 Sobre o Podcast
-
-**BubuiA News** é um podcast diário automatizado que traz as principais notícias do Amazonas, Manaus e do Brasil com o tempero único da nossa região. Apresentado pelos carismáticos Tainá Oliveira e Iray Santos, duas personalidades criadas por IA que capturam a essência, as gírias e o jeito amazonense de ser.
-
-### 🎯 Conceito
-
-- **Foco regional:** Notícias do Amazonas e Manaus em primeiro lugar
-- **Personalidades autênticas:** Apresentadores com gírias e sotaque local
-- **Automatização inteligente:** IA detecta eventos, gera roteiros e produz áudios
-- **Interação real:** Sistema para receber comentários dos ouvintes
-
-### 🗣️ Apresentadores
-
-**👩‍🎤 Tainá Oliveira**
-
-- Personalidade animada e extrovertida
-- Torcedora do Garantido
-- Gírias: "oxe", "meu pai eterno", "cabra danada"
-
-**👨‍🎤 Iray Santos**
-
-- Mais reflexivo e ponderado
-- Torcedor do Caprichoso
-- Gírias: "vichi", "caboco", "é bem assim mesmo"
+> **"Notícia quente de dentro da rede."**
 
 ---
 
-## 🚀 Funcionalidades
+## 🤖 Sobre o Projeto
 
-### ✅ Já Implementado
+O **BubuiA News** é um podcast diário totalmente automatizado, que captura e roteiriza as notícias mais relevantes de Manaus e do Amazonas. Utiliza um pipeline de scripts em Node.js e Inteligência Artificial da OpenAI para transformar o noticiário do dia em um roteiro dinâmico, pronto para ser interpretado por nossos apresentadores de IA: **Tainá Oliveira** e **Iraí Santos**.
 
-- **Detecção automática de eventos** em notícias
-- **Geração de roteiros dinâmicos** com 30+ placeholders
-- **Sistema de comentários** de ouvintes
-- **Integração com TTS** (ElevenLabs/Azure)
-- **Gestão inteligente de eventos** (manual e automático)
+O projeto é dividido em três fases principais:
 
-### 🔄 Em Desenvolvimento
+- **Coleta**
+- **Curadoria**
+- **Roteirização**
 
-- Integração com APIs de notícias
-- Geração automática de áudios
-- Sistema de publicação RSS
-- Dashboard de monitoramento
+Cada uma com seus próprios módulos inteligentes.
+
+---
+
+## 🗣️ Os Apresentadores (IA)
+
+As personalidades são o coração do Bubuia News. O roteiro é gerado com base em perfis detalhados para garantir diálogos autênticos e carismáticos.
+
+- **👩‍🎤 Tainá Oliveira:**  
+  Jovem produtora cultural de Parintins (24 anos), torcedora do Garantido, agora vive em Manaus. É energética, conectada e apaixonada pela cultura amazônica. O coração pulsante do programa.
+
+- **👨‍🎤 Iraí Santos:**  
+  Jornalista manauara de 28 anos, analítico e observador. Morou 3 anos no Sul para estudar, o que lhe deu uma perspectiva cultural mais ampla. É a voz da razão e do ceticismo bem-humorado do podcast.
+
+---
+
+## 🚀 Como Funciona: O Fluxo Automatizado
+
+O sistema opera em uma pipeline de 3 etapas para transformar notícias brutas em um roteiro completo.
+
+### **Etapa 1: Coleta (O "Pescador")**
+
+- **Script:** `noticias/buscarNoticias.js`
+- **O que faz:** Orquestra múltiplos "coletores" (pequenos robôs na pasta `noticias/collectors/`). Cada coletor busca as manchetes mais recentes de um portal de notícias específico (G1 Amazonas, A Crítica, etc.).
+- **Inteligência:** Possui uma "memória" (`data/estado_coleta.json`) que registra a data da última coleta. Assim, busca apenas as notícias publicadas desde a última execução, sendo eficiente mesmo após um fim de semana.
+- **Resultado:** Gera o arquivo `data/noticias-recentes.json` com dezenas de notícias brutas.
+
+---
+
+### **Etapa 2: Curadoria (O "Editor-Chefe Digital")**
+
+- **Script:** `noticias/analisarNoticias.js`
+- **O que faz:** Este é o cérebro editorial do projeto.
+- **Classificação com IA:**  
+  Lê todas as notícias brutas e, para cada uma, envia o título e resumo para a API da OpenAI.  
+  A IA classifica a notícia de acordo com nossa linha editorial (ex: 🚀 Tecnologia, 👽 Bizarrices da Bubuia) e verifica se ela é adequada para áudio.
+- **Agrupamento Inteligente:**  
+  Compara os títulos das notícias classificadas e agrupa aquelas que falam sobre o mesmo evento, criando "Super-Notícias" com informações de múltiplas fontes.
+- **Seleção da Pauta:**  
+  Escolhe a melhor notícia para o "Cold Open" (abertura do programa) e as 4 notícias principais mais relevantes, priorizando a diversidade de temas.
+- **Resultado:** Gera o arquivo `data/episodio-do-dia.json`, a pauta final e inteligente para o episódio.
+
+---
+
+### **Etapa 3: Roteirização (O "Diretor de Cena")**
+
+- **Script:** `roteiro/gerarRoteiro.js`
+- **O que faz:** Transforma a pauta em um roteiro vivo.
+- **Busca Aprofundada:**  
+  Para cada notícia selecionada, visita os links e busca o texto completo da matéria.
+- **Direção de Cena:**  
+  Sorteia uma "cena" de uma lista de interações possíveis (ex: "Comece com Tainá fazendo uma pergunta...", "Comece com Iraí sendo cético...") para garantir variedade.
+- **Geração de Diálogo com IA:**  
+  Envia para a OpenAI o texto completo, os perfis detalhados dos personagens e a direção da cena, pedindo para criar um diálogo natural, com gírias, pausas e a personalidade de cada um.
+- **Preparação para Áudio:**  
+  O prompt instrui a IA a incluir tags SSML (`<break>`, `<emphasis>`) no diálogo, preparando o texto para ser interpretado com mais emoção pela API do ElevenLabs.
+- **Resultado:** Gera o arquivo de roteiro final do dia em Markdown na pasta `episodios/`.
 
 ---
 
 ## 🛠️ Como Usar
 
-### Instalação
+### 1. Instalação
+
+Clone o repositório e instale as dependências:
 
 ```bash
-cd "c:\Meu Drive\podcast-ia"
 npm install
 ```
 
-### Gerar Roteiro
+### 2. Configuração do Ambiente
 
-```bash
-npm run gerar-roteiro
+Renomeie o arquivo `.env.example` para `.env`.
+
+Abra o arquivo `.env` e insira sua chave da API da OpenAI:
+
+```
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-### Adicionar Evento
+### 3. Executando a Pipeline
 
-```bash
-npm run adicionar-evento "Festival de Verão" "Grande festa na Ponta Negra" "2025-07-15" "entretenimento"
-```
+Você pode executar cada etapa individualmente ou usar os comandos "mestres".
 
-### Configurar APIs
+- **Coletar notícias:**
+  ```bash
+  npm run coletar
+  ```
+- **Analisar a pauta:**
+  ```bash
+  npm run analisar
+  ```
+- **Gerar o roteiro:**
+  ```bash
+  npm run roteirizar
+  ```
 
-1. Edite `config/ia-config.json`
-2. Adicione suas chaves de API
-3. Execute `npm run processar-completo`
+#### **Comandos Mestres**
+
+- **Para gerar a pauta completa (coleta + análise):**
+  ```bash
+  npm run pauta-completa
+  ```
+- **Para gerar o episódio completo do início ao fim:**
+  ```bash
+  npm run episodio-completo
+  ```
 
 ---
 
 ## 📁 Estrutura do Projeto
 
 ```
-/podcast-ia
-├── core/
-│   ├── gerarRoteiro.js
-│   ├── integracaoIA.js
-│   ├── dialogosEspontaneos.js
-│   ├── sistemaRevisao.js
-│   ├── classificadorContextual.js
-│   ├── comentariosContextuais.js
-│   ├── gerenciadorEventos.js
-│   ├── mixadorAutomatico.js
-│   ├── geradorFalasIA.js
-│   └── integradorElevenLabs.js
-├── data/
-│   ├── personagens.json
-│   ├── eventos.json
-│   └── girias.json
-├── config/
-│   ├── ia-config.json
-│   ├── tts-emocional.json
-│   └── revisao-config.json
-├── scripts/
-│   ├── processarCorrecoes.js
-│   ├── verificarImportacoes.js
-│   └── ... outros scripts
-├── templates/
-├── episodios/
-├── audios/
-├── temp_audio/
-├── revisao/
-├── docs/
-└── logs/
+/podcast-ia/
+│
+├── 📁 data/
+│   ├── episodio-do-dia.json
+│   ├── estado_coleta.json
+│   ├── noticias-recentes.json
+│   └── personagens.json
+│
+├── 📁 episodios/
+│   └── (Roteiros finais em .md são salvos aqui)
+│
+├── 📁 noticias/
+│   ├── analisarNoticias.js
+│   ├── buscarNoticias.js
+│   └── 📁 collectors/
+│       ├── acritica.js
+│       ├── d24am.js
+│       ├── g1amazonas.js
+│       └── portaldoholanda.js
+│
+└── 📁 roteiro/
+    ├── gerarRoteiro.js
+    └── roteiro-template.md
 ```
-
----
-
-## 🎵 Exemplo de Roteiro
-
-```markdown
-# 🎙️ BUBUIA NEWS - ROTEIRO DIÁRIO
-
-"Notícia quente direto do igarapé."
-
-## 🎵 ABERTURA
-
-Tainá: "Fala maninho, tá começando mais um BubuiA News! Oxe, meu povo!"
-Iray: "E aí, pessoal! Vichi, tô aqui também no BubuiA News! Notícia quente direto do igarapé pra vocês!"
-
-## 📰 NOTÍCIAS
-
-[Conteúdo dinâmico baseado em eventos detectados]
-
-## 🎵 ENCERRAMENTO
-
-Ambos: "E lembrem: aqui é BubuiA News, notícia quente direto do igarapé!"
-```
-
----
-
-## 🗂️ Diagrama de Classes (Mermaid)
-
-```mermaid
-classDiagram
-    class GeradorRoteiro {
-        +gerar(eventos)
-        +aplicarPersonagem(personagem)
-    }
-    class IntegracaoIA {
-        +enviarTexto(texto)
-        +receberAudio()
-    }
-    class GerenciadorEventos {
-        +adicionarEvento(evento)
-        +detectarEventos()
-        +listarEventos()
-    }
-    class SistemaComentarios {
-        +receberComentario(comentario)
-        +listarComentarios()
-    }
-    class Personagem {
-        +nome
-        +girias
-        +perfil
-    }
-    class Evento {
-        +titulo
-        +descricao
-        +data
-        +categoria
-    }
-
-    GeradorRoteiro --> Personagem
-    GeradorRoteiro --> Evento
-    GeradorRoteiro --> IntegracaoIA
-    GerenciadorEventos --> Evento
-    SistemaComentarios --> Personagem
-```
-
----
-
-## 📞 Contribuição
-
-Este é um projeto open-source! Contribuições são bem-vindas:
-
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
-5. Abra um Pull Request
 
 ---
 
 ## 📄 Licença
 
-MIT License - Veja o arquivo LICENSE para detalhes.
-
----
-
-_Desenvolvido com ❤️ para levar as notícias do Amazonas para o mundo todo!_
+MIT License

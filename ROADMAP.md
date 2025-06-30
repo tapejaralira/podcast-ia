@@ -1,175 +1,116 @@
-# 🎙️ BUBUIA NEWS - ROADMAP COMPLETO
+# 🎙️ Bubuia News - Roadmap do Projeto 2.0
 
-_"Notícia quente direto do igarapé."_
-
-## ✅ FASE 1 — Preparação e organização
-
-**Status: 100% IMPLEMENTADO**
-
-- ✅ Estrutura de pastas criada (/data, /templates, /audios, /config, /scripts, /revisao, /docs)
-- ✅ personagens.json com perfis do Iray e da Tainá
-- ✅ eventos.json com sistema dinâmico de eventos
-- ✅ girias.json com bordões e expressões por personagem
-- ✅ roteiro-template.md com placeholders e estrutura diária completa
-- ✅ Scripts Node.js: gerarRoteiro.js, gerenciadorEventos.js, integracaoIA.js, scripts/processarCorrecoes.js, scripts/verificarImportacoes.js
-- 🔄 **NOVA FUNCIONALIDADE:** Sistema automático de detecção de eventos
-- 🔄 **NOVA FUNCIONALIDADE:** Script para adicionar eventos manuais
-
-## 🔊 FASE 2 — Voz e narração
-
-**Status: ESTRUTURA PRONTA**
-
-- ✅ Sistema de integração configurado para ElevenLabs
-- ✅ Configuração personalizada por personagem (Tainá/Iraí)
-- ✅ Preparação de texto com gírias e pausas naturais
-- ✅ SSML para entonações e regionalismo
-- 🔄 **PRÓXIMO:** Criar contas e configurar APIs reais
-- 🔄 **NOVA SUGESTÃO:** Sistema de templates de voz por emoção
-
-> **Atenção:** Atualmente, apenas ElevenLabs está ativo como serviço de TTS. Integrações com Azure e Google foram removidas.
-
-## 🧠 FASE 3 — Geração do conteúdo (roteiro)
-
-**Status: BASE IMPLEMENTADA**
-
-- ✅ Sistema de detecção automática de eventos em notícias
-- ✅ Template dinâmico com 30+ placeholders
-- ✅ Lógica de personalidade por apresentador
-- ✅ Comentários de ouvintes automáticos
-- 🔄 **PRÓXIMO:** Integrar APIs de notícias reais
-- 🔄 **NOVA SUGESTÃO:** Sistema de humor contextual (clima, feriados)
-
-## 🎙️ FASE 4 — Montagem do episódio
-
-**Status: ARQUITETURA PRONTA**
-
-- ✅ Sistema de processamento de roteiro para áudios
-- ✅ Separação automática de falas por personagem
-- ✅ Configurações de qualidade e formato
-- 🔄 **PRÓXIMO:** Implementar FFmpeg para junção de áudios
-- 🔄 **NOVA SUGESTÃO:** Sistema de vinhetas dinâmicas por tema
-
-## 📤 FASE 5 — Publicação e distribuição
-
-**Status: PLANEJAMENTO**
-
-- 🔄 **SUGESTÃO:** GitHub Actions para automação diária
-- 🔄 **SUGESTÃO:** RSS feed automático
-- 🔄 **SUGESTÃO:** Upload para Spotify/Apple Podcasts
-- 🔄 **NOVA FUNCIONALIDADE:** Sistema de metadados automático
-
-## 📲 FASE 6 — Interação com redes sociais e ouvintes
-
-**Status: BASE CRIADA**
-
-- ✅ Sistema de comentários de ouvintes no JSON
-- ✅ Integração automática nos roteiros
-- 🔄 **PRÓXIMO:** API para receber comentários reais
-- 🔄 **NOVA SUGESTÃO:** Bot do WhatsApp para receber mensagens
-
-## 🛠️ FASE 7 — Ajustes e melhorias contínuas
-
-**Status: SISTEMAS PRONTOS**
-
-- ✅ Configurações flexíveis por arquivo JSON
-- ✅ Sistema de logs e debugging
-- ✅ Fallbacks para quando faltam dados
-- 🔄 **NOVA SUGESTÃO:** Dashboard web para monitoramento
+> **"Notícia quente de dentro da rede."**
 
 ---
 
-## 🚀 NOVAS FUNCIONALIDADES IMPLEMENTADAS
+## 🚀 Visão Geral
 
-### 🎯 **Sistema de Eventos Inteligente**
+Este documento descreve o planejamento e o status atual do sistema de automação do podcast **Bubuia News**.  
+A arquitetura foi redefinida para um fluxo de trabalho modular e inteligente, dividido em três fases principais:
 
-- **Detecção automática** de eventos em notícias
-- **Extração de datas** em múltiplos formatos
-- **Categorização automática** por tipo de evento
-- **Relevância calculada** por critérios regionais
-- **Limpeza automática** de eventos passados
-
-### 🤖 **IA e TTS Avançado**
-
-- **TTS exclusivo:** ElevenLabs
-- **Preparação inteligente** de texto para naturalidade
-- **Configurações por personalidade** de cada apresentador
-- **SSML personalizado** com pausas e entonações
-
-### 📋 **Sistema de Roteiros Dinâmicos**
-
-- **30+ placeholders** específicos
-- **Diálogos naturais** gerados automaticamente
-- **Variações aleatórias** para não repetir conteúdo
-- **Contextualização regional** automática
+- **Coleta de Notícias**
+- **Curadoria de Pauta**
+- **Geração de Roteiro**
 
 ---
 
-## 💡 SUGESTÕES EXTRAS PARA NATURALIDADE
+## 🐟 FASE 1: Coleta de Notícias (O "Pescador")
 
-### 🎭 **Personalidades Ainda Mais Humanas**
+**Status:** 100% CONCLUÍDO ✅
 
-```javascript
-// Exemplos de novos campos para personagens.json:
-{
-  "humor_do_dia": ["animado", "reflexivo", "empolgado"],
-  "react_to_weather": {
-    "chuva": "oxe, tá caindo o mundo aqui!",
-    "sol": "que calor absurdo, meu pai!"
-  },
-  "referencias_locais": [
-    "ponte Rio Negro", "mercado municipal",
-    "teatro amazonas", "ponta negra"
-  ]
-}
-```
+O objetivo desta fase é buscar o máximo de notícias relevantes das principais fontes de Manaus e do Amazonas.
 
-### 📱 **Interação em Tempo Real**
+### Pipeline de Coletores
 
-- **WhatsApp Bot** para receber áudios dos ouvintes
-- **Sistema de enquetes** diárias
-- **Comentários por voz** integrados ao roteiro
+- ✅ **Orquestrador (`buscarNoticias.js`):** Gerencia todos os coletores de forma centralizada.
+- ✅ **Sistema de "Memória" (`estado_coleta.json`):** Registra a data da última coleta e busca apenas notícias novas desde então, eficiente em execuções diárias e capaz de cobrir fins de semana.
+- ✅ **Múltiplas Fontes:** Coletores robustos e individuais para 4 grandes portais:
+  - G1 Amazonas (via RSS)
+  - A Crítica (via Web Scraping)
+  - D24AM (via Web Scraping)
+  - Portal do Holanda (via Web Scraping)
+- ✅ **Filtro de Relevância Inicial:** Cada coletor já faz um pré-filtro por data, trazendo apenas notícias recentes.
 
-### 🎵 **Trilha Sonora Inteligente**
-
-- **Música de fundo** que muda por assunto
-- **Vinhetas personalizadas** por categoria de notícia
-- **Efeitos sonoros** regionais (chuva da floresta, rio, etc.)
-
-### 📊 **Analytics e Melhoria Contínua**
-
-- **Dashboard** mostrando engajamento por tema
-- **A/B testing** de estilos de apresentação
-- **Feedback automático** da comunidade
+**Resultado:**  
+Geração do arquivo `data/noticias-recentes.json`, uma base de dados rica e atualizada para a próxima fase.
 
 ---
 
-## 🛠️ COMO USAR O SISTEMA ATUAL
+## 📰 FASE 2: Curadoria de Pauta (O "Editor-Chefe Digital")
 
-### **1. Gerar Roteiro Simples:**
+**Status:** 95% CONCLUÍDO 🛠️
 
-```bash
-cd "c:\Meu Drive\podcast-ia"
-node gerarRoteiro.js
-```
+Esta é a fase mais inteligente do sistema, onde a pauta do episódio é definida com base em nossa linha editorial.
 
-### **2. Adicionar Evento Manual:**
+### Linha Editorial (Guia de Pauta 2.0)
 
-```bash
-node adicionarEvento.js "Festival de Inverno" "Grande festival com artistas locais" "2025-07-20" "entretenimento"
-```
+- ✅ **Novas Categorias:** 7 novas categorias focadas no público-alvo:
+  - Segurança de Impacto
+  - Política de Baré
+  - Perrengues da Cidade
+  - Tecnologia
+  - Cultura Pop
+  - Rolê Cultural
+  - Bizarrices da Bubuia
+- ✅ **Análise com IA (`analisarNoticias.js`):** Usa a API da OpenAI para classificar cada notícia, avaliar sua adequação para áudio e seu sentimento.
+- ✅ **Controle de Qualidade:** A IA descarta notícias com apelo visual, autopromoção ou temas desalinhados com o tom do podcast.
 
-### **3. Processamento Completo com Eventos:**
+### Inteligência de Pauta
 
-```bash
-# O script já detecta eventos automaticamente
-node gerarRoteiro.js
-```
+- ✅ **Agrupamento Semântico:** Agrupa notícias de diferentes fontes sobre o mesmo evento, criando "Super-Notícias" mais completas.
+- ✅ **Seleção de Cold Open:** Lógica avançada para escolher a melhor "isca" para o início do programa, priorizando notícias bizarras, com alto potencial de gancho e sentimento leve.
+- ✅ **Seleção com Diversidade:** O algoritmo seleciona as 4 notícias principais priorizando a variedade de temas, evitando pautas monotemáticas.
 
-### **4. Configurar APIs (quando estiver pronto):**
+**Resultado:**  
+Geração do arquivo `data/episodio-do-dia.json`, uma pauta final e inteligente.
 
-```bash
-# Edite: config/ia-config.json
-# Adicione suas chaves de API
-```
+---
 
-**🎉 O sistema está 70% pronto e super escalável para evoluir!**
+## 🎭 FASE 3: Geração de Roteiro (O "Diretor de Cena")
+
+**Status:** 90% CONCLUÍDO 🎭
+
+A fase criativa, onde transformamos a pauta em um diálogo vivo e pronto para ser interpretado.
+
+### Arquitetura do Roteiro
+
+- ✅ **Ficha de Personagens Detalhada (`personagens.json`):** A IA recebe um perfil completo de Tainá e Iraí, incluindo histórico, gírias, como se chamam e a dinâmica entre eles.
+- ✅ **Geração de Diálogos com IA (`gerarRoteiro.js`):** Para cada notícia, o script faz uma chamada à OpenAI para criar um diálogo único.
+- ✅ **Busca Aprofundada:** O script busca o texto completo das notícias selecionadas, dando mais "munição" para a IA criar um roteiro rico.
+- ✅ **Direção de Cena Dinâmica:** Para evitar repetição, o script sorteia um "gancho" inicial diferente para cada notícia (ex: "Comece com Tainá fazendo uma pergunta...", "Comece com Iraí sendo cético...").
+- ✅ **Ênfase em "Super-Notícias":** O roteiro gerado é mais longo e aprofundado para as notícias que foram cobertas por múltiplas fontes.
+
+### Preparação para Áudio (ElevenLabs)
+
+- ✅ **Roteiro com SSML:** O prompt da IA já a instrui a incluir tags SSML (`<break>`, `<emphasis>`), preparando o texto para uma interpretação de voz mais natural.
+
+---
+
+## 🔜 Próximos Passos
+
+- 🔄 **Fallback do Cold Open:** Implementar lógica para gerar conteúdo alternativo (ex: "Efeméride Regional") quando nenhuma notícia adequada for encontrada.
+- 🔄 **Ajustes Finos de SSML:** Refinar os prompts para usar mais recursos do SSML, como `<prosody>` para controlar tom e ritmo da voz conforme a categoria da notícia.
+
+---
+
+## 🛠️ FASE 4: Produção e Publicação (Próximas Fronteiras)
+
+**Status:** PLANEJADO 📝
+
+Esta fase se concentrará em transformar o roteiro gerado em um episódio de áudio completo e publicá-lo.
+
+### Geração de Áudio
+
+- 🔄 **Integração com ElevenLabs:** Criar o script que lê o roteiro, envia cada fala para a API do ElevenLabs e salva os arquivos de áudio (`fala_01.mp3`, `fala_02.mp3`).
+
+### Edição Automatizada
+
+- 🔄 **Montagem com FFmpeg:** Criar um script que leia o roteiro em Markdown como uma "partitura", juntando as falas, trilhas sonoras e vinhetas na ordem correta para montar o `episodio_final.mp3`.
+
+### Distribuição
+
+- 🔄 **Geração de Feed RSS:** Automatizar a criação do feed para os agregadores de podcast.
+- 🔄 **Publicação:** Implementar automação para upload do episódio final para as plataformas (Spotify, etc.).
+
+---
