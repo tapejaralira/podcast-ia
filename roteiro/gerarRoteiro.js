@@ -12,18 +12,18 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// CAMINHOS CORRIGIDOS PARA A NOVA ESTRUTURA
 const PAUTA_FILE = path.join(__dirname, '..', 'data', 'episodio-do-dia.json');
+const SUGESTOES_ABERTURA_FILE = path.join(__dirname, '..', 'data', 'sugestoes-abertura.json');
+const CONFIG_ROTEIRO_FILE = path.join(__dirname, 'config-roteiro.json');
 const PERSONAGENS_FILE = path.join(__dirname, '..', 'data', 'personagens.json');
 const TEMPLATE_FILE = path.join(__dirname, 'roteiro-template.md');
 const OUTPUT_DIR = path.join(__dirname, '..', 'episodios');
 
 const TRILHA_MAP = {
-    "⚫️": "trilha_tensao_leve.mp3",
-    "🟡": "trilha_informativa_neutra.mp3",
-    "🔴": "trilha_reflexiva.mp3",
-    "🚀": "trilha_tecnologica_upbeat.mp3",
-    "🎬": "trilha_divertida_pop.mp3",
-    "🎭": "trilha_cultural_regional.mp3",
+    "⚫️": "trilha_tensao_leve.mp3", "🟡": "trilha_informativa_neutra.mp3",
+    "🔴": "trilha_reflexiva.mp3", "🚀": "trilha_tecnologica_upbeat.mp3",
+    "🎬": "trilha_divertida_pop.mp3", "🎭": "trilha_cultural_regional.mp3",
     "👽": "trilha_misteriosa_humor.mp3"
 };
 
@@ -40,7 +40,6 @@ const CENAS_DE_DIALOGO = [
 
 
 // --- Funções Principais ---
-
 async function fetchFullText(url) {
     try {
         const { data: html } = await axios.get(url, { headers: { 'User-Agent': 'BubuiaNews-Bot/1.0' }});
@@ -67,8 +66,21 @@ async function fetchFullText(url) {
 }
 
 async function gerarDialogo(promptData) {
-    const { tipo, noticia, personagens, direcao_cena } = promptData;
+    const { tipo, noticia, personagens, direcao_cena, data_fallback, audiencia } = promptData;
     let prompt;
+
+    // Lógica para construir as informações dos personagens apenas quando necessário
+    let infoTaina = '';
+    let infoIrai = '';
+    let infoAudiencia = '';
+
+    if (personagens && audiencia) {
+        infoTaina = `- Tainá: ${personagens.taina.perfil_geral}. Apelidos para Iraí: ${personagens.taina.formas_de_chamar_o_outro.join(', ')}.`;
+        infoIrai = `- Iraí: ${personagens.irai.perfil_geral}. Apelidos para Tainá: ${personagens.irai.formas_de_chamar_o_outro.join(', ')}.`;
+        infoAudiencia = `- Audiência: ${audiencia.perfil}. Formas de chamar os ouvintes: ${audiencia.formas_de_chamar.join(', ')}.`;
+    } else if (audiencia) {
+        infoAudiencia = `- Audiência: ${audiencia.perfil}. Formas de chamar os ouvintes: ${audiencia.formas_de_chamar.join(', ')}.`;
+    }
 
     let tom_cena = "de forma neutra e informativa.";
     if (noticia && noticia.classification) {
@@ -76,11 +88,7 @@ async function gerarDialogo(promptData) {
         if (['🚀', '🎬', '🎭', '👽'].includes(id)) tom_cena = "de forma animada e divertida.";
         if (['🔴', '⚫️'].includes(id)) tom_cena = "com um tom de seriedade e preocupação.";
     }
-
-    // **NOVA LÓGICA:** Monta as informações de personagem para o prompt
-    const infoTaina = `- Tainá: ${personagens.taina.perfil_geral}. Gírias: ${personagens.taina.girias.join(', ')}. Apelidos para Iraí: ${personagens.taina.formas_de_chamar_o_outro.join(', ')}.`;
-    const infoIrai = `- Iraí: ${personagens.irai.perfil_geral}. Gírias: ${personagens.irai.girias.join(', ')}. Apelidos para Tainá: ${personagens.irai.formas_de_chamar_o_outro.join(', ')}.`;
-
+    
     switch (tipo) {
         case 'cold_open':
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo de 15 a 20 segundos para o "Cold Open". Tainá deve contar para Iraí, como se fosse um segredo, a seguinte notícia:
@@ -89,41 +97,12 @@ async function gerarDialogo(promptData) {
 Use os perfis dos personagens para guiar a reação. Use a tag <break time="0.3s"/> para uma pequena pausa.
 Responda APENAS com o diálogo.`;
             break;
-        case 'noticia_principal':
-            prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo natural e conciso (4 a 6 falas) entre Tainá e Iraí sobre a notícia abaixo.
-
-### INSTRUÇÕES DE DIREÇÃO
-- **Perfis:**
-${infoTaina}
-${infoIrai}
-- **Tom da Cena:** Discutam a notícia ${tom_cena}
-- **Conteúdo da Notícia:** ${noticia.texto_completo}
-- **Direção de Início:** ${direcao_cena}
-
-### REGRAS TÉCNICAS (OBRIGATÓRIO)
-- Use a tag <break time="0.5s"/> para criar pausas naturais.
-- Use a tag <emphasis level="strong">PALAVRA</emphasis> para dar ênfase.
-- Incentive o uso dos apelidos que eles usam um com o outro.
-
-Responda APENAS com o diálogo.`;
-            break;
-        case 'super_noticia_principal':
-            prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo APROFUNDADO (6 a 8 falas) entre Tainá e Iraí sobre a notícia abaixo, que foi o evento mais comentado do dia.
-
-### INSTRUÇÕES DE DIREÇÃO
-- **Perfis:**
-${infoTaina}
-${infoIrai}
-- **Tom da Cena:** Discutam a notícia ${tom_cena}
-- **Conteúdo da Notícia (de várias fontes):** ${noticia.texto_completo}
-- **Direção de Início:** ${direcao_cena}
-
-### REGRAS TÉCNICAS (OBRIGATÓRIO)
-- Use a tag <break time="0.5s"/> para criar pausas naturais.
-- Use a tag <emphasis level="strong">PALAVRA</emphasis> para dar ênfase.
-- Incentive o uso dos apelidos que eles usam um com o outro.
-- Use a tag <prosody rate="slow">...</prosody> em uma fala do Iraí para um tom mais analítico.
-
+        case 'fallback_cold_open':
+             prompt = `Você é um roteirista e pesquisador do podcast "Bubuia News". Hoje é ${data_fallback.titulo}.
+Sua tarefa é encontrar UMA efeméride ou fato histórico curioso que aconteceu nesta data, com forte conexão com Manaus ou o estado do Amazonas.
+Com base nesse fato, crie um diálogo de 15 a 20 segundos para o "Cold Open" do programa, onde Iraí surpreende Tainá com essa curiosidade.
+- Fato: "${data_fallback.texto}"
+Exemplo: "Iraí: Égua, Cunhatã, tu sabia que foi num dia como hoje que..."
 Responda APENAS com o diálogo.`;
             break;
         case 'cardapio':
@@ -131,15 +110,45 @@ Responda APENAS com o diálogo.`;
 - Títulos: ${noticia.titulos.join('; ')}
 Responda APENAS com a fala do Iraí.`;
             break;
+
+        case 'saudacao_taina':
+        case 'despedida_taina':
+            const acao = tipo === 'saudacao_taina' ? 'uma saudação de abertura curta e energética' : 'uma despedida curta, animada e convidativa';
+            prompt = `Você é a roteirista da Tainá para o podcast "Bubuia News". Crie ${acao}.
+${infoAudiencia}
+Instrução: Ela deve se dirigir diretamente à audiência usando uma das formas de chamar.
+Responda APENAS com a fala da Tainá.`;
+            break;
+
+        case 'noticia_principal':
+        case 'super_noticia_principal':
+            const dialogoLength = tipo === 'super_noticia_principal' ? 'APROFUNDADO (6 a 8 falas)' : 'natural e conciso (4 a 6 falas)';
+            const ssmlExtra = tipo === 'super_noticia_principal' ? '- Use a tag <prosody rate=\"slow\">...</prosody> em uma fala do Iraí para um tom mais analítico.' : '';
+
+            prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo ${dialogoLength} entre Tainá e Iraí sobre a notícia abaixo.
+
+### INSTRUÇÕES DE DIREÇÃO
+- **Perfis dos Personagens:**
+${infoTaina}
+${infoIrai}
+- **Perfil da Audiência:** ${infoAudiencia}
+- **Tom da Cena:** Discutam a notícia ${tom_cena}
+- **Conteúdo da Notícia:** ${noticia.texto_completo}
+- **Direção de Início:** ${direcao_cena}
+
+### REGRAS TÉCNICAS (OBRIGATÓRIO)
+- **Interação:** É essencial que eles usem os apelidos um do outro e que, em algum momento, um deles se dirija diretamente à audiência.
+- **SSML:** Use a tag <break time="0.5s"/> para pausas e a tag <emphasis level="strong">PALAVRA</emphasis> para ênfase. ${ssmlExtra}
+
+Responda APENAS com o diálogo.`;
+            break;
         default:
             return "// Placeholder para: " + tipo;
     }
 
     try {
         const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.85,
+            model: "gpt-4o", messages: [{ role: "user", content: prompt }], temperature: 0.85,
         });
         return response.choices[0].message.content;
     } catch (error) {
@@ -148,39 +157,67 @@ Responda APENAS com a fala do Iraí.`;
     }
 }
 
+
 async function gerarRoteiro() {
-    console.log('📜 Bubuia News - Iniciando geração do roteiro...');
+    console.log('📜 Bubuia News - Iniciando geração do roteiro final...');
     
-    const [pauta, personagensData, template] = await Promise.all([
+    const [pauta, sugestoes, config, personagensData, template] = await Promise.all([
         fs.readFile(PAUTA_FILE, 'utf-8').then(JSON.parse),
+        fs.readFile(SUGESTOES_ABERTURA_FILE, 'utf-8').then(JSON.parse),
+        fs.readFile(CONFIG_ROTEIRO_FILE, 'utf-8').then(JSON.parse),
         fs.readFile(PERSONAGENS_FILE, 'utf-8').then(JSON.parse),
         fs.readFile(TEMPLATE_FILE, 'utf-8'),
     ]);
     
     const personagens = { taina: personagensData.apresentadores[0], irai: personagensData.apresentadores[1] };
+    const audiencia = personagensData.audiencia;
     let roteiroFinal = template;
+    const dataAtualString = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric'});
     
-    roteiroFinal = roteiroFinal.replace('{{DATA_ATUAL}}', new Date().toLocaleDateString('pt-BR'));
+    roteiroFinal = roteiroFinal.replace('{{DATA_ATUAL}}', dataAtualString);
     
-    let coldOpenDialogo = "// Nenhuma notícia de Cold Open encontrada.";
-    if (pauta.coldOpen) {
-        coldOpenDialogo = await gerarDialogo({ tipo: 'cold_open', noticia: pauta.coldOpen, personagens });
-    } else {
-        coldOpenDialogo = "Iraí: Tainá, tu sabia que... // Placeholder para Efeméride";
+    // **LÓGICA DE DECISÃO CORRIGIDA PARA O COLD OPEN**
+    let coldOpenDialogo = "";
+    console.log(`[LOG] Prioridade de Cold Open definida como: "${config.prioridade_cold_open}"`);
+
+    if (config.prioridade_cold_open === 'efemeride') {
+        if (sugestoes.efemeride && sugestoes.efemeride.texto) {
+            console.log('[LOG] Usando a Efeméride Regional (prioridade do editor).');
+            coldOpenDialogo = await gerarDialogo({ tipo: 'fallback_cold_open', data_fallback: sugestoes.efemeride, personagens });
+        } else {
+            console.log('[LOG] Prioridade era Efeméride, mas não foi encontrada. Usando notícia como fallback.');
+            coldOpenDialogo = await gerarDialogo({ tipo: 'cold_open', noticia: sugestoes.noticia, personagens });
+        }
+    } else { // A prioridade é 'noticia' (ou qualquer outro valor, por segurança)
+        if (sugestoes.noticia) {
+            console.log('[LOG] Usando a notícia sugerida para o Cold Open.');
+            coldOpenDialogo = await gerarDialogo({ tipo: 'cold_open', noticia: sugestoes.noticia, personagens });
+        } else if (sugestoes.efemeride && sugestoes.efemeride.texto) {
+            console.log('[LOG] Nenhuma notícia para Cold Open. Acionando fallback de Efeméride Regional...');
+            coldOpenDialogo = await gerarDialogo({ tipo: 'fallback_cold_open', data_fallback: sugestoes.efemeride, personagens });
+        } else {
+            coldOpenDialogo = "// Nenhuma opção de Cold Open disponível.";
+        }
     }
+
     roteiroFinal = roteiroFinal.replace('{{COLD_OPEN_DIALOGO}}', coldOpenDialogo);
     
-    roteiroFinal = roteiroFinal.replace('{{SAUDACAO_TAINA}}', `E aí, galera conectada no Bubuia News! Tainá na área!`);
-    roteiroFinal = roteiroFinal.replace('{{SAUDACAO_IRAI}}', `Boto fé, Tainá. Um bom dia pra esse povo trabalhador.`);
+    // O resto do script continua como antes...
+    const [saudacaoTaina, despedidaTaina] = await Promise.all([
+        gerarDialogo({ tipo: 'saudacao_taina', audiencia, personagens }),
+        gerarDialogo({ tipo: 'despedida_taina', audiencia, personagens })
+    ]);
+    roteiroFinal = roteiroFinal.replace('{{SAUDACAO_TAINA}}', saudacaoTaina);
+    roteiroFinal = roteiroFinal.replace('{{DESPEDIDA_TAINA}}', despedidaTaina);
+    roteiroFinal = roteiroFinal.replace('{{SAUDACAO_IRAI}}', `Boto fé, Tai. Um bom dia pra esse povo trabalhador.`);
     roteiroFinal = roteiroFinal.replace('{{DESPEDIDA_IRAI}}', `É isso, meu povo. Por hoje é só o filé.`);
-    roteiroFinal = roteiroFinal.replace('{{DESPEDIDA_TAINA}}', `Valeu, galera! Não esquece de seguir a gente nas redes!`);
 
     const titulosPrincipais = pauta.noticiasPrincipais.map(n => n.titulo_principal);
     if(titulosPrincipais.length > 0) {
         const cardapioDialogo = await gerarDialogo({ tipo: 'cardapio', noticia: { titulos: titulosPrincipais } });
         roteiroFinal = roteiroFinal.replace('{{CARDAPIO_NOTICIAS}}', cardapioDialogo);
     } else {
-        roteiroFinal = roteiroFinal.replace('{{CARDAPIO_NOTICIAS}}', 'Iraí: Eita, maninha, parece que hoje a rede veio vazia! Vamos ver o que tem de bom por aqui mesmo assim.');
+        roteiroFinal = roteiroFinal.replace('{{CARDAPIO_NOTICIAS}}', 'Iraí: Eita, maninha, parece que hoje a rede veio vazia!');
     }
 
     let cenasDisponiveis = [...CENAS_DE_DIALOGO];
@@ -203,11 +240,10 @@ async function gerarRoteiro() {
                 const direcao_cena = cenasDisponiveis.splice(cenaIndex, 1)[0];
                 const tipoDialogo = noticia.isSuperNoticia ? 'super_noticia_principal' : 'noticia_principal';
                 console.log(`  -> Gerando diálogo (Tipo: ${tipoDialogo} | Direção: ${direcao_cena})`);
-                dialogo = await gerarDialogo({ tipo: tipoDialogo, noticia, personagens, direcao_cena });
+                dialogo = await gerarDialogo({ tipo: tipoDialogo, noticia, personagens, audiencia, direcao_cena });
             } else {
                 dialogo = "// Não foi possível buscar o texto completo para esta notícia.";
             }
-
             const classificationEmoji = noticia.classification.id.split(' ')[0];
             trilha = TRILHA_MAP[classificationEmoji] || "trilha_neutra.mp3";
         }
@@ -227,5 +263,4 @@ async function gerarRoteiro() {
 
     console.log(`\n✅ Roteiro finalizado com sucesso! Salvo em: ${outputFilename}`);
 }
-
 gerarRoteiro();

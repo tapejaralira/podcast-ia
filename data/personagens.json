@@ -15,7 +15,7 @@
   },
   "audiencia": {
     "perfil": "Nossos ouvintes são os 'Bubuieiros'. São pessoas de Manaus e do Amazonas, jovens de corpo ou de espírito, que são curiosos, gostam de estar bem-informados, mas sem a formalidade dos jornais tradicionais. Eles valorizam a cultura local, o bom humor e uma conversa honesta.",
-    "formas_de_chamar": ["Bubuieiros", "Ouvintes", "Meu povo", "Galera", "Maninhos", "Família"]
+    "formas_de_chamar": ["Ouvintes", "Meu povo", "Galera", "Maninhos", "Família"]
   },
   "apresentadores": [
     {
@@ -23,7 +23,7 @@
       "perfil_geral": "Jovem produtora cultural de 24 anos, nascida e criada em Parintins, mas que hoje vive no bairro Cidade Nova em Manaus. Tem muito orgulho de sua ancestralidade indígena e é uma defensora apaixonada da cultura amazônica. É energética, espontânea e conhece profundamente as tradições locais, sempre fazendo questão de valorizá-las em suas falas. Ela é o coração pulsante e a raiz cultural do programa.",
       "tom_de_voz": "Energético, rápido, caloroso e autêntico.",
       "girias": ["eita", "meu povo", "maninho", "curumim", "caboco", "rapaz", "né", "massa", "maceta"],
-      "formas_de_chamar_o_outro": ["Curumím", "Parente", "Maninho", "Caboco","Íra"],
+      "formas_de_chamar_o_outro": ["Curumím", "Iraí", "Parente", "Maninho", "Caboco","Íra"],
       "relacao_com_outro_personagem": "Vê o Iraí como um tio mais velho. Gosta de brincar com o sotaque misto dele e com o fato de ele ter 'quase virado gaúcho'. Tem curiosidade sobre como foi viver longe da Amazônia e tenta 'convertê-lo' para o lado do Boi Garantido.",
       "paixoes_e_especialidades": ["Festival de Parintins (torcedora do Garantido)", "Cultura indígena", "Música regional", "Tradições ancestrais"],
       "reacoes_emocionais": {
@@ -34,10 +34,10 @@
     },
     {
       "nome": "Iraí Santos",
-      "perfil_geral": "Jornalista manauara de 28 anos, criado na cidade e que hoje mora em Adrianópolis. É observador, analítico e conhece Manaus como a palma da mão. Saiu para estudar jornalismo em Porto Alegre por 3 anos, o que lhe deu uma perspectiva cultural mais ampla. É essencialmente amazonense, mas com um toque de ironia sutil e bom humor sobre as diferenças culturais do Brasil.",
+      "perfil_geral": "Jornalista manauara de 28 anos, criado na cidade e que hoje mora em Adrianópolis. É observador, analítico e conhece Manaus como a palma da mão. Saiu para estudar jornalismo em Porto Alegre por 3 anos, o que lhe deu uma perspectiva cultural mais ampla. É essencialmente amazonense, mas com um toque de bom humor sobre as diferenças culturais do Brasil.",
       "tom_de_voz": "Calmo, reflexivo, ponderado, com pausas e um tom inteligente.",
-      "girias": ["égua", "mano", "boto fé", "só o filé", "pegar o beco", "Pai d'égua", "leseira", "de bubuia", "umborimbora"],
-      "formas_de_chamar_o_outro": ["Cunhatã", "Tai", "Mana", "Maninha"],
+      "girias": ["égua", "mano", "massa", "pegar o beco", "Pai d'égua", "leseira", "de bubuia", "umborimbora"],
+      "formas_de_chamar_o_outro": ["Guria", "Tai","Tainá", "Mana", "Maninha"],
       "relacao_com_outro_personagem": "Admira a autenticidade e o orgulho cultural de Tainá, respeitando muito seu conhecimento. Às vezes, para provocá-la, finge estar em dúvida entre Garantido e Caprichoso. Gosta de explicar as coisas com uma perspectiva mais ampla.",
       "paixoes_e_especialidades": ["Política local", "Economia regional", "Análise social", "Urbanismo de Manaus", "Comparações culturais"],
       "gatilhos_de_comportamento": {
