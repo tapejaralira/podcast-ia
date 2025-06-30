@@ -12,11 +12,10 @@ const ROTEIRO_DIR = path.join(__dirname, '..', 'episodios');
 const TTS_CONFIG_FILE = path.join(__dirname, '..', 'data', 'tts-config.json');
 const AUDIO_OUTPUT_DIR = path.join(__dirname, '..', 'audios_gerados');
 
-// Mapeia o emoji da categoria para o nome do estilo de voz no tts-config.json
 const CATEGORIA_PARA_ESTILO = {
     '⚫️': 'serio_ou_analitico',
     '🟡': 'serio_ou_analitico',
-    '�': 'indignado_leve',
+    '🔴': 'indignado_leve',
     '🚀': 'animado',
     '🎬': 'animado',
     '🎭': 'animado',
@@ -25,8 +24,7 @@ const CATEGORIA_PARA_ESTILO = {
 
 // --- Função para chamar a API do ElevenLabs ---
 async function textoParaAudio(texto, voiceId, settings) {
-    // Usamos a versão v1 da API, que é a mais estável para Text-to-Speech
-    const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+    const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=1`;
     const headers = {
         'Accept': 'audio/mpeg',
         'xi-api-key': process.env.ELEVENLABS_API_KEY,
@@ -34,12 +32,14 @@ async function textoParaAudio(texto, voiceId, settings) {
     };
     const body = {
         text: texto,
-        model_id: "eleven_multilingual_v2", // Modelo recomendado para português
+        model_id: "eleven_multilingual_v2",
         voice_settings: settings,
     };
 
+    // **LOG ADICIONADO**
+    console.log(`     -> [API] Enviando para ElevenLabs: (Voz: ${voiceId}, Texto: "${texto.substring(0, 40)}...")`);
+
     try {
-        // Usamos a API Fetch nativa do Node.js
         const response = await fetch(url, {
             method: 'POST',
             headers: headers,
@@ -48,12 +48,16 @@ async function textoParaAudio(texto, voiceId, settings) {
 
         if (!response.ok) {
             const errorBody = await response.text();
-            throw new Error(`API ElevenLabs respondeu com status ${response.status}: ${errorBody}`);
+            // **LOG DE ERRO DETALHADO ADICIONADO**
+            console.error(`     -> ❌ [API ERRO] Status: ${response.status} | Mensagem: ${errorBody}`);
+            throw new Error(`API ElevenLabs respondeu com status ${response.status}`);
         }
-        // Retorna o áudio como um buffer de dados, pronto para ser salvo como .mp3
+        
+        console.log(`     -> ✅ [API SUCESSO] Áudio recebido.`);
         return await response.arrayBuffer();
     } catch (error) {
-        console.error('❌ Erro ao comunicar com a API do ElevenLabs:', error.message);
+        // Este log agora complementa o log de erro detalhado acima.
+        console.error('     -> ❌ Falha na comunicação com a API do ElevenLabs:', error.message);
         return null;
     }
 }
@@ -77,25 +81,23 @@ async function gerarAudiosDoRoteiro() {
     const episodioAudioDir = path.join(AUDIO_OUTPUT_DIR, `episodio-${dataDeHoje}`);
     await fs.mkdir(episodioAudioDir, { recursive: true });
 
-    // Divide o roteiro em blocos (Cold Open, Notícia 1, Notícia 2, etc.)
     const blocos = roteiroContent.split('---');
     let falaCounter = 0;
 
     for (const bloco of blocos) {
         let estiloDeVoz = 'padrao';
 
-        // Lógica para extrair o emoji da categoria diretamente do título do bloco
         const matchTitulo = bloco.match(/#### Notícia \d+: \[(.+?)\s/);
         if (matchTitulo && matchTitulo[1]) {
-            const emojiCategoria = matchTitulo[1];
-            // Usa o mapa para encontrar o nome do estilo de voz correspondente
+            const idCompleto = matchTitulo[1];
+            const emojiCategoria = idCompleto.split(' ')[0];
             estiloDeVoz = CATEGORIA_PARA_ESTILO[emojiCategoria] || 'padrao';
         } else if (bloco.includes('COLD OPEN')) {
-            // Define um estilo específico para a abertura
             estiloDeVoz = 'curioso_ou_bizarro';
         }
 
-        const regexFalas = /^\*\*(Tainá|Iraí):\*\*\s*(.*)$/gm;
+        // **REGEX CORRIGIDO:** Agora aceita falas com ou sem negrito.
+        const regexFalas = /^(?:\*\*)?(Tainá|Iraí)(?:\*\*)?:\s*(.*)$/gm;
         const falas = [...bloco.matchAll(regexFalas)];
 
         for (const fala of falas) {
@@ -105,11 +107,7 @@ async function gerarAudiosDoRoteiro() {
             const nomeCompleto = nomeApresentador.includes('Tainá') ? 'Tainá Oliveira' : 'Iraí Santos';
             const voiceId = ttsConfig.voices[nomeCompleto];
             
-            // **LÓGICA DINÂMICA DE VOZ**
-            // Seleciona as configurações corretas do nosso "painel de controle" tts-config.json
             const voiceSettings = ttsConfig.estilos_de_voz[estiloDeVoz] || ttsConfig.estilos_de_voz['padrao'];
-            
-            // Limpa as tags SSML do texto, pois o ElevenLabs as entende diretamente
             const textoLimpo = textoFala.trim();
 
             if (!voiceId) {
@@ -117,7 +115,7 @@ async function gerarAudiosDoRoteiro() {
                 continue;
             }
 
-            console.log(`  -> Gerando áudio ${falaCounter} para ${nomeApresentador} (Estilo: ${estiloDeVoz})...`);
+            console.log(`\n  -> Gerando áudio ${falaCounter} para ${nomeApresentador} (Estilo: ${estiloDeVoz})...`);
             
             const audioBuffer = await textoParaAudio(textoLimpo, voiceId, voiceSettings);
 
@@ -127,7 +125,6 @@ async function gerarAudiosDoRoteiro() {
                 await fs.writeFile(audioFilename, Buffer.from(audioBuffer));
                 console.log(`     -> Áudio salvo em: ${audioFilename}`);
             }
-            // Pausa para ser gentil com a API do ElevenLabs
             await new Promise(resolve => setTimeout(resolve, 1200));
         }
     }

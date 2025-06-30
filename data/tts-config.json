@@ -8,7 +8,7 @@
     "padrao": {
       "stability": 0.5,
       "similarity_boost": 0.75,
-      "style_exaggeration": 0,
+      "style_exaggeration": 40,
       "use_speaker_boost": true
     },
     "animado_taina": {

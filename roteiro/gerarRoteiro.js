@@ -219,8 +219,8 @@ async function gerarRoteiro() {
     ]);
     roteiroFinal = roteiroFinal.replace('{{SAUDACAO_TAINA}}', saudacaoTaina);
     roteiroFinal = roteiroFinal.replace('{{DESPEDIDA_TAINA}}', despedidaTaina);
-    roteiroFinal = roteiroFinal.replace('{{SAUDACAO_IRAI}}', `Boto fé, Tai. Um bom dia pra esse povo trabalhador.`);
-    roteiroFinal = roteiroFinal.replace('{{DESPEDIDA_IRAI}}', `É isso, meu povo. Por hoje é só o filé.`);
+    roteiroFinal = roteiroFinal.replace('{{SAUDACAO_IRAI}}', `É isso aí, Tai. Um bom dia pra esse povo trabalhador.`);
+    roteiroFinal = roteiroFinal.replace('{{DESPEDIDA_IRAI}}', `É isso, meu povo. Por hoje é isso.`);
 
     const titulosPrincipais = pauta.noticiasPrincipais.map(n => n.titulo_principal);
     if(titulosPrincipais.length > 0) {
