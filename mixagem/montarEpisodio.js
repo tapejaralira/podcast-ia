@@ -14,6 +14,10 @@ const ASSETS_AUDIO_DIR = path.join(__dirname, '..', 'audios');
 const TEMP_DIR = path.join(__dirname, 'temp'); // Pasta temporária para os blocos
 const FINAL_OUTPUT_DIR = path.join(__dirname, '..', 'episodios_finais');
 
+// **NOVA CONFIGURAÇÃO:** Chave para habilitar/desabilitar efeitos avançados.
+// Mude para 'true' se você instalar uma versão completa do FFmpeg que inclua os filtros 'acompressor' e 'areverb'.
+const APLICAR_EFEITOS_AVANCADOS = false; // Mude para false se não quiser aplicar efeitos avançados
+
 // **NOVA FUNÇÃO:** Normaliza strings removendo acentos para consistência de nomes de arquivo.
 function normalizeString(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -30,29 +34,50 @@ function normalizeString(str) {
  */
 function aplicarEfeitos(inputPath, outputPath, nomeApresentador) {
     return new Promise((resolve, reject) => {
-        const filtros = [
-            {
-                filter: 'acompressor',
-                options: 'threshold=0.125:ratio=4:attack=20:release=250'
-            },
-            {
-                filter: 'areverb',
-                options: 'reverb_time=50:room_scale=60:wet_gain=0.15'
-            }
-        ];
+        const command = ffmpeg(inputPath);
+        let filtros = [];
 
+        // Aplica o aumento de volume para a Tainá, independentemente dos outros efeitos.
         if (nomeApresentador === 'taina') {
-            filtros.unshift({
+            filtros.push({
                 filter: 'volume',
-                options: '1.6'
+                options: '3.5'
             });
-            console.log(`   [FX] Aplicando Volume, Compressão e Reverb para ${nomeApresentador}.`);
-        } else {
-            console.log(`   [FX] Aplicando Compressão e Reverb para ${nomeApresentador}.`);
         }
 
-        ffmpeg(inputPath)
-            .audioFilters(filtros)
+        // Aplica o aumento de volume para a Iraí, independentemente dos outros efeitos.
+        if (nomeApresentador === 'irai') {
+            filtros.push({
+                filter: 'volume',
+                options: '0.8'
+            });
+        }
+
+
+        // Adiciona os efeitos avançados apenas se a chave estiver ativada.
+        if (APLICAR_EFEITOS_AVANCADOS) {
+            filtros.push({
+                filter: 'acompressor',
+                options: 'threshold=0.125:ratio=4:attack=20:release=250'
+            });
+            filtros.push({
+                filter: 'areverb',
+                options: 'reverb_time=50:room_scale=60:wet_gain=0.15'
+            });
+            console.log(`   [FX] Aplicando todos os efeitos para ${nomeApresentador}.`);
+        } else {
+            if (nomeApresentador === 'taina') {
+                console.log(`   [FX] Aplicando apenas Volume para ${nomeApresentador}. Efeitos avançados desativados.`);
+            } else {
+                console.log(`   [FX] Efeitos avançados desativados para ${nomeApresentador}. Copiando arquivo.`);
+            }
+        }
+        
+        if (filtros.length > 0) {
+            command.audioFilters(filtros);
+        }
+
+        command
             .on('error', (err) => reject(new Error(`Erro ao aplicar efeitos em ${inputPath}: ${err.message}`)))
             .on('end', () => resolve())
             .save(outputPath);
@@ -203,7 +228,6 @@ async function montarEpisodio() {
             } else if (matchFala) {
                 falaCounter++;
                 const nomeApresentadorRaw = matchFala[1].toLowerCase();
-                // **CORREÇÃO:** Normaliza o nome para a busca do arquivo.
                 const nomeApresentador = normalizeString(nomeApresentadorRaw);
                 const numeroFala = String(falaCounter).padStart(2, '0');
                 const nomeArquivoFala = `fala_${numeroFala}_${nomeApresentador}.mp3`;
@@ -214,8 +238,9 @@ async function montarEpisodio() {
                     await fs.access(caminhoOriginal);
                     await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentador);
                     falasSubBloco.push(caminhoProcessado);
-                } catch {
-                    console.warn(`   [AVISO] Arquivo de fala não encontrado, pulando: ${caminhoOriginal}`);
+                } catch (err) { // **MELHORIA NO LOG DE ERRO**
+                    console.warn(`   [AVISO] Falha ao processar o arquivo de fala: ${caminhoOriginal}`);
+                    console.error(`     -> Erro detalhado: ${err.message}`);
                 }
             }
         }
