@@ -23,9 +23,20 @@ const TRILHA_MAP = {
     "🔴": "trilha_reflexiva.mp3",
     "🚀": "trilha_tecnologica_upbeat.mp3",
     "🎬": "trilha_divertida_pop.mp3",
-    "�": "trilha_cultural_regional.mp3",
+    "🎭": "trilha_cultural_regional.mp3",
     "👽": "trilha_misteriosa_humor.mp3"
 };
+
+const CENAS_DE_DIALOGO = [
+    "Comece com Tainá chamando a atenção de Iraí com uma expressão como 'Mano, tu viu essa?!' ou 'Iraí, se liga só nisso aqui...'",
+    "Comece com Iraí introduzindo a notícia com uma de suas expressões, como 'Égua, cunhatã, espia só o que rolou...' ou 'Rapaz, essa aqui é da boa...'",
+    "Comece com um dos apresentadores lendo a manchete em voz alta, como se estivesse surpreso, e o outro reage com espanto, como 'É sério isso?'",
+    "Comece com Tainá dizendo que viu algo 'bubuiando' nas redes sociais e então introduzindo a notícia.",
+    "Comece com Iraí fazendo uma pergunta retórica para Tainá que tenha a ver com o tema da notícia, antes de contar o fato. (Ex: 'Tu já imaginou o que acontece quando...? Pois é, aconteceu.')",
+    "Comece com Tainá pedindo a opinião imediata de Iraí sobre a manchete, no estilo 'hot take'.",
+    "Comece com Iraí sendo cético sobre o impacto real da notícia ('Humm, já vi esse filme antes...') e Tainá tentando encontrar um lado positivo.",
+    "Comece com um dos apresentadores dizendo que recebeu uma mensagem de um ouvinte (fictício) sobre o tema para iniciar o debate."
+];
 
 // --- Funções Principais ---
 
@@ -33,12 +44,20 @@ async function fetchFullText(url) {
     try {
         const { data: html } = await axios.get(url, { headers: { 'User-Agent': 'BubuiaNews-Bot/1.0' }});
         const $ = cheerio.load(html);
-        const articleBody = 
-            $('div[itemprop="articleBody"]').text() || 
-            $('div.post-content').text() || 
-            $('div.editorianoticia').text() ||
-            $('article').text();
-        
+        let articleBody = '';
+        const acriticaBody = $('div.ceRPNp'); 
+        if (acriticaBody.length > 0) {
+            acriticaBody.find('p[class*="styled__Paragraph"]').each((i, el) => {
+                articleBody += $(el).text() + ' ';
+            });
+        }
+        if (!articleBody) {
+             articleBody = 
+                $('div[itemprop="articleBody"]').text() || 
+                $('div.post-content').text() || 
+                $('div.editorianoticia').text() ||
+                $('article').text();
+        }
         return articleBody.replace(/\s\s+/g, ' ').trim();
     } catch (error) {
         console.error(`  [ERRO] Falha ao buscar texto completo de: ${url}`);
@@ -47,31 +66,54 @@ async function fetchFullText(url) {
 }
 
 async function gerarDialogo(promptData) {
-    const { tipo, noticia, personagens } = promptData;
+    const { tipo, noticia, personagens, direcao_cena } = promptData;
     let prompt;
+
+    // Define o tom da cena com base na classificação da notícia
+    let tom_cena = "de forma neutra e informativa.";
+    if (noticia && noticia.classification) {
+        const id = noticia.classification.id.split(' ')[0];
+        if (['🚀', '🎬', '🎭', '👽'].includes(id)) tom_cena = "de forma animada e divertida.";
+        if (['🔴', '⚫️'].includes(id)) tom_cena = "com um tom de seriedade e preocupação.";
+    }
 
     switch (tipo) {
         case 'cold_open':
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo de 15 a 20 segundos para o "Cold Open". Tainá deve contar para Iraí, como se fosse um segredo, a seguinte notícia:
 - Título: ${noticia.titulo_principal}
 - Resumo Combinado: ${noticia.fontes.map(f => f.resumo).join(' ')}
-Use os perfis dos personagens para guiar a reação: Tainá (jovem, curiosa), Iraí (cético, tradicional).
-Responda APENAS com o diálogo. Comece com "Tainá:".`;
+Use os perfis dos personagens para guiar a reação: Tainá (jovem, curiosa), Iraí (cético, tradicional). Use a tag <break time="0.3s"/> para uma pequena pausa.
+Responda APENAS com o diálogo.`;
             break;
         case 'noticia_principal':
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo natural e conciso (4 a 6 falas) entre Tainá e Iraí sobre a notícia abaixo.
-- Perfis: Tainá (${personagens.taina.perfil_geral}), Iraí (${personagens.irai.perfil_geral}).
-- Tom da Notícia: ${noticia.classification.description}
-- Conteúdo: ${noticia.texto_completo}
-Instruções: Incorpore o jeito de falar e as gírias de cada um. Comece com um dos apresentadores. Inclua pausas <break time="0.5s"/> para naturalidade.
+
+### INSTRUÇÕES DE DIREÇÃO
+- **Perfis:** Tainá (${personagens.taina.perfil_geral}), Iraí (${personagens.irai.perfil_geral}).
+- **Tom da Cena:** Discutam a notícia ${tom_cena}
+- **Conteúdo da Notícia:** ${noticia.texto_completo}
+- **Direção de Início:** ${direcao_cena}
+
+### REGRAS TÉCNICAS (OBRIGATÓRIO)
+- Use a tag <break time="0.5s"/> para criar pausas naturais.
+- Use a tag <emphasis level="strong">PALAVRA</emphasis> para dar ênfase a palavras importantes.
+
 Responda APENAS com o diálogo.`;
             break;
         case 'super_noticia_principal':
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo APROFUNDADO (6 a 8 falas) entre Tainá e Iraí sobre a notícia abaixo, que foi o evento mais comentado do dia.
-- Perfis: Tainá (${personagens.taina.perfil_geral}), Iraí (${personagens.irai.perfil_geral}).
-- Tom da Notícia: ${noticia.classification.description}
-- Conteúdo Completo (COMBINADO DE VÁRIAS FONTES): ${noticia.texto_completo}
-Instruções: Dê mais profundidade à análise. Permita que eles reajam e comentem sobre os diferentes detalhes apresentados pelas fontes. Incorpore o jeito de falar e as gírias de cada um. Inclua pausas <break time="0.5s"/>.
+
+### INSTRUÇÕES DE DIREÇÃO
+- **Perfis:** Tainá (${personagens.taina.perfil_geral}), Iraí (${personagens.irai.perfil_geral}).
+- **Tom da Cena:** Discutam a notícia ${tom_cena}
+- **Conteúdo da Notícia (de várias fontes):** ${noticia.texto_completo}
+- **Direção de Início:** ${direcao_cena}
+
+### REGRAS TÉCNICAS (OBRIGATÓRIO)
+- Use a tag <break time="0.5s"/> para criar pausas naturais.
+- Use a tag <emphasis level="strong">PALAVRA</emphasis> para dar ênfase a palavras importantes.
+- Como o assunto é importante, use a tag <prosody rate="slow">...</prosody> em uma fala do Iraí para um tom mais analítico.
+
 Responda APENAS com o diálogo.`;
             break;
         case 'cardapio':
@@ -131,7 +173,8 @@ async function gerarRoteiro() {
         roteiroFinal = roteiroFinal.replace('{{CARDAPIO_NOTICIAS}}', 'Iraí: Eita, maninha, parece que hoje a rede veio vazia! Vamos ver o que tem de bom por aqui mesmo assim.');
     }
 
-    // CORREÇÃO: Processando notícias em sequência para evitar rate limit
+    let cenasDisponiveis = [...CENAS_DE_DIALOGO];
+
     for (let i = 0; i < 4; i++) {
         const noticia = pauta.noticiasPrincipais[i];
         let dialogo = "// Sem notícia para este bloco.";
@@ -145,9 +188,12 @@ async function gerarRoteiro() {
             noticia.texto_completo = textosCompletos.filter(t => t).join('\n\n---\n\n');
             
             if (noticia.texto_completo) {
+                if (cenasDisponiveis.length === 0) cenasDisponiveis = [...CENAS_DE_DIALOGO];
+                const cenaIndex = Math.floor(Math.random() * cenasDisponiveis.length);
+                const direcao_cena = cenasDisponiveis.splice(cenaIndex, 1)[0];
                 const tipoDialogo = noticia.isSuperNoticia ? 'super_noticia_principal' : 'noticia_principal';
-                console.log(`  -> Gerando diálogo (Tipo: ${tipoDialogo})`);
-                dialogo = await gerarDialogo({ tipo: tipoDialogo, noticia, personagens });
+                console.log(`  -> Gerando diálogo (Tipo: ${tipoDialogo} | Direção: ${direcao_cena})`);
+                dialogo = await gerarDialogo({ tipo: tipoDialogo, noticia, personagens, direcao_cena });
             } else {
                 dialogo = "// Não foi possível buscar o texto completo para esta notícia.";
             }
@@ -159,8 +205,7 @@ async function gerarRoteiro() {
         roteiroFinal = roteiroFinal.replace(`{{NOTICIA_${i + 1}_DIALOGO}}`, dialogo);
         roteiroFinal = roteiroFinal.replace(`{{NOTICIA_${i + 1}_TRILHA}}`, trilha);
 
-        // Pausa de 1 segundo entre cada notícia para não sobrecarregar a API
-        if(i < 3) { // Não precisa pausar depois da última
+        if(i < 3) {
              await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
