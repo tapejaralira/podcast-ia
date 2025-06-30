@@ -17,6 +17,52 @@ const FINAL_OUTPUT_DIR = path.join(__dirname, '..', 'episodios_finais');
 // --- Funções Auxiliares do FFmpeg ---
 
 /**
+ * Aplica efeitos de áudio (volume, compressão, reverb) a um único arquivo de fala.
+ * @param {string} inputPath - Caminho do arquivo de áudio de entrada.
+ * @param {string} outputPath - Caminho onde o arquivo processado será salvo.
+ * @param {string} nomeApresentador - O nome do apresentador ('tainá' ou 'iraí').
+ * @returns {Promise<void>}
+ */
+function aplicarEfeitos(inputPath, outputPath, nomeApresentador) {
+    return new Promise((resolve, reject) => {
+        // Cadeia de filtros de áudio para um som de estúdio profissional.
+        const filtros = [
+            // 1. Compressor: Nivela o volume e adiciona "presença".
+            // threshold: Nível para começar a compressão.
+            // ratio: Taxa de compressão (4:1 é bom para vocais).
+            // attack/release: Velocidade de reação do compressor.
+            {
+                filter: 'acompressor',
+                options: 'threshold=0.125:ratio=4:attack=20:release=250'
+            },
+            // 2. Reverb: Adiciona uma sutil ambiência de estúdio.
+            {
+                filter: 'areverb',
+                options: 'reverb_time=50:room_scale=60:wet_gain=0.15'
+            }
+        ];
+
+        // 0. Aumenta o volume da Tainá ANTES de aplicar outros efeitos.
+        if (nomeApresentador === 'tainá') {
+            filtros.unshift({
+                filter: 'volume',
+                options: '1.6'
+            });
+            console.log(`   [FX] Aplicando Volume, Compressão e Reverb para ${nomeApresentador}.`);
+        } else {
+            console.log(`   [FX] Aplicando Compressão e Reverb para ${nomeApresentador}.`);
+        }
+
+        ffmpeg(inputPath)
+            .audioFilters(filtros)
+            .on('error', (err) => reject(new Error(`Erro ao aplicar efeitos em ${inputPath}: ${err.message}`)))
+            .on('end', () => resolve())
+            .save(outputPath);
+    });
+}
+
+
+/**
  * Mixa um conjunto de arquivos de fala com uma trilha sonora de fundo.
  * @param {string[]} blocoFalas - Array de caminhos para os arquivos de áudio das falas.
  * @param {string} trilhaPath - Caminho para o arquivo da trilha sonora.
@@ -33,16 +79,10 @@ function mixarBloco(blocoFalas, trilhaPath, volume, outputPath) {
 
         const command = ffmpeg();
         
-        // Adiciona as falas como uma entrada concatenada
         command.input(`concat:${blocoFalas.join('|')}`);
         
-        // Adiciona a trilha sonora como uma segunda entrada, se fornecida
         if (trilhaPath) {
             command.input(trilhaPath);
-            // Cria um filtro complexo para mixar os dois áudios
-            // [0:a] é o áudio das falas, [1:a] é a trilha
-            // O volume da trilha é ajustado e depois os dois são mixados
-            // 'amix' mixa os áudios. 'duration=first' faz a mixagem durar o tempo do primeiro input (as falas).
             command.complexFilter([
                 `[1:a]volume=${volume}[bg]`,
                 '[0:a][bg]amix=inputs=2:duration=first'
@@ -50,7 +90,7 @@ function mixarBloco(blocoFalas, trilhaPath, volume, outputPath) {
         }
         
         command
-            .on('start', (commandLine) => console.log(`  [FFMPEG] Executando: ${commandLine}`))
+            .on('start', (commandLine) => console.log(`  [FFMPEG] Executando mixagem: ${commandLine}`))
             .on('error', (err) => reject(new Error(`Erro no FFmpeg ao mixar bloco: ${err.message}`)))
             .on('end', () => resolve())
             .save(outputPath);
@@ -73,7 +113,7 @@ function concatenarBlocos(listaDeBlocos, outputPath) {
         listaDeBlocos.forEach(file => command.input(file));
         
         command
-            .on('start', (commandLine) => console.log(`  [FFMPEG] Executando: ${commandLine}`))
+            .on('start', (commandLine) => console.log(`  [FFMPEG] Executando concatenação: ${commandLine}`))
             .on('error', (err) => reject(new Error(`Erro no FFmpeg ao concatenar blocos: ${err.message}`)))
             .on('end', () => resolve())
             .mergeToFile(outputPath, TEMP_DIR);
@@ -89,7 +129,6 @@ async function montarEpisodio() {
     const roteiroFilename = path.join(ROTEIRO_DIR, `roteiro-${dataDeHoje}.md`);
     const episodioAudioDir = path.join(AUDIOS_GERADOS_DIR, `episodio-${dataDeHoje}`);
     
-    // Garante que a pasta temporária e de saída existam
     await fs.mkdir(TEMP_DIR, { recursive: true });
     await fs.mkdir(FINAL_OUTPUT_DIR, { recursive: true });
     
@@ -104,7 +143,6 @@ async function montarEpisodio() {
     const blocosDeAudioProcessados = [];
     let falaCounter = 0;
     
-    // Divide o roteiro em blocos principais (separados por '---')
     const blocosPrincipais = roteiroContent.split('---');
 
     for (let i = 0; i < blocosPrincipais.length; i++) {
@@ -117,7 +155,6 @@ async function montarEpisodio() {
 
         const linhas = bloco.split('\n').filter(l => l.trim() !== '');
 
-        // Função auxiliar para processar e salvar um sub-bloco de áudio
         async function processarSubBloco() {
             if (falasSubBloco.length === 0) return;
 
@@ -129,14 +166,11 @@ async function montarEpisodio() {
                 await mixarBloco(falasSubBloco, trilhaInfo.path, trilhaInfo.volume, outputPathBloco);
             } else {
                 console.log(`   -> Concatenando ${falasSubBloco.length} áudio(s) (sem trilha).`);
-                // Usamos a função de concatenar para um único arquivo também, funciona como uma cópia.
                 await concatenarBlocos(falasSubBloco, outputPathBloco);
             }
             blocosDeAudioProcessados.push(outputPathBloco);
             
-            // Limpa para o próximo sub-bloco
             falasSubBloco = [];
-            // Não reseta a trilha aqui, ela só é resetada no [TRILHA_FIM]
         }
 
         for (const linha of linhas) {
@@ -146,35 +180,37 @@ async function montarEpisodio() {
             const matchAudio = linha.match(/\[AUDIO:\s*(.*?)\s*\]/);
 
             if (matchTrilhaInicio) {
-                await processarSubBloco(); // Processa o que estava antes da trilha
+                await processarSubBloco();
                 trilhaInfo = { 
                     path: path.join(ASSETS_AUDIO_DIR, 'trilhas', matchTrilhaInicio[1]),
                     volume: matchTrilhaInicio[2]
                 };
             } else if (matchTrilhaFim) {
-                await processarSubBloco(); // Processa o conteúdo que estava com a trilha
-                trilhaInfo = null; // Finaliza a trilha para os próximos áudios
+                await processarSubBloco();
+                trilhaInfo = null;
             } else if (matchAudio) {
-                await processarSubBloco(); // Processa o que veio antes da vinheta
+                await processarSubBloco();
                 const vinhetaPath = path.join(ASSETS_AUDIO_DIR, 'vinhetas', matchAudio[1]);
                 falasSubBloco.push(vinhetaPath);
-                await processarSubBloco(); // Processa a vinheta como um bloco isolado
+                await processarSubBloco();
             } else if (matchFala) {
                 falaCounter++;
                 const nomeApresentador = matchFala[1].toLowerCase();
                 const numeroFala = String(falaCounter).padStart(2, '0');
                 const nomeArquivoFala = `fala_${numeroFala}_${nomeApresentador}.mp3`;
-                const caminhoFala = path.join(episodioAudioDir, nomeArquivoFala);
+                const caminhoOriginal = path.join(episodioAudioDir, nomeArquivoFala);
+                const caminhoProcessado = path.join(TEMP_DIR, `fala_${numeroFala}_${nomeApresentador}_fx.mp3`);
                 
                 try {
-                    await fs.access(caminhoFala); // Verifica se o arquivo de fala existe
-                    falasSubBloco.push(caminhoFala);
+                    await fs.access(caminhoOriginal);
+                    await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentador);
+                    falasSubBloco.push(caminhoProcessado);
                 } catch {
                     console.warn(`   [AVISO] Arquivo de fala não encontrado, pulando: ${nomeArquivoFala}`);
                 }
             }
         }
-        await processarSubBloco(); // Processa qualquer áudio restante no final do bloco principal
+        await processarSubBloco();
     }
 
     if (blocosDeAudioProcessados.length === 0) {
@@ -182,14 +218,12 @@ async function montarEpisodio() {
         return;
     }
 
-    // Etapa final: concatenar todos os sub-blocos processados
     console.log('\n🎬 Montando o episódio final a partir dos segmentos processados...');
     const outputFinal = path.join(FINAL_OUTPUT_DIR, `bubuia_news_${dataDeHoje}.mp3`);
     await concatenarBlocos(blocosDeAudioProcessados, outputFinal);
 
     console.log(`\n✅ Episódio finalizado com sucesso! Salvo em: ${outputFinal}`);
     
-    // Limpa a pasta temporária
     console.log('🧹 Limpando arquivos temporários...');
     await fs.rm(TEMP_DIR, { recursive: true, force: true });
     console.log('✨ Processo concluído!');

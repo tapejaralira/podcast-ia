@@ -22,6 +22,11 @@ const CATEGORIA_PARA_ESTILO = {
     '👽': 'curioso_ou_bizarro'
 };
 
+// **NOVA FUNÇÃO:** Normaliza strings removendo acentos.
+function normalizeString(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 // --- Função para chamar a API do ElevenLabs ---
 async function textoParaAudio(texto, voiceId, settings) {
     const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=1`;
@@ -36,7 +41,6 @@ async function textoParaAudio(texto, voiceId, settings) {
         voice_settings: settings,
     };
 
-    // **LOG ADICIONADO**
     console.log(`     -> [API] Enviando para ElevenLabs: (Voz: ${voiceId}, Texto: "${texto.substring(0, 40)}...")`);
 
     try {
@@ -48,7 +52,6 @@ async function textoParaAudio(texto, voiceId, settings) {
 
         if (!response.ok) {
             const errorBody = await response.text();
-            // **LOG DE ERRO DETALHADO ADICIONADO**
             console.error(`     -> ❌ [API ERRO] Status: ${response.status} | Mensagem: ${errorBody}`);
             throw new Error(`API ElevenLabs respondeu com status ${response.status}`);
         }
@@ -56,7 +59,6 @@ async function textoParaAudio(texto, voiceId, settings) {
         console.log(`     -> ✅ [API SUCESSO] Áudio recebido.`);
         return await response.arrayBuffer();
     } catch (error) {
-        // Este log agora complementa o log de erro detalhado acima.
         console.error('     -> ❌ Falha na comunicação com a API do ElevenLabs:', error.message);
         return null;
     }
@@ -96,32 +98,33 @@ async function gerarAudiosDoRoteiro() {
             estiloDeVoz = 'curioso_ou_bizarro';
         }
 
-        // **REGEX CORRIGIDO:** Agora aceita falas com ou sem negrito.
         const regexFalas = /^(?:\*\*)?(Tainá|Iraí)(?:\*\*)?:\s*(.*)$/gm;
         const falas = [...bloco.matchAll(regexFalas)];
 
         for (const fala of falas) {
             falaCounter++;
-            const [_, nomeApresentador, textoFala] = fala;
+            const [_, nomeApresentadorRaw, textoFala] = fala;
             
-            const nomeCompleto = nomeApresentador.includes('Tainá') ? 'Tainá Oliveira' : 'Iraí Santos';
+            const nomeCompleto = nomeApresentadorRaw.includes('Tainá') ? 'Tainá Oliveira' : 'Iraí Santos';
             const voiceId = ttsConfig.voices[nomeCompleto];
             
             const voiceSettings = ttsConfig.estilos_de_voz[estiloDeVoz] || ttsConfig.estilos_de_voz['padrao'];
             const textoLimpo = textoFala.trim();
 
             if (!voiceId) {
-                console.warn(`  -> [AVISO] Voice ID não encontrado para ${nomeApresentador}. Pulando...`);
+                console.warn(`  -> [AVISO] Voice ID não encontrado para ${nomeApresentadorRaw}. Pulando...`);
                 continue;
             }
 
-            console.log(`\n  -> Gerando áudio ${falaCounter} para ${nomeApresentador} (Estilo: ${estiloDeVoz})...`);
+            console.log(`\n  -> Gerando áudio ${falaCounter} para ${nomeApresentadorRaw} (Estilo: ${estiloDeVoz})...`);
             
             const audioBuffer = await textoParaAudio(textoLimpo, voiceId, voiceSettings);
 
             if (audioBuffer) {
                 const numeroFala = String(falaCounter).padStart(2, '0');
-                const audioFilename = path.join(episodioAudioDir, `fala_${numeroFala}_${nomeApresentador.toLowerCase()}.mp3`);
+                // **CORREÇÃO:** Normaliza o nome do apresentador para o nome do arquivo.
+                const nomeNormalizado = normalizeString(nomeApresentadorRaw.toLowerCase());
+                const audioFilename = path.join(episodioAudioDir, `fala_${numeroFala}_${nomeNormalizado}.mp3`);
                 await fs.writeFile(audioFilename, Buffer.from(audioBuffer));
                 console.log(`     -> Áudio salvo em: ${audioFilename}`);
             }

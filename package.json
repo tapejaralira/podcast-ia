@@ -10,7 +10,8 @@
     "gerar-audio": "node producao/gerarAudio.js",
     "montar": "node mixagem/montarEpisodio.js",
     "pauta-completa": "npm run coletar && npm run analisar",
-    "episodio-completo": "npm run pauta-completa && npm run roteirizar"
+    "episodio-completo": "npm run pauta-completa && npm run roteirizar",
+    "produzir": "npm run gerar-audio && npm run montar"
   },
   "dependencies": {
     "axios": "^1.7.2",
