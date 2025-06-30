@@ -12,7 +12,6 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CAMINHOS CORRIGIDOS PARA A NOVA ESTRUTURA
 const PAUTA_FILE = path.join(__dirname, '..', 'data', 'episodio-do-dia.json');
 const PERSONAGENS_FILE = path.join(__dirname, '..', 'data', 'personagens.json');
 const TEMPLATE_FILE = path.join(__dirname, 'roteiro-template.md');
@@ -33,7 +32,7 @@ const CENAS_DE_DIALOGO = [
     "Comece com Iraí introduzindo a notícia com uma de suas expressões, como 'Égua, cunhatã, espia só o que rolou...' ou 'Rapaz, essa aqui é da boa...'",
     "Comece com um dos apresentadores lendo a manchete em voz alta, como se estivesse surpreso, e o outro reage com espanto, como 'É sério isso?'",
     "Comece com Tainá dizendo que viu algo 'bubuiando' nas redes sociais e então introduzindo a notícia.",
-    "Comece com Iraí fazendo uma pergunta retórica para Tainá que tenha a ver com o tema da notícia, antes de contar o fato. (Ex: 'Tu já imaginou o que acontece quando...? Pois é, aconteceu.')",
+    "Comece com Iraí fazendo uma pergunta retórica para Tainá que tenha a ver com o tema da notícia. (Ex: 'Tu já imaginou o que acontece quando...? Pois é, aconteceu.')",
     "Comece com Tainá pedindo a opinião imediata de Iraí sobre a manchete, no estilo 'hot take'.",
     "Comece com Iraí sendo cético sobre o impacto real da notícia ('Humm, já vi esse filme antes...') e Tainá tentando encontrar um lado positivo.",
     "Comece com um dos apresentadores dizendo que recebeu uma mensagem de um ouvinte (fictício) sobre o tema para iniciar o debate."
@@ -47,16 +46,12 @@ async function fetchFullText(url) {
         const { data: html } = await axios.get(url, { headers: { 'User-Agent': 'BubuiaNews-Bot/1.0' }});
         const $ = cheerio.load(html);
         let articleBody = '';
-        
-        // Seletor específico para 'A Crítica'
         const acriticaBody = $('div.ceRPNp'); 
         if (acriticaBody.length > 0) {
             acriticaBody.find('p[class*="styled__Paragraph"]').each((i, el) => {
                 articleBody += $(el).text() + ' ';
             });
         }
-
-        // Se o seletor específico falhar, tenta os genéricos
         if (!articleBody) {
              articleBody = 
                 $('div[itemprop="articleBody"]').text() || 
@@ -64,7 +59,6 @@ async function fetchFullText(url) {
                 $('div.editorianoticia').text() ||
                 $('article').text();
         }
-        
         return articleBody.replace(/\s\s+/g, ' ').trim();
     } catch (error) {
         console.error(`  [ERRO] Falha ao buscar texto completo de: ${url}`);
@@ -76,13 +70,16 @@ async function gerarDialogo(promptData) {
     const { tipo, noticia, personagens, direcao_cena } = promptData;
     let prompt;
 
-    // Define o tom da cena com base na classificação da notícia
     let tom_cena = "de forma neutra e informativa.";
     if (noticia && noticia.classification) {
         const id = noticia.classification.id.split(' ')[0];
         if (['🚀', '🎬', '🎭', '👽'].includes(id)) tom_cena = "de forma animada e divertida.";
-        if (['�', '⚫️'].includes(id)) tom_cena = "com um tom de seriedade e preocupação.";
+        if (['🔴', '⚫️'].includes(id)) tom_cena = "com um tom de seriedade e preocupação.";
     }
+
+    // **NOVA LÓGICA:** Monta as informações de personagem para o prompt
+    const infoTaina = `- Tainá: ${personagens.taina.perfil_geral}. Gírias: ${personagens.taina.girias.join(', ')}. Apelidos para Iraí: ${personagens.taina.formas_de_chamar_o_outro.join(', ')}.`;
+    const infoIrai = `- Iraí: ${personagens.irai.perfil_geral}. Gírias: ${personagens.irai.girias.join(', ')}. Apelidos para Tainá: ${personagens.irai.formas_de_chamar_o_outro.join(', ')}.`;
 
     switch (tipo) {
         case 'cold_open':
@@ -92,28 +89,21 @@ async function gerarDialogo(promptData) {
 Use os perfis dos personagens para guiar a reação. Use a tag <break time="0.3s"/> para uma pequena pausa.
 Responda APENAS com o diálogo.`;
             break;
-        
-        // NOVO CASO: Lógica para o Fallback do Cold Open
-        case 'fallback_cold_open':
-            prompt = `Você é um roteirista e pesquisador do podcast "Bubuia News". Hoje é ${promptData.data_fallback}.
-Sua tarefa é encontrar UMA efeméride ou fato histórico curioso que aconteceu nesta data, com forte conexão com Manaus ou o estado do Amazonas.
-Com base nesse fato, crie um diálogo de 15 a 20 segundos para o "Cold Open" do programa, onde Iraí surpreende Tainá com essa curiosidade.
-Exemplo: "Iraí: Égua, Cunhatã, tu sabia que foi num dia como hoje que..."
-Responda APENAS com o diálogo.`;
-            break;
-
         case 'noticia_principal':
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo natural e conciso (4 a 6 falas) entre Tainá e Iraí sobre a notícia abaixo.
 
 ### INSTRUÇÕES DE DIREÇÃO
-- **Perfis:** Tainá (${personagens.taina.perfil_geral}), Iraí (${personagens.irai.perfil_geral}).
+- **Perfis:**
+${infoTaina}
+${infoIrai}
 - **Tom da Cena:** Discutam a notícia ${tom_cena}
 - **Conteúdo da Notícia:** ${noticia.texto_completo}
 - **Direção de Início:** ${direcao_cena}
 
 ### REGRAS TÉCNICAS (OBRIGATÓRIO)
 - Use a tag <break time="0.5s"/> para criar pausas naturais.
-- Use a tag <emphasis level="strong">PALAVRA</emphasis> para dar ênfase a palavras importantes.
+- Use a tag <emphasis level="strong">PALAVRA</emphasis> para dar ênfase.
+- Incentive o uso dos apelidos que eles usam um com o outro.
 
 Responda APENAS com o diálogo.`;
             break;
@@ -121,15 +111,18 @@ Responda APENAS com o diálogo.`;
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo APROFUNDADO (6 a 8 falas) entre Tainá e Iraí sobre a notícia abaixo, que foi o evento mais comentado do dia.
 
 ### INSTRUÇÕES DE DIREÇÃO
-- **Perfis:** Tainá (${personagens.taina.perfil_geral}), Iraí (${personagens.irai.perfil_geral}).
+- **Perfis:**
+${infoTaina}
+${infoIrai}
 - **Tom da Cena:** Discutam a notícia ${tom_cena}
 - **Conteúdo da Notícia (de várias fontes):** ${noticia.texto_completo}
 - **Direção de Início:** ${direcao_cena}
 
 ### REGRAS TÉCNICAS (OBRIGATÓRIO)
 - Use a tag <break time="0.5s"/> para criar pausas naturais.
-- Use a tag <emphasis level="strong">PALAVRA</emphasis> para dar ênfase a palavras importantes.
-- Como o assunto é importante, use a tag <prosody rate="slow">...</prosody> em uma fala do Iraí para um tom mais analítico.
+- Use a tag <emphasis level="strong">PALAVRA</emphasis> para dar ênfase.
+- Incentive o uso dos apelidos que eles usam um com o outro.
+- Use a tag <prosody rate="slow">...</prosody> em uma fala do Iraí para um tom mais analítico.
 
 Responda APENAS com o diálogo.`;
             break;
@@ -166,17 +159,14 @@ async function gerarRoteiro() {
     
     const personagens = { taina: personagensData.apresentadores[0], irai: personagensData.apresentadores[1] };
     let roteiroFinal = template;
-    const dataAtualString = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric'});
     
-    roteiroFinal = roteiroFinal.replace('{{DATA_ATUAL}}', dataAtualString);
+    roteiroFinal = roteiroFinal.replace('{{DATA_ATUAL}}', new Date().toLocaleDateString('pt-BR'));
     
-    let coldOpenDialogo = "";
+    let coldOpenDialogo = "// Nenhuma notícia de Cold Open encontrada.";
     if (pauta.coldOpen) {
-        console.log('[LOG] Notícia para Cold Open encontrada. Gerando diálogo...');
         coldOpenDialogo = await gerarDialogo({ tipo: 'cold_open', noticia: pauta.coldOpen, personagens });
     } else {
-        console.log('[LOG] Nenhuma notícia para Cold Open. Acionando fallback de Efeméride Regional...');
-        coldOpenDialogo = await gerarDialogo({ tipo: 'fallback_cold_open', data_fallback: dataAtualString, personagens });
+        coldOpenDialogo = "Iraí: Tainá, tu sabia que... // Placeholder para Efeméride";
     }
     roteiroFinal = roteiroFinal.replace('{{COLD_OPEN_DIALOGO}}', coldOpenDialogo);
     
@@ -209,10 +199,8 @@ async function gerarRoteiro() {
             
             if (noticia.texto_completo) {
                 if (cenasDisponiveis.length === 0) cenasDisponiveis = [...CENAS_DE_DIALOGO];
-                
                 const cenaIndex = Math.floor(Math.random() * cenasDisponiveis.length);
                 const direcao_cena = cenasDisponiveis.splice(cenaIndex, 1)[0];
-
                 const tipoDialogo = noticia.isSuperNoticia ? 'super_noticia_principal' : 'noticia_principal';
                 console.log(`  -> Gerando diálogo (Tipo: ${tipoDialogo} | Direção: ${direcao_cena})`);
                 dialogo = await gerarDialogo({ tipo: tipoDialogo, noticia, personagens, direcao_cena });
