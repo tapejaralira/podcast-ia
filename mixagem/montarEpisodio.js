@@ -8,17 +8,30 @@ import ffmpeg from 'fluent-ffmpeg';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// **CONFIGURAÇÃO MANUAL OBRIGATÓRIA**
+// Cole aqui o caminho completo para o seu arquivo 'ffmpeg.exe' da versão completa.
+// Use barras normais '/' em vez de barras invertidas '\'.
+const FFMPEG_PATH = 'C:/Program Files/ffmpeg/bin/ffmpeg.exe'; // <-- CONFIRME SE ESTE CAMINHO ESTÁ CORRETO
+
+// Define o caminho do FFmpeg para a biblioteca.
+if (FFMPEG_PATH && FFMPEG_PATH.includes('caminho/para')) {
+    console.warn("\n⚠️ AVISO: O caminho para o FFmpeg ainda não foi configurado. Edite a constante 'FFMPEG_PATH' no script 'montarEpisodio.js'.\n");
+} else if (FFMPEG_PATH) {
+    ffmpeg.setFfmpegPath(FFMPEG_PATH);
+    console.log(`[FFMPEG] Usando executável em: ${FFMPEG_PATH}`);
+}
+
 const ROTEIRO_DIR = path.join(__dirname, '..', 'episodios');
 const AUDIOS_GERADOS_DIR = path.join(__dirname, '..', 'audios_gerados');
 const ASSETS_AUDIO_DIR = path.join(__dirname, '..', 'audios');
-const TEMP_DIR = path.join(__dirname, 'temp'); // Pasta temporária para os blocos
+const TEMP_DIR = path.join(__dirname, 'temp');
 const FINAL_OUTPUT_DIR = path.join(__dirname, '..', 'episodios_finais');
 
-// **NOVA CONFIGURAÇÃO:** Chave para habilitar/desabilitar efeitos avançados.
-// Mude para 'true' se você instalar uma versão completa do FFmpeg que inclua os filtros 'acompressor' e 'areverb'.
-const APLICAR_EFEITOS_AVANCADOS = false; // Mude para false se não quiser aplicar efeitos avançados
-
-// **NOVA FUNÇÃO:** Normaliza strings removendo acentos para consistência de nomes de arquivo.
+/**
+ * Normaliza strings removendo acentos para consistência de nomes de arquivo.
+ * @param {string} str A string a ser normalizada.
+ * @returns {string} A string sem acentos.
+ */
 function normalizeString(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
@@ -26,7 +39,7 @@ function normalizeString(str) {
 // --- Funções Auxiliares do FFmpeg ---
 
 /**
- * Aplica efeitos de áudio (volume, compressão, reverb) a um único arquivo de fala.
+ * Aplica efeitos de áudio usando filtros nativos do FFmpeg.
  * @param {string} inputPath - Caminho do arquivo de áudio de entrada.
  * @param {string} outputPath - Caminho onde o arquivo processado será salvo.
  * @param {string} nomeApresentador - O nome do apresentador ('taina' ou 'irai').
@@ -34,50 +47,28 @@ function normalizeString(str) {
  */
 function aplicarEfeitos(inputPath, outputPath, nomeApresentador) {
     return new Promise((resolve, reject) => {
-        const command = ffmpeg(inputPath);
-        let filtros = [];
+        // **LÓGICA DE FILTROS CORRIGIDA E SIMPLIFICADA**
+        // Usando o filtro 'compand' para compressão e 'aecho' para um reverb sutil.
+        // Estes filtros são universais e devem existir em qualquer build do FFmpeg.
+        const filterChain = [
+            // Compressor de áudio para dar "peso" e consistência à voz.
+            'compand=attacks=0:points=-80/-90|-45/-15|-27/-9|-12/-5|0/-3|20/-1.5',
+            // Normalização de loudness para um nível consistente.
+            'loudnorm=I=-16:TP=-1.5:LRA=11',
+            // Reverb de estúdio sutil.
+            'aecho=1:0.8:20:0.2'
+        ];
 
-        // Aplica o aumento de volume para a Tainá, independentemente dos outros efeitos.
+        // Adiciona o aumento de volume para a Tainá no início da cadeia de filtros.
         if (nomeApresentador === 'taina') {
-            filtros.push({
-                filter: 'volume',
-                options: '3.5'
-            });
+            filterChain.unshift('volume=2.8');
         }
 
-        // Aplica o aumento de volume para a Iraí, independentemente dos outros efeitos.
-        if (nomeApresentador === 'irai') {
-            filtros.push({
-                filter: 'volume',
-                options: '0.8'
-            });
-        }
+        const filterString = filterChain.join(',');
+        console.log(`   [FX] Aplicando filtros em ${nomeApresentador}: ${filterString}`);
 
-
-        // Adiciona os efeitos avançados apenas se a chave estiver ativada.
-        if (APLICAR_EFEITOS_AVANCADOS) {
-            filtros.push({
-                filter: 'acompressor',
-                options: 'threshold=0.125:ratio=4:attack=20:release=250'
-            });
-            filtros.push({
-                filter: 'areverb',
-                options: 'reverb_time=50:room_scale=60:wet_gain=0.15'
-            });
-            console.log(`   [FX] Aplicando todos os efeitos para ${nomeApresentador}.`);
-        } else {
-            if (nomeApresentador === 'taina') {
-                console.log(`   [FX] Aplicando apenas Volume para ${nomeApresentador}. Efeitos avançados desativados.`);
-            } else {
-                console.log(`   [FX] Efeitos avançados desativados para ${nomeApresentador}. Copiando arquivo.`);
-            }
-        }
-        
-        if (filtros.length > 0) {
-            command.audioFilters(filtros);
-        }
-
-        command
+        ffmpeg(inputPath)
+            .audioFilter(filterString)
             .on('error', (err) => reject(new Error(`Erro ao aplicar efeitos em ${inputPath}: ${err.message}`)))
             .on('end', () => resolve())
             .save(outputPath);
@@ -146,7 +137,7 @@ function concatenarBlocos(listaDeBlocos, outputPath) {
 
 // --- Função Principal ---
 async function montarEpisodio() {
-    console.log('🎧 Bubuia News - Iniciando montagem do episódio...');
+    console.log('\n🎧 Bubuia News - Iniciando montagem do episódio...');
 
     const dataDeHoje = new Date().toISOString().split('T')[0];
     const roteiroFilename = path.join(ROTEIRO_DIR, `roteiro-${dataDeHoje}.md`);
@@ -160,7 +151,7 @@ async function montarEpisodio() {
         return; 
     }
 
-    await fs.rm(TEMP_DIR, { recursive: true, force: true }).catch(() => {}); // Limpa a pasta temp antes de começar
+    await fs.rm(TEMP_DIR, { recursive: true, force: true }).catch(() => {});
     await fs.mkdir(TEMP_DIR, { recursive: true });
     await fs.mkdir(FINAL_OUTPUT_DIR, { recursive: true });
     
@@ -238,7 +229,7 @@ async function montarEpisodio() {
                     await fs.access(caminhoOriginal);
                     await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentador);
                     falasSubBloco.push(caminhoProcessado);
-                } catch (err) { // **MELHORIA NO LOG DE ERRO**
+                } catch (err) { 
                     console.warn(`   [AVISO] Falha ao processar o arquivo de fala: ${caminhoOriginal}`);
                     console.error(`     -> Erro detalhado: ${err.message}`);
                 }
