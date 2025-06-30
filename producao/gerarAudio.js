@@ -8,14 +8,24 @@ import 'dotenv/config';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CAMINHOS ATUALIZADOS: Apontam para as pastas corretas a partir de /producao
 const ROTEIRO_DIR = path.join(__dirname, '..', 'episodios');
 const TTS_CONFIG_FILE = path.join(__dirname, '..', 'data', 'tts-config.json');
 const AUDIO_OUTPUT_DIR = path.join(__dirname, '..', 'audios_gerados');
 
+// Mapeia a categoria da pauta para o estilo de voz definido no config
+const CATEGORIA_PARA_ESTILO = {
+    '⚫️': 'serio_ou_analitico',
+    '🟡': 'serio_ou_analitico',
+    '🔴': 'indignado_leve',
+    '🚀': 'animado',
+    '🎬': 'animado',
+    '🎭': 'animado',
+    '👽': 'curioso_ou_bizarro'
+};
+
 // --- Função para chamar a API do ElevenLabs ---
 async function textoParaAudio(texto, voiceId, settings) {
-    const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+    const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=1`;
     const headers = {
         'Accept': 'audio/mpeg',
         'xi-api-key': process.env.ELEVENLABS_API_KEY,
@@ -38,8 +48,6 @@ async function textoParaAudio(texto, voiceId, settings) {
             const errorBody = await response.text();
             throw new Error(`API ElevenLabs respondeu com status ${response.status}: ${errorBody}`);
         }
-
-        // Retorna o áudio como um buffer de dados
         return await response.arrayBuffer();
     } catch (error) {
         console.error('❌ Erro ao comunicar com a API do ElevenLabs:', error.message);
@@ -51,7 +59,6 @@ async function textoParaAudio(texto, voiceId, settings) {
 async function gerarAudiosDoRoteiro() {
     console.log('🔊 Bubuia News - Iniciando geração de áudios...');
 
-    // 1. Carregar configurações
     const ttsConfig = JSON.parse(await fs.readFile(TTS_CONFIG_FILE, 'utf-8'));
     const dataDeHoje = new Date().toISOString().split('T')[0];
     const roteiroFilename = path.join(ROTEIRO_DIR, `roteiro-${dataDeHoje}.md`);
@@ -60,55 +67,63 @@ async function gerarAudiosDoRoteiro() {
     try {
         roteiroContent = await fs.readFile(roteiroFilename, 'utf-8');
     } catch (error) {
-        console.error(`🔥 Erro ao ler o ficheiro de roteiro: ${roteiroFilename}. Execute o 'gerarRoteiro.js' primeiro.`);
+        console.error(`🔥 Erro ao ler o ficheiro de roteiro: ${roteiroFilename}. Execute os passos anteriores primeiro.`);
         return;
     }
 
-    // Cria a pasta de saída para o episódio de hoje
     const episodioAudioDir = path.join(AUDIO_OUTPUT_DIR, `episodio-${dataDeHoje}`);
     await fs.mkdir(episodioAudioDir, { recursive: true });
 
-    // 2. Extrair as falas do roteiro
-    const regexFalas = /^\*\*(Tainá|Iraí):\*\*\s*(.*)$/gm;
-    const falas = [...roteiroContent.matchAll(regexFalas)];
+    const blocos = roteiroContent.split('---');
+    let falaCounter = 0;
 
-    if (falas.length === 0) {
-        console.warn('Nenhuma fala de apresentador encontrada no roteiro.');
-        return;
-    }
+    for (const bloco of blocos) {
+        let estiloDeVoz = 'padrao';
 
-    console.log(`Encontradas ${falas.length} falas para gerar.`);
-
-    // 3. Gerar cada áudio em sequência
-    for (let i = 0; i < falas.length; i++) {
-        const [_, nomeApresentador, textoFala] = falas[i];
-        
-        // Constrói o nome completo para buscar no JSON de configuração
-        const nomeCompleto = nomeApresentador.includes('Tainá') ? 'Tainá Oliveira' : 'Iraí Santos';
-        const voiceId = ttsConfig.voices[nomeCompleto];
-        
-        const textoLimpo = textoFala.replace(/<speak>|<\/speak>/g, '').trim();
-
-        if (!voiceId) {
-            console.warn(`  -> [AVISO] Voice ID não encontrado para ${nomeApresentador}. Pulando...`);
-            continue;
+        // **NOVA LÓGICA:** Extrai o emoji diretamente do título do bloco
+        const matchTitulo = bloco.match(/#### Notícia \d+: \[(.+?)\s/);
+        if (matchTitulo && matchTitulo[1]) {
+            const emojiCategoria = matchTitulo[1];
+            estiloDeVoz = CATEGORIA_PARA_ESTILO[emojiCategoria] || 'padrao';
+        } else if (bloco.includes('COLD OPEN')) {
+            estiloDeVoz = 'curioso_ou_bizarro';
         }
 
-        console.log(`  -> Gerando áudio ${i + 1}/${falas.length} para ${nomeApresentador}...`);
-        
-        const audioBuffer = await textoParaAudio(textoLimpo, voiceId, ttsConfig.padrao_voice_settings);
+        const regexFalas = /^\*\*(Tainá|Iraí):\*\*\s*(.*)$/gm;
+        const falas = [...bloco.matchAll(regexFalas)];
 
-        if (audioBuffer) {
-            const numeroFala = String(i + 1).padStart(2, '0');
-            const audioFilename = path.join(episodioAudioDir, `fala_${numeroFala}_${nomeApresentador.toLowerCase()}.mp3`);
-            await fs.writeFile(audioFilename, Buffer.from(audioBuffer));
-            console.log(`     -> Áudio salvo em: ${audioFilename}`);
+        for (const fala of falas) {
+            falaCounter++;
+            const [_, nomeApresentador, textoFala] = fala;
+            
+            const nomeCompleto = nomeApresentador.includes('Tainá') ? 'Tainá Oliveira' : 'Iraí Santos';
+            const voiceId = ttsConfig.voices[nomeCompleto];
+            
+            // **LÓGICA DINÂMICA DE VOZ**
+            const voiceSettings = ttsConfig.estilos_de_voz[estiloDeVoz] || ttsConfig.estilos_de_voz['padrao'];
+            
+            const textoLimpo = textoFala.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+            if (!voiceId) {
+                console.warn(`  -> [AVISO] Voice ID não encontrado para ${nomeApresentador}. Pulando...`);
+                continue;
+            }
+
+            console.log(`  -> Gerando áudio ${falaCounter} para ${nomeApresentador} (Estilo: ${estiloDeVoz})...`);
+            
+            const audioBuffer = await textoParaAudio(textoLimpo, voiceId, voiceSettings);
+
+            if (audioBuffer) {
+                const numeroFala = String(falaCounter).padStart(2, '0');
+                const audioFilename = path.join(episodioAudioDir, `fala_${numeroFala}_${nomeApresentador.toLowerCase()}.mp3`);
+                await fs.writeFile(audioFilename, Buffer.from(audioBuffer));
+                console.log(`     -> Áudio salvo em: ${audioFilename}`);
+            }
+            await new Promise(resolve => setTimeout(resolve, 1200));
         }
-
-        await new Promise(resolve => setTimeout(resolve, 500));
     }
 
-    console.log('\n✅ Geração de áudio finalizada com sucesso!');
+    console.log(`\n✅ Geração de áudio finalizada! Total de ${falaCounter} falas geradas.`);
 }
 
 gerarAudiosDoRoteiro();
