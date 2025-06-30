@@ -20,3 +20,14 @@ Thumbs.db
 dist/
 build/
 out/
+
+# Arquivos de áudio
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.aac
+*.m4a
+*.wma
+*.aiff
+*.alac
