@@ -8,11 +8,52 @@ import ffmpeg from 'fluent-ffmpeg';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Caminhos dos diretórios
 const ROTEIRO_DIR = path.join(__dirname, '..', 'episodios');
 const AUDIOS_GERADOS_DIR = path.join(__dirname, '..', 'audios_gerados');
 const ASSETS_AUDIO_DIR = path.join(__dirname, '..', 'audios');
+const TEMP_DIR = path.join(__dirname, 'temp'); // Pasta temporária para os blocos
 const FINAL_OUTPUT_DIR = path.join(__dirname, '..', 'episodios_finais');
+
+// --- Função para mixar um bloco de áudio ---
+function mixarBloco(blocoFalas, trilhaPath, volume, outputPath) {
+    return new Promise((resolve, reject) => {
+        const command = ffmpeg();
+        
+        // Adiciona as falas como uma entrada concatenada
+        command.input(`concat:${blocoFalas.join('|')}`);
+        
+        // Adiciona a trilha sonora como uma segunda entrada
+        if (trilhaPath) {
+            command.input(trilhaPath);
+            // Cria um filtro complexo para mixar os dois áudios
+            // [0:a] é o áudio das falas, [1:a] é a trilha
+            // O volume da trilha é ajustado e depois os dois são mixados
+            command.complexFilter([
+                `[1:a]volume=${volume}[bg]`,
+                '[0:a][bg]amix=inputs=2:duration=first'
+            ]);
+        }
+        
+        command
+            .on('error', (err) => reject(new Error(`Erro no FFmpeg ao mixar bloco: ${err.message}`)))
+            .on('end', () => resolve())
+            .save(outputPath);
+    });
+}
+
+// --- Função para concatenar os blocos finais ---
+function concatenarBlocos(listaDeBlocos, outputPath) {
+    return new Promise((resolve, reject) => {
+        const command = ffmpeg();
+        listaDeBlocos.forEach(file => command.input(file));
+        
+        command
+            .on('error', (err) => reject(new Error(`Erro no FFmpeg ao concatenar blocos: ${err.message}`)))
+            .on('end', () => resolve())
+            .mergeToFile(outputPath, TEMP_DIR);
+    });
+}
+
 
 // --- Função Principal ---
 async function montarEpisodio() {
@@ -22,6 +63,8 @@ async function montarEpisodio() {
     const roteiroFilename = path.join(ROTEIRO_DIR, `roteiro-${dataDeHoje}.md`);
     const episodioAudioDir = path.join(AUDIOS_GERADOS_DIR, `episodio-${dataDeHoje}`);
     
+    await fs.mkdir(TEMP_DIR, { recursive: true });
+    
     let roteiroContent;
     try {
         roteiroContent = await fs.readFile(roteiroFilename, 'utf-8');
@@ -30,60 +73,70 @@ async function montarEpisodio() {
         return;
     }
 
-    // 1. Criar a "playlist" de áudios principais
-    const playlist = [];
-    let falaCounter = 1;
+    const blocos = roteiroContent.split('---');
+    let falaCounter = 0;
+    const blocosDeAudioProcessados = [];
 
-    const linhas = roteiroContent.split('\n');
+    for (let i = 0; i < blocos.length; i++) {
+        const bloco = blocos[i];
+        const falasDoBloco = [];
+        let trilhaInfo = null;
 
-    for (const linha of linhas) {
-        // Encontra marcadores de áudio (vinhetas)
-        const matchAudio = linha.match(/\[AUDIO:\s*(.*?)\s*\]/);
-        if (matchAudio) {
-            const nomeVinheta = matchAudio[1];
-            // Assumimos que as vinhetas estão em audios/vinhetas/
-            const caminhoVinheta = path.join(ASSETS_AUDIO_DIR, 'vinhetas', nomeVinheta);
-            playlist.push(caminhoVinheta);
-            console.log(`  -> Adicionando à playlist: Vinheta (${nomeVinheta})`);
-            continue;
+        // Procura por vinhetas ou falas no bloco
+        const linhas = bloco.split('\n').filter(l => l.trim() !== '');
+
+        for (const linha of linhas) {
+            const matchAudio = linha.match(/\[AUDIO:\s*(.*?)\s*\]/);
+            const matchFala = linha.match(/^(?:\*\*)?(Tainá|Iraí)(?:\*\*)?:/);
+            const matchTrilha = linha.match(/\[TRILHA_INICIO: (.*?),\s*(-?\d+dB)\s*\]/);
+
+            if (matchTrilha) {
+                trilhaInfo = { 
+                    path: path.join(ASSETS_AUDIO_DIR, 'trilhas', matchTrilha[1]),
+                    volume: matchTrilha[2]
+                };
+            }
+
+            if (matchAudio) {
+                falasDoBloco.push(path.join(ASSETS_AUDIO_DIR, 'vinhetas', matchAudio[1]));
+            } else if (matchFala) {
+                falaCounter++;
+                const nomeApresentador = matchFala[1].toLowerCase();
+                const numeroFala = String(falaCounter).padStart(2, '0');
+                const nomeArquivoFala = `fala_${numeroFala}_${nomeApresentador}.mp3`;
+                falasDoBloco.push(path.join(episodioAudioDir, nomeArquivoFala));
+            }
         }
 
-        // Encontra falas dos apresentadores
-        const matchFala = linha.match(/^(?:\*\*)?(Tainá|Iraí)(?:\*\*)?:/);
-        if (matchFala) {
-            const nomeApresentador = matchFala[1].toLowerCase();
-            const numeroFala = String(falaCounter).padStart(2, '0');
-            const nomeArquivoFala = `fala_${numeroFala}_${nomeApresentador}.mp3`;
-            const caminhoFala = path.join(episodioAudioDir, nomeArquivoFala);
-            playlist.push(caminhoFala);
-            console.log(`  -> Adicionando à playlist: Fala ${falaCounter} (${nomeApresentador})`);
-            falaCounter++;
+        if (falasDoBloco.length > 0) {
+            const outputPathBloco = path.join(TEMP_DIR, `bloco_${i}.mp3`);
+            console.log(`\n🎬 Processando Bloco ${i}...`);
+            if (trilhaInfo) {
+                console.log(`   -> Mixando com trilha: ${path.basename(trilhaInfo.path)} a ${trilhaInfo.volume}`);
+                await mixarBloco(falasDoBloco, trilhaInfo.path, trilhaInfo.volume, outputPathBloco);
+            } else {
+                console.log('   -> Concatenando falas/vinhetas (sem trilha).');
+                await concatenarBlocos(falasDoBloco, outputPathBloco);
+            }
+            blocosDeAudioProcessados.push(outputPathBloco);
         }
     }
 
-    if (playlist.length === 0) {
-        console.error('❌ Nenhuma fala ou vinheta encontrada para montar o episódio.');
+    if (blocosDeAudioProcessados.length === 0) {
+        console.error('❌ Nenhum bloco de áudio foi processado. Verifique o roteiro.');
         return;
     }
 
-    // 2. Usar FFmpeg para juntar os áudios
-    console.log('\n🎬 Iniciando a concatenação com FFmpeg...');
+    // Etapa final: concatenar todos os blocos processados
+    console.log('\n🎬 Montando o episódio final...');
     await fs.mkdir(FINAL_OUTPUT_DIR, { recursive: true });
     const outputFinal = path.join(FINAL_OUTPUT_DIR, `bubuia_news_${dataDeHoje}.mp3`);
+    await concatenarBlocos(blocosDeAudioProcessados, outputFinal);
 
-    const command = ffmpeg();
-    playlist.forEach(file => {
-        command.input(file);
-    });
-
-    command
-        .on('error', (err) => {
-            console.error('❌ Erro no FFmpeg:', err.message);
-        })
-        .on('end', () => {
-            console.log(`\n✅ Episódio finalizado com sucesso! Salvo em: ${outputFinal}`);
-        })
-        .mergeToFile(outputFinal, FINAL_OUTPUT_DIR);
+    console.log(`\n✅ Episódio finalizado com sucesso! Salvo em: ${outputFinal}`);
+    
+    // Limpa a pasta temporária
+    await fs.rm(TEMP_DIR, { recursive: true, force: true });
 }
 
 montarEpisodio();
