@@ -1,0 +1,13 @@
+{
+  "voices": {
+    "Tainá Oliveira": "33B4UnXyTNbgLmdEDh5P",
+    "Iraí Santos": "UPTmB6OygMADpd4LOwE5"
+  },
+  "elevenlabs_model_id": "eleven_multilingual_v2",
+  "padrao_voice_settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.75,
+    "style_exaggeration": 25,
+    "use_speaker_boost": true
+  }
+}

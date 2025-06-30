@@ -7,6 +7,7 @@
     "coletar": "node noticias/buscarNoticias.js",
     "analisar": "node noticias/analisarNoticias.js",
     "roteirizar": "node roteiro/gerarRoteiro.js",
+    "gerar-audio": "node producao/gerarAudio.js",
     "pauta-completa": "npm run coletar && npm run analisar",
     "episodio-completo": "npm run pauta-completa && npm run roteirizar"
   },
