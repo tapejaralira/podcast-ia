@@ -14,36 +14,34 @@ const ASSETS_AUDIO_DIR = path.join(__dirname, '..', 'audios');
 const TEMP_DIR = path.join(__dirname, 'temp'); // Pasta temporária para os blocos
 const FINAL_OUTPUT_DIR = path.join(__dirname, '..', 'episodios_finais');
 
+// **NOVA FUNÇÃO:** Normaliza strings removendo acentos para consistência de nomes de arquivo.
+function normalizeString(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 // --- Funções Auxiliares do FFmpeg ---
 
 /**
  * Aplica efeitos de áudio (volume, compressão, reverb) a um único arquivo de fala.
  * @param {string} inputPath - Caminho do arquivo de áudio de entrada.
  * @param {string} outputPath - Caminho onde o arquivo processado será salvo.
- * @param {string} nomeApresentador - O nome do apresentador ('tainá' ou 'iraí').
+ * @param {string} nomeApresentador - O nome do apresentador ('taina' ou 'irai').
  * @returns {Promise<void>}
  */
 function aplicarEfeitos(inputPath, outputPath, nomeApresentador) {
     return new Promise((resolve, reject) => {
-        // Cadeia de filtros de áudio para um som de estúdio profissional.
         const filtros = [
-            // 1. Compressor: Nivela o volume e adiciona "presença".
-            // threshold: Nível para começar a compressão.
-            // ratio: Taxa de compressão (4:1 é bom para vocais).
-            // attack/release: Velocidade de reação do compressor.
             {
                 filter: 'acompressor',
                 options: 'threshold=0.125:ratio=4:attack=20:release=250'
             },
-            // 2. Reverb: Adiciona uma sutil ambiência de estúdio.
             {
                 filter: 'areverb',
                 options: 'reverb_time=50:room_scale=60:wet_gain=0.15'
             }
         ];
 
-        // 0. Aumenta o volume da Tainá ANTES de aplicar outros efeitos.
-        if (nomeApresentador === 'tainá') {
+        if (nomeApresentador === 'taina') {
             filtros.unshift({
                 filter: 'volume',
                 options: '1.6'
@@ -129,6 +127,15 @@ async function montarEpisodio() {
     const roteiroFilename = path.join(ROTEIRO_DIR, `roteiro-${dataDeHoje}.md`);
     const episodioAudioDir = path.join(AUDIOS_GERADOS_DIR, `episodio-${dataDeHoje}`);
     
+    try {
+        await fs.access(episodioAudioDir);
+    } catch (error) {
+        console.error(`\n❌ ERRO: A pasta de áudios do dia não foi encontrada em '${episodioAudioDir}'.`);
+        console.error("   -> Certifique-se de que você executou o script 'npm run gerar-audio' antes de tentar montar o episódio.");
+        return; 
+    }
+
+    await fs.rm(TEMP_DIR, { recursive: true, force: true }).catch(() => {}); // Limpa a pasta temp antes de começar
     await fs.mkdir(TEMP_DIR, { recursive: true });
     await fs.mkdir(FINAL_OUTPUT_DIR, { recursive: true });
     
@@ -195,7 +202,9 @@ async function montarEpisodio() {
                 await processarSubBloco();
             } else if (matchFala) {
                 falaCounter++;
-                const nomeApresentador = matchFala[1].toLowerCase();
+                const nomeApresentadorRaw = matchFala[1].toLowerCase();
+                // **CORREÇÃO:** Normaliza o nome para a busca do arquivo.
+                const nomeApresentador = normalizeString(nomeApresentadorRaw);
                 const numeroFala = String(falaCounter).padStart(2, '0');
                 const nomeArquivoFala = `fala_${numeroFala}_${nomeApresentador}.mp3`;
                 const caminhoOriginal = path.join(episodioAudioDir, nomeArquivoFala);
@@ -206,7 +215,7 @@ async function montarEpisodio() {
                     await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentador);
                     falasSubBloco.push(caminhoProcessado);
                 } catch {
-                    console.warn(`   [AVISO] Arquivo de fala não encontrado, pulando: ${nomeArquivoFala}`);
+                    console.warn(`   [AVISO] Arquivo de fala não encontrado, pulando: ${caminhoOriginal}`);
                 }
             }
         }
