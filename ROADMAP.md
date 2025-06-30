@@ -6,8 +6,9 @@
 
 ## 🚀 Visão Geral
 
-Este documento apresenta o planejamento e o status do sistema de automação do podcast **Bubuia News**.  
-A arquitetura foi redesenhada para um fluxo modular e inteligente, dividido em **quatro fases principais**:
+Este documento descreve o planejamento e o status atual do sistema de automação do podcast **Bubuia News**. O projeto atingiu a maturidade, com um fluxo de trabalho totalmente funcional, desde a coleta de notícias até a geração do episódio de áudio final.
+
+A arquitetura está dividida em **quatro fases principais**, todas agora concluídas:
 
 1. **Coleta de Notícias**
 2. **Curadoria de Pauta**
@@ -18,97 +19,85 @@ A arquitetura foi redesenhada para um fluxo modular e inteligente, dividido em *
 
 ## 🐟 FASE 1: Coleta de Notícias (O "Pescador")
 
-**Status:** `100% CONCLUÍDO` ✅
+**Status:** `100% CONCLUÍDO ✅`
 
-> Buscar o máximo de notícias relevantes das principais fontes de Manaus e do Amazonas.
+O objetivo desta fase é buscar o máximo de notícias relevantes das principais fontes de Manaus e do Amazonas.
 
-### Pipeline de Coletores
+**Pipeline de Coletores:**
 
 - ✅ **Orquestrador** (`buscarNoticias.js`): Gerencia todos os coletores de forma centralizada.
-- ✅ **Sistema de "Memória"** (`estado_coleta.json`): Registra a data da última coleta e busca apenas notícias novas, eficiente em execuções diárias e cobrindo fins de semana.
-- ✅ **Múltiplas Fontes:** Coletores robustos para 4 grandes portais:
-  - G1 Amazonas (via RSS)
-  - A Crítica (Web Scraping)
-  - D24AM (Web Scraping)
-  - Portal do Holanda (Web Scraping)
-- ✅ **Filtro de Relevância Inicial:** Cada coletor já faz pré-filtro por data, trazendo apenas notícias recentes.
+- ✅ **Sistema de "Memória"** (`estado_coleta.json`): Registra a data da última coleta e busca apenas notícias novas desde então.
+- ✅ **Múltiplas Fontes:** Coletores robustos e individuais para 4 grandes portais (_G1 Amazonas, A Crítica, D24AM, Portal do Holanda_).
+- ✅ **Filtro de Relevância Inicial:** Cada coletor já faz um pré-filtro por data, trazendo apenas notícias recentes.
 
-**🗂️ Resultado:**  
-Geração do arquivo `data/noticias-recentes.json`, uma base rica e atualizada para a próxima fase.
+**Resultado:**  
+Geração do arquivo `data/noticias-recentes.json`, uma base de dados rica e atualizada.
 
 ---
 
 ## 📰 FASE 2: Curadoria de Pauta (O "Editor-Chefe Digital")
 
-**Status:** `100% CONCLUÍDO` ✅
+**Status:** `100% CONCLUÍDO ✅`
 
-> Fase inteligente onde a pauta do episódio é definida com base na linha editorial.
+Esta é a fase inteligente do sistema, onde a pauta do episódio é definida com base em nossa linha editorial.
 
-### Linha Editorial (Guia de Pauta 2.0)
+**Inteligência de Pauta:**
 
-- ✅ **Novas Categorias:** 7 categorias focadas no público-alvo.
-- ✅ **Análise com IA** (`analisarNoticias.js`): Usa a API da OpenAI para classificar cada notícia, avaliar adequação para áudio e sentimento.
-- ✅ **Controle de Qualidade:** IA descarta notícias com apelo visual, autopromoção ou desalinhadas com o tom do podcast.
-
-### Inteligência de Pauta
-
+- ✅ **Classificação com IA** (`analisarNoticias.js`): Usa a API da OpenAI para classificar, filtrar e agrupar notícias de acordo com 7 categorias editoriais.
 - ✅ **Agrupamento Semântico:** Agrupa notícias de diferentes fontes sobre o mesmo evento, criando "Super-Notícias".
-- ✅ **Seleção de Cold Open:** Lógica avançada para escolher a melhor "isca" para o início do programa, priorizando notícias bizarras ou de alto impacto.
-- ✅ **Fallback do Cold Open:** Geração automática de efeméride regional como alternativa, com escolha pelo editor em `roteiro/config-roteiro.json`.
-- ✅ **Seleção com Diversidade:** Algoritmo seleciona 4 notícias principais priorizando variedade de temas, evitando pautas monotemáticas.
+- ✅ **Seleção de Cold Open:** Lógica avançada para escolher a melhor "isca" para o início do programa, com fallback para efemérides regionais.
+- ✅ **Seleção com Diversidade:** O algoritmo seleciona as 4 notícias principais priorizando a variedade de temas.
 
-**🗂️ Resultado:**  
+**Resultado:**  
 Geração do arquivo `data/episodio-do-dia.json`, uma pauta final e inteligente.
 
 ---
 
 ## 🎭 FASE 3: Geração de Roteiro (O "Diretor de Cena")
 
-**Status:** `100% CONCLUÍDO` ✅
+**Status:** `100% CONCLUÍDO ✅`
 
-> Transformar a pauta em um diálogo vivo e pronto para interpretação.
+A fase criativa, onde transformamos a pauta em um diálogo vivo e pronto para ser interpretado.
 
-### Arquitetura do Roteiro
+**Arquitetura do Roteiro:**
 
-- ✅ **Ficha de Personagens Detalhada** (`personagens.json`): IA recebe perfil completo de Tainá e Iraí (histórico, gírias, dinâmica).
-- ✅ **Geração de Diálogos com IA** (`gerarRoteiro.js`): Para cada notícia, script faz chamada à OpenAI para criar diálogo único.
-- ✅ **Busca Aprofundada:** Script busca texto completo das notícias selecionadas, enriquecendo o roteiro.
-- ✅ **Direção de Cena Dinâmica:** Sorteio de "gancho" inicial diferente para cada notícia (ex: "Comece com Tainá fazendo uma pergunta...", "Comece com Iraí sendo cético...").
-- ✅ **Ênfase em "Super-Notícias":** Roteiro mais longo e aprofundado para notícias cobertas por múltiplas fontes.
-
-### Preparação para Áudio
-
-- ✅ **Roteiro com SSML:** Prompt da IA instrui a incluir tags SSML (`<break>`, `<emphasis>`, `<prosody>`), preparando o texto para voz natural.
+- ✅ **Ficha de Personagens Detalhada** (`personagens.json`): A IA recebe um perfil completo de Tainá e Iraí para guiar a criação dos diálogos.
+- ✅ **Geração de Diálogos com IA** (`gerarRoteiro.js`): Para cada notícia, o script cria um diálogo único e natural.
+- ✅ **Busca Aprofundada:** O script busca o texto completo das notícias para enriquecer o roteiro.
+- ✅ **Direção de Cena Dinâmica:** O sistema sorteia um "gancho" inicial diferente para cada notícia, evitando repetição.
+- ✅ **Roteiro com SSML:** O prompt da IA já inclui tags SSML (`<break>`, `<emphasis>`), preparando o texto para uma interpretação de voz mais natural.
 
 ---
 
-## 🎧 FASE 4: Produção de Áudio e Publicação
+## 🎧 FASE 4: Produção de Áudio
 
-**Status:** `90% CONCLUÍDO` 🎧
+**Status:** `100% CONCLUÍDO ✅`
 
-> Transformar o roteiro em um episódio de áudio completo.
+Esta fase transforma o roteiro gerado em um episódio de áudio completo, mixado e pronto para ouvir.
 
-### Geração de Áudio
+**Geração e Montagem:**
 
-- ✅ **Integração com ElevenLabs** (`producao/gerarAudio.js`): Script lê o roteiro final, envia cada fala para a API da ElevenLabs com voz e estilo corretos, salvando arquivos de áudio (`fala_01.mp3`, `fala_02.mp3`, ...).
+- ✅ **Geração de Voz com IA** (`producao/gerarAudio.js`): Script lê o roteiro final, envia cada fala individualmente para a API da ElevenLabs e salva os arquivos de áudio.
+- ✅ **Edição e Mixagem Automatizada** (`mixagem/montarEpisodio.js`): O script lê o roteiro como uma "partitura", juntando as falas, trilhas sonoras e vinhetas na ordem correta.
+- ✅ **Efeitos de Estúdio:** Aplica automaticamente efeitos de compressão e reverb nas vozes para uma qualidade de áudio profissional.
+- ✅ **Configuração Robusta:** O script aponta diretamente para uma instalação completa do FFmpeg, garantindo que todos os filtros funcionem de forma consistente.
 
-### Edição Automatizada
-
-- ✅ **Montagem com FFmpeg** (`mixagem/montarEpisodio.js`): Script lê o roteiro como "partitura", juntando falas, trilhas e vinhetas na ordem correta para montar o arquivo `episodio_final.mp3`.
-
-### Distribuição
-
-- 🔄 **Geração de Feed RSS:** Automatizar criação do feed para agregadores de podcast.
-- 🔄 **Publicação:** Implementar automação para upload do episódio final nas plataformas (Spotify, etc.).
+**Resultado:**  
+Geração de um arquivo `bubuia_news_AAAA-MM-DD.mp3` na pasta `episodios_finais`, pronto para ser distribuído.
 
 ---
 
-## 🔜 Próximos Passos (A Fronteira Final)
+## 📡 Próximos Passos (A Fronteira Final: Distribuição)
 
-O foco agora é na **distribuição** do podcast:
+Com a pipeline de produção completa, o foco agora é levar o Bubuia News aos ouvintes.
 
-- **Gerar Feed RSS:** Criar script que, após montagem do episódio, atualize um arquivo `rss.xml` com informações do novo episódio (título, descrição, link do `.mp3`).
-- **Automatizar Publicação:** Criar script para upload do áudio e atualização do feed RSS na plataforma de hospedagem.  
-  _Como alternativa, esta etapa pode ser manual._
+- 🔄 **Geração de Feed RSS:**  
+  Criar um script que, após a montagem do episódio, gere ou atualize um arquivo `rss.xml` com as informações do novo episódio (título, descrição, link para o arquivo `.mp3`, etc.). Isso é essencial para a distribuição em agregadores de podcast.
+
+- 🔄 **Automatizar Publicação:**  
+  Para uma automação completa, o próximo passo seria criar um script que faça o upload do áudio final e do feed RSS para uma plataforma de hospedagem de podcasts (_como Anchor/Spotify for Podcasters, Transistor.fm, etc._), utilizando a API da plataforma, se disponível.
+
+- 🔄 **Monitoramento e Manutenção:**  
+  Criar rotinas para monitorar a execução dos scripts e lidar com possíveis falhas (_ex: APIs fora do ar, mudanças na estrutura dos sites de notícias_).
 
 ---
