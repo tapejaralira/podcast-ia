@@ -76,11 +76,12 @@ async function gerarDialogo(promptData) {
     const { tipo, noticia, personagens, direcao_cena } = promptData;
     let prompt;
 
+    // Define o tom da cena com base na classificação da notícia
     let tom_cena = "de forma neutra e informativa.";
     if (noticia && noticia.classification) {
         const id = noticia.classification.id.split(' ')[0];
         if (['🚀', '🎬', '🎭', '👽'].includes(id)) tom_cena = "de forma animada e divertida.";
-        if (['🔴', '⚫️'].includes(id)) tom_cena = "com um tom de seriedade e preocupação.";
+        if (['�', '⚫️'].includes(id)) tom_cena = "com um tom de seriedade e preocupação.";
     }
 
     switch (tipo) {
@@ -88,9 +89,19 @@ async function gerarDialogo(promptData) {
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo de 15 a 20 segundos para o "Cold Open". Tainá deve contar para Iraí, como se fosse um segredo, a seguinte notícia:
 - Título: ${noticia.titulo_principal}
 - Resumo Combinado: ${noticia.fontes.map(f => f.resumo).join(' ')}
-Use os perfis dos personagens para guiar a reação: Tainá (jovem, curiosa), Iraí (cético, tradicional). Use a tag <break time="0.3s"/> para uma pequena pausa.
+Use os perfis dos personagens para guiar a reação. Use a tag <break time="0.3s"/> para uma pequena pausa.
 Responda APENAS com o diálogo.`;
             break;
+        
+        // NOVO CASO: Lógica para o Fallback do Cold Open
+        case 'fallback_cold_open':
+            prompt = `Você é um roteirista e pesquisador do podcast "Bubuia News". Hoje é ${promptData.data_fallback}.
+Sua tarefa é encontrar UMA efeméride ou fato histórico curioso que aconteceu nesta data, com forte conexão com Manaus ou o estado do Amazonas.
+Com base nesse fato, crie um diálogo de 15 a 20 segundos para o "Cold Open" do programa, onde Iraí surpreende Tainá com essa curiosidade.
+Exemplo: "Iraí: Égua, Cunhatã, tu sabia que foi num dia como hoje que..."
+Responda APENAS com o diálogo.`;
+            break;
+
         case 'noticia_principal':
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo natural e conciso (4 a 6 falas) entre Tainá e Iraí sobre a notícia abaixo.
 
@@ -155,14 +166,17 @@ async function gerarRoteiro() {
     
     const personagens = { taina: personagensData.apresentadores[0], irai: personagensData.apresentadores[1] };
     let roteiroFinal = template;
+    const dataAtualString = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric'});
     
-    roteiroFinal = roteiroFinal.replace('{{DATA_ATUAL}}', new Date().toLocaleDateString('pt-BR'));
+    roteiroFinal = roteiroFinal.replace('{{DATA_ATUAL}}', dataAtualString);
     
-    let coldOpenDialogo = "// Nenhuma notícia de Cold Open encontrada.";
+    let coldOpenDialogo = "";
     if (pauta.coldOpen) {
+        console.log('[LOG] Notícia para Cold Open encontrada. Gerando diálogo...');
         coldOpenDialogo = await gerarDialogo({ tipo: 'cold_open', noticia: pauta.coldOpen, personagens });
     } else {
-        coldOpenDialogo = "Iraí: Tainá, tu sabia que... // Placeholder para Efeméride";
+        console.log('[LOG] Nenhuma notícia para Cold Open. Acionando fallback de Efeméride Regional...');
+        coldOpenDialogo = await gerarDialogo({ tipo: 'fallback_cold_open', data_fallback: dataAtualString, personagens });
     }
     roteiroFinal = roteiroFinal.replace('{{COLD_OPEN_DIALOGO}}', coldOpenDialogo);
     
@@ -195,8 +209,10 @@ async function gerarRoteiro() {
             
             if (noticia.texto_completo) {
                 if (cenasDisponiveis.length === 0) cenasDisponiveis = [...CENAS_DE_DIALOGO];
+                
                 const cenaIndex = Math.floor(Math.random() * cenasDisponiveis.length);
                 const direcao_cena = cenasDisponiveis.splice(cenaIndex, 1)[0];
+
                 const tipoDialogo = noticia.isSuperNoticia ? 'super_noticia_principal' : 'noticia_principal';
                 console.log(`  -> Gerando diálogo (Tipo: ${tipoDialogo} | Direção: ${direcao_cena})`);
                 dialogo = await gerarDialogo({ tipo: tipoDialogo, noticia, personagens, direcao_cena });

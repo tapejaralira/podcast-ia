@@ -1,0 +1,24 @@
+{
+  "noticia": {
+    "isSuperNoticia": false,
+    "titulo_principal": "Jumentos em risco de extinção devido à alta demanda chinesa por gelatina medicinal",
+    "classification": {
+      "id": "👽 7",
+      "description": "Bizarrices da Bubuia",
+      "adequada_para_audio": true
+    },
+    "relevanceScore": 23,
+    "fontes": [
+      {
+        "link": "https://www.acritica.com/geral/jumentos-em-risco-de-extinc-o-devido-a-alta-demanda-chinesa-por-gelatina-medicinal-1.376899",
+        "source": "A Crítica",
+        "resumo": "De 1996 a 2025, Brasil reduziu em 94% de seu rebanho de asininos, que são os burros, bestas e jumentos",
+        "titulo_original": "Jumentos em risco de extinção devido à alta demanda chinesa por gelatina medicinal"
+      }
+    ]
+  },
+  "efemeride": {
+    "titulo": "Inauguração da Zona Franca de Manaus",
+    "texto": "Em 29 de junho de 1967, foi instituída a Zona Franca de Manaus, um marco importante para o desenvolvimento econômico da região amazônica. A iniciativa buscava incentivar a industrialização e a diversificação econômica no estado do Amazonas, criando um polo industrial baseado em incentivos fiscais para atrair investimentos. Ao longo dos anos, a Zona Franca contribuiu significativamente para o crescimento econômico de Manaus, transformando a cidade em um centro industrial e tecnológico vital para a economia brasileira."
+  }
+}
