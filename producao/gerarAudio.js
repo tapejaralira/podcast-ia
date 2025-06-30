@@ -12,11 +12,11 @@ const ROTEIRO_DIR = path.join(__dirname, '..', 'episodios');
 const TTS_CONFIG_FILE = path.join(__dirname, '..', 'data', 'tts-config.json');
 const AUDIO_OUTPUT_DIR = path.join(__dirname, '..', 'audios_gerados');
 
-// Mapeia a categoria da pauta para o estilo de voz definido no config
+// Mapeia o emoji da categoria para o nome do estilo de voz no tts-config.json
 const CATEGORIA_PARA_ESTILO = {
     '⚫️': 'serio_ou_analitico',
     '🟡': 'serio_ou_analitico',
-    '🔴': 'indignado_leve',
+    '�': 'indignado_leve',
     '🚀': 'animado',
     '🎬': 'animado',
     '🎭': 'animado',
@@ -25,7 +25,8 @@ const CATEGORIA_PARA_ESTILO = {
 
 // --- Função para chamar a API do ElevenLabs ---
 async function textoParaAudio(texto, voiceId, settings) {
-    const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=1`;
+    // Usamos a versão v1 da API, que é a mais estável para Text-to-Speech
+    const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
     const headers = {
         'Accept': 'audio/mpeg',
         'xi-api-key': process.env.ELEVENLABS_API_KEY,
@@ -33,11 +34,12 @@ async function textoParaAudio(texto, voiceId, settings) {
     };
     const body = {
         text: texto,
-        model_id: "eleven_multilingual_v2",
+        model_id: "eleven_multilingual_v2", // Modelo recomendado para português
         voice_settings: settings,
     };
 
     try {
+        // Usamos a API Fetch nativa do Node.js
         const response = await fetch(url, {
             method: 'POST',
             headers: headers,
@@ -48,6 +50,7 @@ async function textoParaAudio(texto, voiceId, settings) {
             const errorBody = await response.text();
             throw new Error(`API ElevenLabs respondeu com status ${response.status}: ${errorBody}`);
         }
+        // Retorna o áudio como um buffer de dados, pronto para ser salvo como .mp3
         return await response.arrayBuffer();
     } catch (error) {
         console.error('❌ Erro ao comunicar com a API do ElevenLabs:', error.message);
@@ -74,18 +77,21 @@ async function gerarAudiosDoRoteiro() {
     const episodioAudioDir = path.join(AUDIO_OUTPUT_DIR, `episodio-${dataDeHoje}`);
     await fs.mkdir(episodioAudioDir, { recursive: true });
 
+    // Divide o roteiro em blocos (Cold Open, Notícia 1, Notícia 2, etc.)
     const blocos = roteiroContent.split('---');
     let falaCounter = 0;
 
     for (const bloco of blocos) {
         let estiloDeVoz = 'padrao';
 
-        // **NOVA LÓGICA:** Extrai o emoji diretamente do título do bloco
+        // Lógica para extrair o emoji da categoria diretamente do título do bloco
         const matchTitulo = bloco.match(/#### Notícia \d+: \[(.+?)\s/);
         if (matchTitulo && matchTitulo[1]) {
             const emojiCategoria = matchTitulo[1];
+            // Usa o mapa para encontrar o nome do estilo de voz correspondente
             estiloDeVoz = CATEGORIA_PARA_ESTILO[emojiCategoria] || 'padrao';
         } else if (bloco.includes('COLD OPEN')) {
+            // Define um estilo específico para a abertura
             estiloDeVoz = 'curioso_ou_bizarro';
         }
 
@@ -100,9 +106,11 @@ async function gerarAudiosDoRoteiro() {
             const voiceId = ttsConfig.voices[nomeCompleto];
             
             // **LÓGICA DINÂMICA DE VOZ**
+            // Seleciona as configurações corretas do nosso "painel de controle" tts-config.json
             const voiceSettings = ttsConfig.estilos_de_voz[estiloDeVoz] || ttsConfig.estilos_de_voz['padrao'];
             
-            const textoLimpo = textoFala.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            // Limpa as tags SSML do texto, pois o ElevenLabs as entende diretamente
+            const textoLimpo = textoFala.trim();
 
             if (!voiceId) {
                 console.warn(`  -> [AVISO] Voice ID não encontrado para ${nomeApresentador}. Pulando...`);
@@ -119,6 +127,7 @@ async function gerarAudiosDoRoteiro() {
                 await fs.writeFile(audioFilename, Buffer.from(audioBuffer));
                 console.log(`     -> Áudio salvo em: ${audioFilename}`);
             }
+            // Pausa para ser gentil com a API do ElevenLabs
             await new Promise(resolve => setTimeout(resolve, 1200));
         }
     }
