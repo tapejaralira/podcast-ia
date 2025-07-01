@@ -8,12 +8,14 @@ import ffmpeg from 'fluent-ffmpeg';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// ATENÇÃO: Configure o caminho correto para o executável do FFmpeg no seu sistema.
 const FFMPEG_PATH = 'C:/Program Files/ffmpeg/bin/ffmpeg.exe';
 
 if (FFMPEG_PATH && !FFMPEG_PATH.includes('caminho/para')) {
     ffmpeg.setFfmpegPath(FFMPEG_PATH);
 } else {
     console.warn("\n⚠️ AVISO: O caminho para o FFmpeg não foi configurado. O script pode falhar.");
+    console.warn("   -> Edite o arquivo 'mixagem/montarEpisodio.js' e ajuste a constante FFMPEG_PATH.");
 }
 
 const ROTEIRO_DIR = path.join(__dirname, '..', 'episodios');
@@ -22,19 +24,32 @@ const ASSETS_AUDIO_DIR = path.join(__dirname, '..', 'audios');
 const TEMP_DIR = path.join(__dirname, 'temp');
 const FINAL_OUTPUT_DIR = path.join(__dirname, '..', 'episodios_finais');
 
+/**
+ * Normaliza uma string, removendo acentos e caracteres especiais.
+ * @param {string} str - A string para normalizar.
+ * @returns {string} A string normalizada.
+ */
 function normalizeString(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 // --- Funções Auxiliares do FFmpeg ---
 
+/**
+ * Aplica uma cadeia de efeitos de áudio a um arquivo.
+ * @param {string} inputPath - Caminho do arquivo de áudio de entrada.
+ * @param {string} outputPath - Caminho para salvar o arquivo de áudio processado.
+ * @param {string} nomeApresentador - Nome do apresentador ('taina' ou 'irai') para aplicar lógicas específicas.
+ * @returns {Promise<void>}
+ */
 function aplicarEfeitos(inputPath, outputPath, nomeApresentador) {
     return new Promise((resolve, reject) => {
         const filterChain = [
-            'compand=attacks=0:points=-80/-90|-45/-15|-27/-9|-12/-5|0/-3|20/-1.5',
-            'loudnorm=I=-16:TP=-1.5:LRA=11',
-            'aecho=1:0.8:20:0.2'
+            'compand=attacks=0:points=-80/-90|-45/-15|-27/-9|-12/-5|0/-3|20/-1.5', // Compressor/Expansor
+            'loudnorm=I=-16:TP=-1.5:LRA=11', // Normalização de volume
+            'aecho=1:0.8:20:0.2' // Leve eco/reverb para dar ambiência
         ];
+        // Lógica específica para a voz da Tainá para equilibrar os volumes
         if (nomeApresentador === 'taina') {
             filterChain.unshift('volume=2.8');
         }
@@ -48,6 +63,12 @@ function aplicarEfeitos(inputPath, outputPath, nomeApresentador) {
     });
 }
 
+/**
+ * Concatena uma lista de arquivos de áudio em um único arquivo.
+ * @param {string[]} listaDeBlocos - Array com os caminhos dos arquivos de áudio.
+ * @param {string} outputPath - Caminho para salvar o arquivo final concatenado.
+ * @returns {Promise<void>}
+ */
 function concatenarBlocos(listaDeBlocos, outputPath) {
     return new Promise((resolve, reject) => {
         if (listaDeBlocos.length === 0) {
@@ -64,12 +85,15 @@ function concatenarBlocos(listaDeBlocos, outputPath) {
 }
 
 /**
- * **NOVA FUNÇÃO DE MIXAGEM:** Cria um segmento musical completo com transição, pausa e falas sobre a trilha.
+ * Cria um segmento musical completo com transição, pausa, falas sobre a trilha e pausa final.
+ * @param {object} segmentoInfo - Objeto contendo informações sobre o segmento.
+ * @param {string} outputPath - Caminho para salvar o segmento mixado.
+ * @returns {Promise<void>}
  */
 async function mixarSegmentoMusical(segmentoInfo, outputPath) {
     console.log(`   -> Mixando segmento musical para a trilha: ${path.basename(segmentoInfo.trilha.path)}`);
 
-    // 1. Criar o "trilho vocal" juntando a vinheta, o silêncio e as falas.
+    // 1. Criar o "trilho vocal" juntando a vinheta, o silêncio, as falas e o silêncio final.
     const vocalParts = [];
     if (segmentoInfo.vinheta) {
         vocalParts.push(segmentoInfo.vinheta);
@@ -77,8 +101,9 @@ async function mixarSegmentoMusical(segmentoInfo, outputPath) {
     
     // Usa o caminho para o arquivo de silêncio pré-criado
     const silencioPath = path.join(ASSETS_AUDIO_DIR, 'assets', 'silencio_3s.mp3');
-    vocalParts.push(silencioPath);
+    vocalParts.push(silencioPath); // Silêncio no INÍCIO (já existente)
     vocalParts.push(...segmentoInfo.falas);
+    vocalParts.push(silencioPath); // Silêncio no FIM do bloco de falas
 
     const vocalTrackPath = path.join(TEMP_DIR, `vocal_track_${segmentoInfo.id}.mp3`);
     await concatenarBlocos(vocalParts, vocalTrackPath);
@@ -89,8 +114,8 @@ async function mixarSegmentoMusical(segmentoInfo, outputPath) {
             .input(vocalTrackPath)
             .input(segmentoInfo.trilha.path)
             .complexFilter([
-                `[1:a]volume=${segmentoInfo.trilha.volume}[bg]`,
-                `[0:a][bg]amix=inputs=2:duration=first`
+                `[1:a]volume=${segmentoInfo.trilha.volume}[bg]`, // Ajusta o volume da trilha de fundo
+                `[0:a][bg]amix=inputs=2:duration=first` // Mixa o vocal por cima da trilha
             ])
             .on('error', (err) => reject(new Error(`Erro ao mixar segmento musical: ${err.message}`)))
             .on('end', () => resolve())
@@ -106,21 +131,30 @@ async function montarEpisodio() {
     const roteiroFilename = path.join(ROTEIRO_DIR, `roteiro-${dataDeHoje}.md`);
     const episodioAudioDir = path.join(AUDIOS_GERADOS_DIR, `episodio-${dataDeHoje}`);
     
+    // <<< NOVA CONSTANTE PARA O SILÊNCIO CURTO >>>
+    const silencio1s = path.join(ASSETS_AUDIO_DIR, 'assets', 'silencio_1s.mp3');
     const silencio3s = path.join(ASSETS_AUDIO_DIR, 'assets', 'silencio_3s.mp3');
 
+    // Verifica se os diretórios e arquivos essenciais existem
     try {
         await fs.access(episodioAudioDir);
         await fs.access(silencio3s);
+        await fs.access(silencio1s); // <<< VERIFICA SE O NOVO ARQUIVO DE SILÊNCIO EXISTE
     } catch (error) {
-        if (error.code === 'ENOENT' && error.path === silencio3s) {
-            console.error(`\n❌ ERRO: Arquivo de silêncio não encontrado em '${silencio3s}'.`);
-            console.error("   -> Por favor, crie um arquivo MP3 de 3 segundos de silêncio e salve-o nesta pasta.");
-        } else {
-            console.error(`\n❌ ERRO: A pasta de áudios do dia não foi encontrada em '${episodioAudioDir}'.`);
+        if (error.code === 'ENOENT') {
+             if (error.path === silencio1s) {
+                console.error(`\n❌ ERRO: Arquivo de silêncio curto não encontrado em '${silencio1s}'.`);
+                console.error("   -> Por favor, crie um arquivo MP3 de 1 segundo de silêncio e salve-o nesta pasta.");
+             } else if (error.path === silencio3s) {
+                console.error(`\n❌ ERRO: Arquivo de silêncio longo não encontrado em '${silencio3s}'.`);
+             } else {
+                console.error(`\n❌ ERRO: A pasta de áudios do dia não foi encontrada em '${episodioAudioDir}'. Execute o script 'gerarAudio.js' primeiro.`);
+             }
         }
         return; 
     }
 
+    // Limpa e cria diretórios temporários e de saída
     await fs.rm(TEMP_DIR, { recursive: true, force: true }).catch(() => {});
     await fs.mkdir(TEMP_DIR, { recursive: true });
     await fs.mkdir(FINAL_OUTPUT_DIR, { recursive: true });
@@ -137,6 +171,7 @@ async function montarEpisodio() {
     let falaCounter = 0;
     const blocosPrincipais = roteiroContent.split('---');
 
+    // Itera sobre cada bloco principal do roteiro (separados por '---')
     for (let i = 0; i < blocosPrincipais.length; i++) {
         const bloco = blocosPrincipais[i];
         if (bloco.trim().length === 0) continue;
@@ -145,6 +180,7 @@ async function montarEpisodio() {
         let partesDoBloco = [];
         const linhas = bloco.split('\n').filter(l => l.trim() !== '');
 
+        // Analisa cada linha do bloco para identificar o tipo de áudio
         for (const linha of linhas) {
             const matchFala = linha.match(/^(?:\*\*)?(Tainá|Iraí)(?:\*\*)?:/);
             const matchTrilhaInicio = linha.match(/\[TRILHA_INICIO: (.*?),\s*(-?\d+dB)\s*\]/);
@@ -169,14 +205,18 @@ async function montarEpisodio() {
                 try {
                     await fs.access(caminhoOriginal);
                     await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentador);
+                    // <<< LÓGICA ATUALIZADA >>>
+                    // Adiciona a fala processada
                     partesDoBloco.push({ type: 'fala', path: caminhoProcessado });
+                    // Adiciona o silêncio curto logo em seguida
+                    partesDoBloco.push({ type: 'fala', path: silencio1s });
                 } catch (err) { 
                     console.warn(`   [AVISO] Falha ao processar o arquivo de fala: ${caminhoOriginal}`);
                 }
             }
         }
 
-        // **NOVA LÓGICA DE MONTAGEM**
+        // Lógica de montagem dos segmentos (NÃO PRECISA MUDAR AQUI)
         let segmentoMusical = null;
         for (let j = 0; j < partesDoBloco.length; j++) {
             const parte = partesDoBloco[j];
@@ -224,12 +264,14 @@ async function montarEpisodio() {
         return;
     }
 
+    // Concatena todos os blocos processados no episódio final
     console.log('\n🎬 Montando o episódio final...');
     const outputFinal = path.join(FINAL_OUTPUT_DIR, `bubuia_news_${dataDeHoje}.mp3`);
     await concatenarBlocos(blocosDeAudioProcessados, outputFinal);
 
     console.log(`\n✅ Episódio finalizado com sucesso! Salvo em: ${outputFinal}`);
     
+    // Limpa a pasta temporária
     console.log('🧹 Limpando arquivos temporários...');
     await fs.rm(TEMP_DIR, { recursive: true, force: true });
     console.log('✨ Processo concluído!');
