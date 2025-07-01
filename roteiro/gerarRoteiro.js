@@ -184,6 +184,8 @@ async function gerarRoteiro() {
     const dataAtualString = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric'});
     
     roteiroFinal = roteiroFinal.replace('{{DATA_ATUAL}}', dataAtualString);
+    roteiroFinal = roteiroFinal.replace('{{TRILHA_ABERTURA}}', 'trilha_cultural_regional.mp3'); 
+
     
     // LÓGICA DE DECISÃO CORRIGIDA PARA O COLD OPEN
     let coldOpenDialogo = "";
