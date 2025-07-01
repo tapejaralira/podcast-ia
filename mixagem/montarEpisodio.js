@@ -115,7 +115,9 @@ async function mixarSegmentoMusical(segmentoInfo, outputPath) {
             .input(segmentoInfo.trilha.path)
             .complexFilter([
                 `[1:a]volume=${segmentoInfo.trilha.volume}[bg]`, // Ajusta o volume da trilha de fundo
-                `[0:a][bg]amix=inputs=2:duration=first` // Mixa o vocal por cima da trilha
+                // <<< ALTERAÇÃO APLICADA AQUI >>>
+                // Mixa o vocal com a trilha e aumenta o volume final em 50% para compensar a normalização do amix
+                `[0:a][bg]amix=inputs=2:duration=first,volume=1.7` 
             ])
             .on('error', (err) => reject(new Error(`Erro ao mixar segmento musical: ${err.message}`)))
             .on('end', () => resolve())
@@ -131,7 +133,6 @@ async function montarEpisodio() {
     const roteiroFilename = path.join(ROTEIRO_DIR, `roteiro-${dataDeHoje}.md`);
     const episodioAudioDir = path.join(AUDIOS_GERADOS_DIR, `episodio-${dataDeHoje}`);
     
-    // <<< NOVA CONSTANTE PARA O SILÊNCIO CURTO >>>
     const silencio1s = path.join(ASSETS_AUDIO_DIR, 'assets', 'silencio_1s.mp3');
     const silencio3s = path.join(ASSETS_AUDIO_DIR, 'assets', 'silencio_3s.mp3');
 
@@ -139,7 +140,7 @@ async function montarEpisodio() {
     try {
         await fs.access(episodioAudioDir);
         await fs.access(silencio3s);
-        await fs.access(silencio1s); // <<< VERIFICA SE O NOVO ARQUIVO DE SILÊNCIO EXISTE
+        await fs.access(silencio1s);
     } catch (error) {
         if (error.code === 'ENOENT') {
              if (error.path === silencio1s) {
@@ -205,10 +206,7 @@ async function montarEpisodio() {
                 try {
                     await fs.access(caminhoOriginal);
                     await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentador);
-                    // <<< LÓGICA ATUALIZADA >>>
-                    // Adiciona a fala processada
                     partesDoBloco.push({ type: 'fala', path: caminhoProcessado });
-                    // Adiciona o silêncio curto logo em seguida
                     partesDoBloco.push({ type: 'fala', path: silencio1s });
                 } catch (err) { 
                     console.warn(`   [AVISO] Falha ao processar o arquivo de fala: ${caminhoOriginal}`);
@@ -216,7 +214,7 @@ async function montarEpisodio() {
             }
         }
 
-        // Lógica de montagem dos segmentos (NÃO PRECISA MUDAR AQUI)
+        // Lógica de montagem dos segmentos
         let segmentoMusical = null;
         for (let j = 0; j < partesDoBloco.length; j++) {
             const parte = partesDoBloco[j];
