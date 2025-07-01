@@ -63,17 +63,36 @@ function concatenarBlocos(listaDeBlocos, outputPath) {
     });
 }
 
-function mixarComTrilha(blocoFalasPath, trilhaInfo, outputPath) {
+/**
+ * **NOVA FUNÇÃO DE MIXAGEM:** Cria um segmento musical completo com transição, pausa e falas sobre a trilha.
+ */
+async function mixarSegmentoMusical(segmentoInfo, outputPath) {
+    console.log(`   -> Mixando segmento musical para a trilha: ${path.basename(segmentoInfo.trilha.path)}`);
+
+    // 1. Criar o "trilho vocal" juntando a vinheta, o silêncio e as falas.
+    const vocalParts = [];
+    if (segmentoInfo.vinheta) {
+        vocalParts.push(segmentoInfo.vinheta);
+    }
+    
+    // Usa o caminho para o arquivo de silêncio pré-criado
+    const silencioPath = path.join(ASSETS_AUDIO_DIR, 'assets', 'silencio_3s.mp3');
+    vocalParts.push(silencioPath);
+    vocalParts.push(...segmentoInfo.falas);
+
+    const vocalTrackPath = path.join(TEMP_DIR, `vocal_track_${segmentoInfo.id}.mp3`);
+    await concatenarBlocos(vocalParts, vocalTrackPath);
+
+    // 2. Mixar o trilho vocal com a trilha de fundo.
     return new Promise((resolve, reject) => {
-        console.log(`   -> Mixando bloco com trilha: ${path.basename(trilhaInfo.path)}`);
         ffmpeg()
-            .input(blocoFalasPath)
-            .input(trilhaInfo.path)
+            .input(vocalTrackPath)
+            .input(segmentoInfo.trilha.path)
             .complexFilter([
-                `[1:a]volume=${trilhaInfo.volume}[bg]`,
+                `[1:a]volume=${segmentoInfo.trilha.volume}[bg]`,
                 `[0:a][bg]amix=inputs=2:duration=first`
             ])
-            .on('error', (err) => reject(new Error(`Erro ao mixar com trilha: ${err.message}`)))
+            .on('error', (err) => reject(new Error(`Erro ao mixar segmento musical: ${err.message}`)))
             .on('end', () => resolve())
             .save(outputPath);
     });
@@ -95,6 +114,7 @@ async function montarEpisodio() {
     } catch (error) {
         if (error.code === 'ENOENT' && error.path === silencio3s) {
             console.error(`\n❌ ERRO: Arquivo de silêncio não encontrado em '${silencio3s}'.`);
+            console.error("   -> Por favor, crie um arquivo MP3 de 3 segundos de silêncio e salve-o nesta pasta.");
         } else {
             console.error(`\n❌ ERRO: A pasta de áudios do dia não foi encontrada em '${episodioAudioDir}'.`);
         }
@@ -122,29 +142,8 @@ async function montarEpisodio() {
         if (bloco.trim().length === 0) continue;
         console.log(`\n🎬 Processando Bloco Principal ${i}...`);
 
-        let subBlocoFalas = [];
-        let trilhaInfo = null;
-        let subBlocoCounter = 0;
-
+        let partesDoBloco = [];
         const linhas = bloco.split('\n').filter(l => l.trim() !== '');
-
-        async function finalizarSubBloco() {
-            if (subBlocoFalas.length === 0) return;
-
-            const subBlocoPath = path.join(TEMP_DIR, `sub_bloco_${i}_${subBlocoCounter}.mp3`);
-            await concatenarBlocos(subBlocoFalas, subBlocoPath);
-
-            if (trilhaInfo) {
-                const subBlocoMixadoPath = path.join(TEMP_DIR, `sub_bloco_mixado_${i}_${subBlocoCounter}.mp3`);
-                await mixarComTrilha(subBlocoPath, trilhaInfo, subBlocoMixadoPath);
-                blocosDeAudioProcessados.push(subBlocoMixadoPath);
-            } else {
-                blocosDeAudioProcessados.push(subBlocoPath);
-            }
-
-            subBlocoFalas = [];
-            subBlocoCounter++;
-        }
 
         for (const linha of linhas) {
             const matchFala = linha.match(/^(?:\*\*)?(Tainá|Iraí)(?:\*\*)?:/);
@@ -153,16 +152,11 @@ async function montarEpisodio() {
             const matchAudio = linha.match(/\[AUDIO:\s*(.*?)\s*\]/);
 
             if (matchAudio) {
-                await finalizarSubBloco();
-                trilhaInfo = null;
-                blocosDeAudioProcessados.push(path.join(ASSETS_AUDIO_DIR, 'vinhetas', matchAudio[1]));
+                partesDoBloco.push({ type: 'vinheta', file: matchAudio[1] });
             } else if (matchTrilhaInicio) {
-                await finalizarSubBloco();
-                trilhaInfo = { path: path.join(ASSETS_AUDIO_DIR, 'trilhas', matchTrilhaInicio[1]), volume: matchTrilhaInicio[2] };
-                subBlocoFalas.push(silencio3s);
+                partesDoBloco.push({ type: 'trilha_inicio', file: matchTrilhaInicio[1], volume: matchTrilhaInicio[2] });
             } else if (matchTrilhaFim) {
-                await finalizarSubBloco();
-                trilhaInfo = null;
+                partesDoBloco.push({ type: 'trilha_fim' });
             } else if (matchFala) {
                 falaCounter++;
                 const nomeApresentadorRaw = matchFala[1].toLowerCase();
@@ -175,13 +169,54 @@ async function montarEpisodio() {
                 try {
                     await fs.access(caminhoOriginal);
                     await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentador);
-                    subBlocoFalas.push(caminhoProcessado);
+                    partesDoBloco.push({ type: 'fala', path: caminhoProcessado });
                 } catch (err) { 
                     console.warn(`   [AVISO] Falha ao processar o arquivo de fala: ${caminhoOriginal}`);
                 }
             }
         }
-        await finalizarSubBloco();
+
+        // **NOVA LÓGICA DE MONTAGEM**
+        let segmentoMusical = null;
+        for (let j = 0; j < partesDoBloco.length; j++) {
+            const parte = partesDoBloco[j];
+
+            if (parte.type === 'trilha_inicio') {
+                segmentoMusical = {
+                    id: `${i}_${j}`,
+                    trilha: { path: path.join(ASSETS_AUDIO_DIR, 'trilhas', parte.file), volume: parte.volume },
+                    vinheta: null,
+                    pausa: 3,
+                    falas: []
+                };
+                
+                if (j > 0 && partesDoBloco[j-1].type === 'vinheta' && partesDoBloco[j-1].file.includes('TRANSICAO')) {
+                    segmentoMusical.vinheta = blocosDeAudioProcessados.pop();
+                }
+            } else if (parte.type === 'trilha_fim') {
+                if (segmentoMusical) {
+                    const outputPath = path.join(TEMP_DIR, `segmento_musical_${segmentoMusical.id}.mp3`);
+                    await mixarSegmentoMusical(segmentoMusical, outputPath);
+                    blocosDeAudioProcessados.push(outputPath);
+                    segmentoMusical = null;
+                }
+            } else if (segmentoMusical) {
+                if(parte.type === 'fala') {
+                    segmentoMusical.falas.push(parte.path);
+                }
+            } else {
+                if (parte.type === 'vinheta') {
+                    blocosDeAudioProcessados.push(path.join(ASSETS_AUDIO_DIR, 'vinhetas', parte.file));
+                } else if (parte.type === 'fala') {
+                    blocosDeAudioProcessados.push(parte.path);
+                }
+            }
+        }
+        if (segmentoMusical) {
+            const outputPath = path.join(TEMP_DIR, `segmento_musical_${segmentoMusical.id}.mp3`);
+            await mixarSegmentoMusical(segmentoMusical, outputPath);
+            blocosDeAudioProcessados.push(outputPath);
+        }
     }
 
     if (blocosDeAudioProcessados.length === 0) {
