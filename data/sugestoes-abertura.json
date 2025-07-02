@@ -1,7 +1,8 @@
 {
   "noticia": null,
   "efemeride": {
-    "titulo": "Mensagem do Ouvinte",
-    "texto": "Manaus é um verdadeiro espetáculo e vocês capturam isso maravilhosamente no Bubuia News! Saudações, Ana Clara, do bairro Adrianópolis."
+    "encontrado": true,
+    "titulo": "Dia do Bombeiro Brasileiro",
+    "texto": "Em 2 de julho, comemoramos o Dia do Bombeiro Brasileiro. A data homenageia os profissionais que arriscam suas vidas para salvar outras, combatendo incêndios, realizando resgates e prestando primeiros socorros."
   }
 }

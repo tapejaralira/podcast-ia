@@ -15,18 +15,42 @@ const ROTEIRISTA_API = 'gemini'; // Opções: 'openai', 'gemini'
 // --- Configurações e Constantes ---
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+// --- Caminhos dos Arquivos ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, '..');
 
-// CAMINHOS CORRIGIDOS PARA A NOVA ESTRUTURA
-const PAUTA_FILE = path.join(__dirname, '..', 'data', 'episodio-do-dia.json');
-const SUGESTOES_ABERTURA_FILE = path.join(__dirname, '..', 'data', 'sugestoes-abertura.json');
-const CONFIG_ROTEIRO_FILE = path.join(__dirname, 'config-roteiro.json');
-const PERSONAGENS_FILE = path.join(__dirname, '..', 'data', 'personagens.json');
-const TEMPLATE_FILE = path.join(__dirname, 'roteiro-template.md');
-const OUTPUT_DIR = path.join(__dirname, '..', 'episodios');
+const DATA_DIR = path.join(PROJECT_ROOT, 'data');
+const PAUTA_FILE = path.join(DATA_DIR, 'episodio-do-dia.json');
+const SUGESTOES_ABERTURA_FILE = path.join(DATA_DIR, 'sugestoes-abertura.json');
+const PERSONAGENS_FILE = path.join(DATA_DIR, 'personagens.json');
 
+const ROTEIRO_DIR = path.join(PROJECT_ROOT, 'roteiro');
+const CONFIG_ROTEIRO_FILE = path.join(ROTEIRO_DIR, 'config-roteiro.json');
+const TEMPLATE_FILE = path.join(ROTEIRO_DIR, 'roteiro-template.md');
+
+const OUTPUT_DIR = path.join(PROJECT_ROOT, 'episodios');
+
+// --- Constante de Normalização para TTS ---
+const TTS_NORMALIZATION_PROMPT = `
+### REGRAS DE FORMATAÇÃO PARA ÁUDIO (OBRIGATÓRIO)
+- **Normalização para TTS:** Converta o texto de saída para um formato adequado para text-to-speech. Garanta que números, símbolos e abreviações sejam expandidos para maior clareza quando lidos em voz alta. Expanda todas as abreviações para suas formas faladas completas.
+- **Ritmo e Ênfase:** Em vez de usar tags SSML, controle o ritmo e a ênfase usando pontuação. Use reticências (...) para pausas dramáticas ou hesitação. Use LETRAS MAIÚSCULAS para dar ÊNFASE a palavras ou frases importantes.
+
+- **Exemplos de Normalização:**
+  - "R$ 42,50" → "quarenta e dois reais e cinquenta centavos"
+  - "2º" → "segundo"
+  - "Dr." → "Doutor"
+  - "Av." → "Avenida"
+  - "100km" → "cem quilômetros"
+  - "100%" → "cem por cento"
+  - "01/01/2024" → "primeiro de janeiro de dois mil e vinte e quatro"
+  - "14:30" → "duas e trinta da tarde"
+`;
+
+// --- Constantes de Roteiro ---
 const TRILHA_MAP = {
     "⚫️": "trilha_tensao_leve.mp3",
     "🟡": "trilha_informativa_neutra.mp3",
@@ -37,17 +61,16 @@ const TRILHA_MAP = {
     "👽": "trilha_misteriosa_humor.mp3"
 };
 
-const CENAS_DE_DIALOGO = [
-    "Comece com Tainá chamando a atenção de Iraí com uma expressão como 'Mano, tu viu essa?!' ou 'Iraí, se liga só nisso aqui...'",
-    "Comece com Iraí introduzindo a notícia com uma de suas expressões, como 'Égua, espia só o que rolou...' ou 'Rapaz, essa aqui é da boa...'",
-    "Comece com um dos apresentadores lendo a manchete em voz alta, como se estivesse surpreso, e o outro reage com espanto, como 'É sério isso?'",
-    "Comece com Tainá dizendo que viu algo 'bubuiando' nas redes sociais e então introduzindo a notícia.",
-    "Comece com Iraí fazendo uma pergunta retórica para Tainá que tenha a ver com o tema da notícia. (Ex: 'Tu já imaginou o que acontece quando...? Pois é, aconteceu.')",
-    "Comece com Tainá pedindo a opinião imediata de Iraí sobre a manchete, no estilo 'hot take'.",
-    "Comece com Iraí sendo cético sobre o impacto real da notícia ('Humm, já vi esse filme antes...') e Tainá tentando encontrar um lado positivo.",
-    "Comece com um dos apresentadores dizendo que recebeu uma mensagem de um ouvinte (fictício) sobre o tema para iniciar o debate."
+const INSPIRACAO_INICIO_CENA = [
+    "Início com Exclamação/Surpresa: Um apresentador chama a atenção do outro de forma energética sobre a notícia.",
+    "Início com Curiosidade/Mistério: Um apresentador introduz o tema com uma pergunta ou de forma enigmática para despertar o interesse.",
+    "Início com Reação à Manchete: Um apresentador lê a manchete e o outro reage imediatamente, seja com espanto, humor ou ceticismo.",
+    "Início 'Fofoca'/Rede Social: A notícia é introduzida como algo que está 'bombando' ou 'bubuiando' nas redes.",
+    "Início com Pergunta Retórica: Um apresentador faz uma pergunta ao outro que conecta com o cerne da notícia para iniciar a discussão.",
+    "Início 'Hot Take': Um apresentador pede a opinião direta e sem filtros do outro logo de cara.",
+    "Início com Contraponto/Debate: Um apresentador se mostra cético ou pessimista e o outro tenta apresentar uma visão diferente.",
+    "Início com Interação do Ouvinte: A discussão começa a partir de uma suposta mensagem ou pergunta de um ouvinte."
 ];
-
 
 // --- Funções Principais ---
 
@@ -103,20 +126,52 @@ async function gerarDialogo(promptData) {
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo de 15 a 20 segundos para o "Cold Open". Tainá deve contar para Iraí, como se fosse um segredo, a seguinte notícia:
 - Título: ${noticia.titulo_principal}
 - Resumo Combinado: ${noticia.fontes.map(f => f.resumo).join(' ')}
-Use os perfis dos personagens para guiar a reação. Use a tag <break time="0.3s"/> para uma pequena pausa.
+
+${TTS_NORMALIZATION_PROMPT}
+
 Responda APENAS com o diálogo.`;
             break;
         case 'fallback_cold_open':
-            prompt = `Você é um roteirista e pesquisador do podcast "Bubuia News". Hoje é ${data_fallback.titulo}.
-Sua tarefa é encontrar UMA efeméride ou fato histórico curioso que aconteceu nesta data, com forte conexão com Manaus ou o estado do Amazonas.
-Com base nesse fato, crie um diálogo de 15 a 20 segundos para o "Cold Open" do programa, onde Iraí surpreende Tainá com essa curiosidade.
-- Fato: "${data_fallback.texto}"
-Exemplo: "Iraí: Tai, tu sabia que no dia..."
-Responda APENAS com o diálogo.`;
+            // Lógica para escolher o prompt de Cold Open mais adequado
+            if (data_fallback.titulo.includes("Mensagem") || data_fallback.titulo.includes("Curiosidade")) {
+                // Prompt para quando o fallback é uma mensagem de ouvinte ou curiosidade genérica
+                prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo de 15 a 20 segundos para o "Cold Open".
+                A ideia é que Tainá leia uma mensagem carinhosa de um ouvinte (ou uma curiosidade aleatória) para Iraí, e ele reage de forma calorosa e autêntica.
+
+                - Conteúdo a ser lido por Tainá: "${data_fallback.texto}"
+
+                ${TTS_NORMALIZATION_PROMPT}
+
+                Exemplo de início: "Tainá: Mano, se liga só nessa mensagem que chegou pra gente..."
+                Responda APENAS com o diálogo.`;
+            } else {
+                // Prompt para quando é uma efeméride histórica real, ligada a uma data
+                prompt = `Você é um roteirista criativo para o podcast "Bubuia News". Sua missão é criar um diálogo de 15 a 20 segundos para o "Cold Open" entre Tainá e Iraí.
+
+                **Contexto:**
+                A conversa deve girar em torno do seguinte fato histórico ou data comemorativa. A interação precisa ser natural, onde um apresentador compartilha a informação e o outro reage com curiosidade ou de forma positiva.
+
+                - **Título do Fato:** ${data_fallback.titulo}
+                - **Descrição:** "${data_fallback.texto}"
+
+                **Inspiração para o Início (Use como base, não precisa ser idêntico):**
+                - "Iraí: Mana... se liga nessa..."
+                - "Tainá: Rapaz... Olha isso... Hoje..."
+                - "Iraí: Ei, hoje é comemorado o dia..."
+                - "Tainá: Olha, acabei de ver que hoje é dia d..."
+                - "Iraí: Sabia que hoje, dia dois de julho, é..."
+
+                ${TTS_NORMALIZATION_PROMPT}
+
+                **Instrução Final:** Responda APENAS com o diálogo entre Tainá e Iraí.`;
+            }
             break;
         case 'cardapio':
              prompt = `Você é o roteirista Iraí do podcast "Bubuia News". Com base nos títulos a seguir, crie uma chamada carismática e regional para o que vem por aí no programa, no estilo 'E hoje no Bubuia, a gente vai de...'
 - Títulos: ${noticia.titulos.join('; ')}
+
+${TTS_NORMALIZATION_PROMPT}
+
 Responda APENAS com a fala do Iraí.`;
             break;
         case 'saudacao_taina':
@@ -125,6 +180,9 @@ Responda APENAS com a fala do Iraí.`;
             prompt = `Você é a roteirista da Tainá para o podcast "Bubuia News". Crie ${acao}.
 ${infoAudiencia}
 Instrução: Ela deve se dirigir diretamente à audiência usando uma das formas de chamar.
+
+${TTS_NORMALIZATION_PROMPT}
+
 Responda APENAS com a fala da Tainá.`;
             break;
         case 'noticia_principal':
@@ -136,7 +194,6 @@ Responda APENAS com a fala da Tainá.`;
                 if (['🔴', '⚫️'].includes(id)) tom_cena = "com um tom de seriedade e preocupação.";
             }
             const dialogoLength = tipo === 'super_noticia_principal' ? 'APROFUNDADO (6 a 8 falas)' : 'natural e conciso (4 a 6 falas)';
-            const ssmlExtra = tipo === 'super_noticia_principal' ? '- Use a tag <prosody rate=\"slow\">...</prosody> em uma fala do Iraí para um tom mais analítico.' : '';
 
             prompt = `Você é um roteirista do podcast "Bubuia News". Crie um diálogo ${dialogoLength} entre Tainá e Iraí sobre a notícia abaixo.
 
@@ -147,11 +204,12 @@ ${infoIrai}
 - **Perfil da Audiência:** ${infoAudiencia}
 - **Tom da Cena:** Discutam a notícia ${tom_cena}
 - **Conteúdo da Notícia:** ${noticia.texto_completo}
-- **Direção de Início:** ${direcao_cena}
+- **Inspiração para o Início:** Use a seguinte ideia como inspiração para começar o diálogo, mas sinta-se livre para variar: "${direcao_cena}". O importante é capturar a essência da sugestão.
 
-### REGRAS TÉCNICAS (OBRIGATÓRIO)
-- **Interação:** É essencial que eles usem os apelidos um do outro e que, em algum momento, um deles se dirija diretamente à audiência.
-- **SSML:** Use a tag <break time="0.5s"/> para pausas e a tag <emphasis level="strong">PALAVRA</emphasis> para ênfase. ${ssmlExtra}
+${TTS_NORMALIZATION_PROMPT}
+
+### REGRAS DE INTERAÇÃO (OBRIGATÓRIO)
+- É essencial que eles usem os apelidos um do outro e que, em algum momento, um deles se dirija diretamente à audiência.
 
 Responda APENAS com o diálogo.`;
             break;
@@ -247,7 +305,7 @@ async function gerarRoteiro() {
         roteiroFinal = roteiroFinal.replace('{{CARDAPIO_NOTICIAS}}', 'Iraí: Eita, maninha, parece que hoje a rede veio vazia!');
     }
 
-    let cenasDisponiveis = [...CENAS_DE_DIALOGO];
+    let cenasDisponiveis = [...INSPIRACAO_INICIO_CENA];
 
     for (let i = 0; i < 4; i++) {
         const noticia = pauta.noticiasPrincipais[i];
@@ -263,11 +321,11 @@ async function gerarRoteiro() {
             noticia.texto_completo = textosCompletos.filter(t => t).join('\n\n---\n\n');
             
             if (noticia.texto_completo) {
-                if (cenasDisponiveis.length === 0) cenasDisponiveis = [...CENAS_DE_DIALOGO];
+                if (cenasDisponiveis.length === 0) cenasDisponiveis = [...INSPIRACAO_INICIO_CENA];
                 const cenaIndex = Math.floor(Math.random() * cenasDisponiveis.length);
                 const direcao_cena = cenasDisponiveis.splice(cenaIndex, 1)[0];
                 const tipoDialogo = noticia.isSuperNoticia ? 'super_noticia_principal' : 'noticia_principal';
-                console.log(`  -> Gerando diálogo (Tipo: ${tipoDialogo} | Direção: ${direcao_cena})`);
+                console.log(`  -> Gerando diálogo (Tipo: ${tipoDialogo} | Inspiração: ${direcao_cena.split(':')[0]})`);
                 dialogo = await gerarDialogo({ tipo: tipoDialogo, noticia, personagens, audiencia, direcao_cena });
             } else {
                 dialogo = "// Não foi possível buscar o texto completo para esta notícia.";
