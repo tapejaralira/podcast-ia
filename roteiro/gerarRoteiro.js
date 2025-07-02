@@ -5,10 +5,17 @@ import { fileURLToPath } from 'url';
 import OpenAI from 'openai';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import 'dotenv/config';
+
+// --- Configuração do Roteirista ---
+// Mude para 'gemini' para testar a nova API, ou 'openai' para usar a padrão.
+const ROTEIRISTA_API = 'gemini'; // Opções: 'openai', 'gemini'
 
 // --- Configurações e Constantes ---
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -153,12 +160,20 @@ Responda APENAS com o diálogo.`;
     }
 
     try {
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o", messages: [{ role: "user", content: prompt }], temperature: 0.85,
-        });
-        return response.choices[0].message.content;
+        if (ROTEIRISTA_API === 'gemini') {
+            console.log(`  -> Gerando diálogo com Gemini...`);
+            const result = await geminiModel.generateContent(prompt);
+            const response = await result.response;
+            return response.text();
+        } else { // Padrão é OpenAI
+            console.log(`  -> Gerando diálogo com OpenAI...`);
+            const response = await openai.chat.completions.create({
+                model: "gpt-4o", messages: [{ role: "user", content: prompt }], temperature: 0.85,
+            });
+            return response.choices[0].message.content;
+        }
     } catch (error) {
-        console.error(`❌ Erro ao gerar diálogo para '${tipo}': ${error.message}`);
+        console.error(`❌ Erro ao gerar diálogo para '${tipo}' usando ${ROTEIRISTA_API}: ${error.message}`);
         return `// Erro ao gerar diálogo para ${tipo}.`;
     }
 }
