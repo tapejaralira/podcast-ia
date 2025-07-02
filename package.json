@@ -6,8 +6,9 @@
   "scripts": {
     "coletar": "node noticias/buscarNoticias.js",
     "analisar": "node noticias/analisarNoticias.js",
+    "efemeride": "node roteiro/sugerirAbertura.js",
     "roteirizar": "node roteiro/gerarRoteiro.js",
-    "gerar-audio": "node producao/gerarAudio.js",
+    "audios": "node producao/gerarAudio.js",
     "montar": "node mixagem/montarEpisodio.js",
     "pauta-completa": "npm run coletar && npm run analisar",
     "episodio-completo": "npm run pauta-completa && npm run roteirizar",
