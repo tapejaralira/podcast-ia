@@ -4,15 +4,14 @@
   "description": "Sistema de geração de pautas e roteiros para o podcast BubuiA News.",
   "type": "module",
   "scripts": {
-    "coletar": "node noticias/buscarNoticias.js",
-    "analisar": "node noticias/analisarNoticias.js",
-    "efemeride": "node roteiro/sugerirAbertura.js",
-    "roteirizar": "node roteiro/gerarRoteiro.js",
-    "audios": "node producao/gerarAudio.js",
-    "montar": "node mixagem/montarEpisodio.js",
-    "pauta-completa": "npm run coletar && npm run analisar",
-    "episodio-completo": "npm run pauta-completa && npm run roteirizar",
-    "produzir": "npm run audios && npm run montar"
+    "start": "ts-node src/index.ts",
+    "coletar": "ts-node src/noticias/buscarNoticias.ts",
+    "analisar": "ts-node src/noticias/analisarNoticias.ts",
+    "abertura": "ts-node src/roteiro/sugerirAbertura.ts",
+    "roteirizar": "ts-node src/roteiro/gerarRoteiro.ts",
+    "audios": "ts-node src/producao/gerarAudio.ts",
+    "montar": "ts-node src/mixagem/montarEpisodio.ts",
+    "pipeline": "npm run start"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -34,5 +33,18 @@
     "tts"
   ],
   "author": "BubuiA News Team",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.27",
+    "@types/node": "^24.0.10",
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
+    "eslint": "^9.30.1",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.1",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
 }

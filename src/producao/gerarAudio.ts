@@ -1,38 +1,25 @@
-// producao/gerarAudio.js
+// producao/gerarAudio.ts
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import 'dotenv/config';
+import { config } from '../config.js';
+import { TtsConfig } from '../types.js';
 
-// --- Configurações e Constantes ---
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const ROTEIRO_DIR = path.join(__dirname, '..', 'episodios');
-const TTS_CONFIG_FILE = path.join(__dirname, '..', 'data', 'tts-config.json');
-const AUDIO_OUTPUT_DIR = path.join(__dirname, '..', 'audios_gerados');
-
-const CATEGORIA_PARA_ESTILO = {
-    '⚫️': 'serio_ou_analitico',
-    '🟡': 'serio_ou_analitico',
-    '🔴': 'indignado_leve',
-    '🚀': 'animado',
-    '🎬': 'animado',
-    '🎭': 'animado',
-    '👽': 'curioso_ou_bizarro'
-};
-
-// **NOVA FUNÇÃO:** Normaliza strings removendo acentos.
-function normalizeString(str) {
+// --- Função para normalizar strings ---
+function normalizeString(str: string): string {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 // --- Função para chamar a API do ElevenLabs ---
-async function textoParaAudio(texto, voiceId, settings) {
+async function textoParaAudio(
+    texto: string,
+    voiceId: string,
+    settings: TtsConfig['estilos_de_voz']['padrao']
+): Promise<ArrayBuffer | null> {
     const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=1`;
     const headers = {
         'Accept': 'audio/mpeg',
-        'xi-api-key': process.env.ELEVENLABS_API_KEY,
+        'xi-api-key': process.env.ELEVENLABS_API_KEY || '',
         'Content-Type': 'application/json',
     };
     const body = {
@@ -58,21 +45,21 @@ async function textoParaAudio(texto, voiceId, settings) {
         
         console.log(`     -> ✅ [API SUCESSO] Áudio recebido.`);
         return await response.arrayBuffer();
-    } catch (error) {
+    } catch (error: any) {
         console.error('     -> ❌ Falha na comunicação com a API do ElevenLabs:', error.message);
         return null;
     }
 }
 
 // --- Função Principal ---
-async function gerarAudiosDoRoteiro() {
+export async function gerarAudiosDoRoteiro(): Promise<void> {
     console.log('🔊 Bubuia News - Iniciando geração de áudios...');
 
-    const ttsConfig = JSON.parse(await fs.readFile(TTS_CONFIG_FILE, 'utf-8'));
+    const ttsConfig: TtsConfig = JSON.parse(await fs.readFile(config.paths.ttsConfigFile, 'utf-8'));
     const dataDeHoje = new Date().toISOString().split('T')[0];
-    const roteiroFilename = path.join(ROTEIRO_DIR, `roteiro-${dataDeHoje}.md`);
+    const roteiroFilename = path.join(config.paths.roteirosDir, `roteiro-${dataDeHoje}.md`);
     
-    let roteiroContent;
+    let roteiroContent: string;
     try {
         roteiroContent = await fs.readFile(roteiroFilename, 'utf-8');
     } catch (error) {
@@ -80,20 +67,20 @@ async function gerarAudiosDoRoteiro() {
         return;
     }
 
-    const episodioAudioDir = path.join(AUDIO_OUTPUT_DIR, `episodio-${dataDeHoje}`);
+    const episodioAudioDir = path.join(config.paths.audioOutputDir, `episodio-${dataDeHoje}`);
     await fs.mkdir(episodioAudioDir, { recursive: true });
 
     const blocos = roteiroContent.split('---');
     let falaCounter = 0;
 
     for (const bloco of blocos) {
-        let estiloDeVoz = 'padrao';
+        let estiloDeVoz: keyof TtsConfig['estilos_de_voz'] = 'padrao';
 
         const matchTitulo = bloco.match(/#### Notícia \d+: \[(.+?)\s/);
         if (matchTitulo && matchTitulo[1]) {
             const idCompleto = matchTitulo[1];
-            const emojiCategoria = idCompleto.split(' ')[0];
-            estiloDeVoz = CATEGORIA_PARA_ESTILO[emojiCategoria] || 'padrao';
+            const emojiCategoria = idCompleto.split(' ')[0] as keyof typeof config.geracaoAudio.categoriaParaEstilo;
+            estiloDeVoz = config.geracaoAudio.categoriaParaEstilo[emojiCategoria] || 'padrao';
         } else if (bloco.includes('COLD OPEN')) {
             estiloDeVoz = 'curioso_ou_bizarro';
         }
@@ -106,7 +93,7 @@ async function gerarAudiosDoRoteiro() {
             const [_, nomeApresentadorRaw, textoFala] = fala;
             
             const nomeCompleto = nomeApresentadorRaw.includes('Tainá') ? 'Tainá Oliveira' : 'Iraí Santos';
-            const voiceId = ttsConfig.voices[nomeCompleto];
+            const voiceId = ttsConfig.voices[nomeCompleto as keyof typeof ttsConfig.voices];
             
             const voiceSettings = ttsConfig.estilos_de_voz[estiloDeVoz] || ttsConfig.estilos_de_voz['padrao'];
             const textoLimpo = textoFala.trim();
@@ -116,23 +103,21 @@ async function gerarAudiosDoRoteiro() {
                 continue;
             }
 
-            console.log(`\n  -> Gerando áudio ${falaCounter} para ${nomeApresentadorRaw} (Estilo: ${estiloDeVoz})...`);
+            console.log(`\n  -> Gerando áudio ${falaCounter} para ${nomeApresentadorRaw} (Estilo: ${String(estiloDeVoz)})...`);
             
             const audioBuffer = await textoParaAudio(textoLimpo, voiceId, voiceSettings);
 
             if (audioBuffer) {
                 const numeroFala = String(falaCounter).padStart(2, '0');
-                // **CORREÇÃO:** Normaliza o nome do apresentador para o nome do arquivo.
                 const nomeNormalizado = normalizeString(nomeApresentadorRaw.toLowerCase());
                 const audioFilename = path.join(episodioAudioDir, `fala_${numeroFala}_${nomeNormalizado}.mp3`);
                 await fs.writeFile(audioFilename, Buffer.from(audioBuffer));
                 console.log(`     -> Áudio salvo em: ${audioFilename}`);
             }
-            await new Promise(resolve => setTimeout(resolve, 1200));
+            // Adiciona um pequeno delay para não sobrecarregar a API
+            await new Promise(resolve => setTimeout(resolve, 1200)); 
         }
     }
 
     console.log(`\n✅ Geração de áudio finalizada! Total de ${falaCounter} falas geradas.`);
 }
-
-gerarAudiosDoRoteiro();

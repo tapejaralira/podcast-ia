@@ -1,172 +1,89 @@
-# 🎙️ Bubuia News - Podcast 100% Automatizado
+# 🎙️ Bubuia News: Sua Central de Notícias Automatizada! 🤖
 
-> **"Notícia quente de dentro da rede."**
+Bem-vindo ao **Bubuia News**, o projeto que transforma o caos da informação em um podcast diário, informativo e (às vezes) hilário! Cansado de rolar infinitamente por feeds de notícias? O Bubuia News faz o trabalho pesado para você: ele busca, analisa, roteiriza, narra e produz um episódio de podcast completo, tudo com o poder da IA.
 
----
+![Bubuia News Thumbnail](img/thumbnail02.png)
 
-## 🤖 Sobre o Projeto
+## ✨ O que fazemos?
 
-O **BubuiA News** é um podcast diário totalmente automatizado, que captura, roteiriza, narra e produz as notícias mais relevantes de Manaus e do Amazonas. Utiliza um pipeline de scripts em Node.js, Inteligência Artificial da OpenAI e ElevenLabs para transformar o noticiário do dia em um episódio de áudio completo e pronto para ser distribuído.
+Nosso pipeline automatizado é o coração do projeto. Ele executa uma série de tarefas para entregar seu podcast fresquinho todos os dias:
 
-O projeto é dividido em quatro fases principais:
+1.  **Busca de Notícias**: Vasculhamos a web em busca das notícias mais quentes e relevantes.
+2.  **Análise com IA**: Usamos modelos de linguagem para entender, classificar e resumir cada notícia.
+3.  **Geração de Roteiro**: Criamos um roteiro dinâmico e coeso, com direito a aberturas criativas, blocos de notícias e encerramento.
+4.  **Produção de Áudio (TTS)**: Damos voz ao roteiro com narrações geradas por IA, usando as vozes dos nossos personas.
+5.  **Mixagem Profissional**: Juntamos tudo — narrações, trilhas sonoras e vinhetas — para criar um episódio com qualidade de estúdio.
 
-- **Coleta**
-- **Curadoria**
-- **Roteirização**
-- **Produção de Áudio**
+## 🚀 Começando
 
-Cada uma com seus próprios módulos inteligentes.
+Para colocar o Bubuia News para funcionar, você só precisa de alguns passos:
 
----
+### Pré-requisitos
 
-## 🗣️ Os Apresentadores (IA)
+*   Node.js (v18 ou superior)
+*   FFmpeg (instalado e acessível no PATH do sistema)
+*   Credenciais de API (para os serviços de IA que você usar)
 
-As personalidades são o coração do Bubuia News. O roteiro é gerado com base em perfis detalhados para garantir diálogos autênticos e carismáticos.
+### Instalação
 
-- **👩‍🎤 Tainá Oliveira:**  
-  Jovem produtora cultural de Parintins (24 anos), torcedora do Garantido, agora vive em Manaus. É energética, conectada e apaixonada pela cultura amazônica. O coração pulsante do programa.
+1.  Clone este repositório:
+    ```bash
+    git clone https://github.com/seu-usuario/bubuia-news.git
+    cd bubuia-news
+    ```
 
-- **👨‍🎤 Iraí Santos:**  
-  Jornalista manauara de 28 anos, analítico e observador. Morou 3 anos no Sul para estudar, o que lhe deu uma perspectiva cultural mais ampla. É a voz da razão e do ceticismo bem-humorado do podcast.
+2.  Instale as dependências:
+    ```bash
+    npm install
+    ```
 
----
+3.  Configure suas chaves de API e outros parâmetros no arquivo `src/config.ts`.
 
-## 🚀 Como Funciona: O Fluxo Automatizado
+### Executando o Pipeline
 
-O sistema opera em uma pipeline de 4 etapas para transformar notícias brutas em um episódio de áudio completo.
-
-### **Etapa 1: Coleta (O "Pescador")**
-
-- **Script:** `noticias/buscarNoticias.js`
-- **O que faz:** Orquestra múltiplos "coletores" (pequenos robôs na pasta `noticias/collectors/`). Cada coletor busca as manchetes mais recentes de um portal de notícias específico (G1 Amazonas, A Crítica, etc.).
-- **Inteligência:** Possui uma "memória" (`data/estado_coleta.json`) que registra a data da última coleta. Assim, busca apenas as notícias publicadas desde a última execução.
-- **Resultado:** Gera o arquivo `data/noticias-recentes.json` com dezenas de notícias brutas.
-
----
-
-### **Etapa 2: Curadoria (O "Editor-Chefe Digital")**
-
-- **Script:** `noticias/analisarNoticias.js`
-- **O que faz:** Este é o cérebro editorial do projeto.
-- **Classificação com IA:**  
-  Lê todas as notícias brutas e, para cada uma, envia o título e resumo para a API da OpenAI. A IA classifica a notícia de acordo com nossa linha editorial (ex: 🚀 Tecnologia, 👽 Bizarrices da Bubuia).
-- **Agrupamento Inteligente:**  
-  Compara os títulos das notícias classificadas e agrupa aquelas que falam sobre o mesmo evento, criando "Super-Notícias".
-- **Seleção da Pauta:**  
-  Escolhe a melhor notícia para o "Cold Open" (abertura do programa) e as 4 notícias principais mais relevantes.
-- **Resultado:** Gera o arquivo `data/episodio-do-dia.json`, a pauta final e inteligente para o episódio.
-
----
-
-### **Etapa 3: Roteirização (O "Diretor de Cena")**
-
-- **Script:** `roteiro/gerarRoteiro.js`
-- **O que faz:** Transforma a pauta em um roteiro vivo.
-- **Busca Aprofundada:**  
-  Para cada notícia selecionada, visita os links e busca o texto completo da matéria.
-- **Geração de Diálogo com IA:**  
-  Envia para a OpenAI o texto completo, os perfis detalhados dos personagens e uma direção de cena, pedindo para criar um diálogo natural, com gírias, pausas e a personalidade de cada um.
-- **Preparação para Áudio:**  
-  O prompt instrui a IA a incluir tags SSML (`<break>`, `<emphasis>`) no diálogo, preparando o texto para ser interpretado com mais emoção pela API de Text-to-Speech.
-- **Resultado:** Gera o arquivo de roteiro final do dia em Markdown na pasta `episodios/`.
-
----
-
-### **Etapa 4: Produção de Áudio (O "Engenheiro de Som")**
-
-- **Scripts:** `producao/gerarAudio.js` e `mixagem/montarEpisodio.js`
-- **O que faz:** Converte o roteiro de texto em um episódio de áudio finalizado.
-- **Geração de Voz com IA:**  
-  O script `gerarAudio.js` lê o roteiro final, envia cada fala individualmente para a API da ElevenLabs e salva os arquivos de áudio na pasta `audios_gerados/`.
-- **Mixagem Automatizada:**  
-  O script `montarEpisodio.js` atua como um engenheiro de som. Ele lê o roteiro como uma "partitura", juntando as falas, trilhas sonoras, vinhetas e efeitos na ordem correta, usando `fluent-ffmpeg`.
-- **Qualidade de Estúdio:**  
-  Aplica automaticamente efeitos de compressão e normalização de áudio para garantir uma qualidade profissional e consistente.
-- **Resultado:** Gera um arquivo `bubuia_news_AAAA-MM-DD.mp3` na pasta `episodios_finais/`, pronto para ser distribuído.
-
----
-
-## 🛠️ Como Usar
-
-### 1. Instalação
-
-Clone o repositório e instale as dependências:
+Para rodar o pipeline completo e gerar um novo episódio, execute:
 
 ```bash
-npm install
+npm start
 ```
 
-### 2. Configuração do Ambiente
+O episódio final será salvo na pasta `episodios_finais`.
 
-Renomeie o arquivo `.env.example` para `.env`.
+## 🛠️ Scripts Disponíveis
 
-Abra o arquivo `.env` e insira suas chaves de API:
+Você também pode executar cada etapa do pipeline individualmente:
+
+*   `npm run buscar`: Busca as notícias mais recentes.
+*   `npm run analisar`: Analisa as notícias baixadas.
+*   `npm run roteiro`: Gera o roteiro do dia.
+*   `npm run audio`: Gera os áudios para o roteiro.
+*   `npm run montar`: Monta o episódio final.
+*   `npm run lint`: Verifica a qualidade do código.
+*   `npm run format`: Formata o código usando Prettier.
+
+## 📂 Estrutura do Projeto
 
 ```
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
-ELEVENLABS_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
+.bubuia-news/
+├── src/                # Todo o código-fonte em TypeScript
+│   ├── noticias/       # Módulos de busca e análise de notícias
+│   ├── roteiro/        # Módulos de geração de roteiro
+│   ├── producao/       # Módulo de geração de áudio (TTS)
+│   ├── mixagem/        # Módulo de montagem do episódio
+│   ├── config.ts       # Configurações centrais do projeto
+│   ├── types.ts        # Tipos e interfaces
+│   └── index.ts        # Orquestrador principal do pipeline
+├── data/               # Dados gerados (notícias, roteiros, etc.)
+├── audios/             # Arquivos de áudio base (trilhas, vinhetas)
+├── episodios_finais/   # Onde a mágica acontece: seus podcasts!
+├── package.json        # Dependências e scripts
+└── tsconfig.json       # Configurações do TypeScript
 ```
 
-### 3. Executando a Pipeline
+## 🤝 Contribuindo
 
-Você pode executar cada etapa individualmente ou usar os comandos "mestres".
-
-- **Coletar notícias:**
-  ```bash
-  npm run coletar
-  ```
-- **Analisar e criar a pauta:**
-  ```bash
-  npm run analisar
-  ```
-- **Gerar o roteiro em texto:**
-  ```bash
-  npm run roteirizar
-  ```
-- **Gerar os arquivos de áudio:**
-  ```bash
-  npm run audios
-  ```
-- **Montar o episódio final:**
-  ```bash
-  npm run montar
-  ```
-
-#### **Comandos Mestres**
-
-- **Gerar a pauta completa (coleta + análise):**
-  ```bash
-  npm run pauta-completa
-  ```
-- **Gerar o roteiro a partir da pauta (coleta + análise + roteiro):**
-  ```bash
-  npm run episodio-completo
-  ```
-- **Produzir o áudio a partir do roteiro (geração de áudio + montagem):**
-  ```bash
-  npm run produzir
-  ```
+O Bubuia News é um projeto em constante evolução! Sinta-se à vontade para abrir *issues* com sugestões, reportar bugs ou enviar *pull requests* com melhorias.
 
 ---
 
-## 📁 Estrutura do Projeto
-
-```
-/podcast-ia/
-│
-├── 📁 audios/               # Vinhetas, trilhas e locuções base
-├── 📁 audios_gerados/       # Áudios de falas gerados pela IA
-├── 📁 data/                 # JSONs de estado e pautas
-├── 📁 episodios/            # Roteiros finais em .md
-├── 📁 episodios_finais/     # Arquivos .mp3 dos episódios prontos
-├── 📁 mixagem/              # Script de montagem do áudio
-├── 📁 noticias/             # Scripts de coleta e análise
-├── 📁 producao/             # Script de geração de voz
-└── 📁 roteiro/              # Scripts de geração de roteiro
-```
-
----
-
-## 📄 Licença
-
-MIT License
+Feito com ❤️, ☕ e muito código por [Seu Nome](https://github.com/seu-usuario).
