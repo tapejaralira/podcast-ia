@@ -1,7 +1,8 @@
-// noticias/collectors/d24am.js
+// src/noticias/collectors/d24am.ts
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { toDate } from 'date-fns-tz';
+import { NoticiaCrua, Collector } from '../../types.js';
 
 const D24AM_URLS = [
     'https://d24am.com/amazonas/',
@@ -11,14 +12,14 @@ const D24AM_URLS = [
 const SOURCE_NAME = 'D24AM';
 const TIMEZONE = 'America/Manaus';
 
-const monthMap = {
+const monthMap: { [key: string]: string } = {
     'janeiro': 'January', 'fevereiro': 'February', 'março': 'March',
     'abril': 'April', 'maio': 'May', 'junho': 'June',
     'julho': 'July', 'agosto': 'August', 'setembro': 'September',
     'outubro': 'October', 'novembro': 'November', 'dezembro': 'December'
 };
 
-function parsePortugueseDate(dateString) {
+function parsePortugueseDate(dateString: string | undefined): string | null {
     if (!dateString) return null;
     const parts = dateString.toLowerCase().split(' ');
     if (parts.length < 5) return null;
@@ -35,21 +36,22 @@ function parsePortugueseDate(dateString) {
         const date = new Date(standardDateString);
         return toDate(date, { timeZone: TIMEZONE }).toISOString();
     } catch (e) {
+        console.error(`Erro ao converter a data: ${dateString}`, e);
         return null;
     }
 }
 
-// LÓGICA CORRIGIDA: Usando o filtro dinâmico
-function isAfterStartTime(isoDate, startTime) {
-    if (!isoDate || !startTime) return false;
+function isAfterStartTime(isoDate: string | null, startTime: string): boolean {
+    if (!isoDate) return false;
     try {
         return new Date(isoDate) > new Date(startTime);
     } catch(e) {
+        console.error(`Erro ao comparar datas: ${isoDate} e ${startTime}`, e);
         return false;
     }
 }
 
-async function fetchFromSection(url) {
+async function fetchFromSection(url: string): Promise<NoticiaCrua[]> {
     const { data: html } = await axios.get(url, {
         headers: {
             'User-Agent': 'BubuiaNews-Bot/1.0'
@@ -57,7 +59,7 @@ async function fetchFromSection(url) {
     });
 
     const $ = cheerio.load(html);
-    const articles = [];
+    const articles: NoticiaCrua[] = [];
 
     $('div.text-container').each((index, element) => {
         const container = $(element);
@@ -67,15 +69,14 @@ async function fetchFromSection(url) {
         const fullLink = container.closest('a').attr('href');
         const publishedDate = parsePortugueseDate(dateText);
         
-        // Coleta todos os artigos com data válida, o filtro será aplicado depois
         if (title && fullLink && publishedDate) {
             if (!articles.some(a => a.link === fullLink)) {
                 articles.push({
-                    title,
+                    titulo: title,
                     link: fullLink,
-                    source: SOURCE_NAME,
-                    publishedDate,
-                    summary: summary || 'Resumo não disponível.',
+                    fonte: SOURCE_NAME,
+                    dataPublicacao: publishedDate,
+                    resumo: summary || 'Resumo não disponível.',
                 });
             }
         }
@@ -84,37 +85,29 @@ async function fetchFromSection(url) {
     return articles;
 }
 
-// LÓGICA CORRIGIDA: A função agora aceita e usa o parâmetro { startTime }
-async function fetchFromD24AM({ startTime }) {
+async function fetchFromD24AM({ startTime }: { startTime: string }): Promise<NoticiaCrua[]> {
   try {
     const sectionsResults = await Promise.all(D24AM_URLS.map(url => fetchFromSection(url)));
-    let allArticles = sectionsResults.flat().filter(article => article !== null);
+    let allArticles = sectionsResults.flat();
 
-    // Filtro dinâmico aplicado aqui
-    allArticles = allArticles.filter(article => isAfterStartTime(article.publishedDate, startTime));
+    allArticles = allArticles.filter(article => isAfterStartTime(article.dataPublicacao, startTime));
     
-    const uniqueArticles = [];
-    const processedLinks = new Set();
+    const uniqueArticles: NoticiaCrua[] = [];
+    const processedLinks = new Set<string>();
     for (const article of allArticles) {
         if (!processedLinks.has(article.link)) {
             uniqueArticles.push(article);
             processedLinks.add(article.link);
         }
     }
-
-    if (uniqueArticles.length === 0) {
-        console.warn(`[AVISO] Nenhum artigo recente encontrado para "${SOURCE_NAME}".`);
-    }
-
     return uniqueArticles;
-
   } catch (error) {
-    console.error(`Erro ao buscar notícias do ${SOURCE_NAME}:`, error.message);
+    console.error('Erro ao buscar notícias do D24AM:', error);
     return [];
   }
 }
 
-export default {
-  fetch: fetchFromD24AM,
-  sourceName: SOURCE_NAME,
+export const d24amCollector: Collector = {
+    name: SOURCE_NAME,
+    fetch: fetchFromD24AM,
 };

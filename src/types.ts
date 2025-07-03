@@ -1,7 +1,27 @@
 // src/types.ts
 
 /**
+ * Define a estrutura para uma notícia crua, como coletada de uma fonte.
+ */
+export interface NoticiaCrua {
+  titulo: string;
+  resumo: string;
+  link: string;
+  fonte: string;
+  dataPublicacao: string;
+}
+
+/**
+ * Define a interface para um coletor de notícias.
+ */
+export interface Collector {
+  name: string;
+  fetch: (options: { startTime: string }) => Promise<NoticiaCrua[]>;
+}
+
+/**
  * Define a estrutura para uma única fonte de notícia.
+ * @deprecated Substituído por NoticiaCrua e NoticiaAgrupada.
  */
 export interface FonteNoticia {
   resumo: string;
@@ -107,6 +127,7 @@ export interface ConfigRoteiro {
 
 /**
  * Define a estrutura para uma notícia.
+ * @deprecated Use NoticiaCrua ou NoticiaClassificada em vez disso.
  */
 export interface Noticia {
   titulo_principal: string;

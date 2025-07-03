@@ -1,9 +1,9 @@
-// noticias/collectors/portaldoholanda.js
+// src/noticias/collectors/portaldoholanda.ts
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { toDate } from 'date-fns-tz';
 import { subDays, subHours, subMinutes } from 'date-fns';
-
+import { NoticiaCrua, Collector } from '../../types.js';
 
 const PORTAL_DO_HOLANDA_URLS = [
     'https://www.portaldoholanda.com.br/bizarro',
@@ -13,7 +13,7 @@ const PORTAL_DO_HOLANDA_URLS = [
 const SOURCE_NAME = 'Portal do Holanda';
 const TIMEZONE = 'America/Manaus';
 
-function parseRelativeDate(dateText) {
+function parseRelativeDate(dateText: string | undefined): string | null {
     if (!dateText) return null;
     const now = new Date();
     const text = dateText.toLowerCase();
@@ -29,26 +29,25 @@ function parseRelativeDate(dateText) {
         if (text.includes('dia')) return toDate(subDays(now, number), { timeZone: TIMEZONE }).toISOString();
         return null;
     } catch(e) {
+        console.error(`Erro ao converter data relativa: ${dateText}`, e);
         return null;
     }
 }
 
-// MODO DE PRODUÇÃO: Usando o filtro dinâmico
-function isAfterStartTime(isoDate, startTime) {
+function isAfterStartTime(isoDate: string | null, startTime: string): boolean {
     if (!isoDate || !startTime) return false;
     try {
         return new Date(isoDate) > new Date(startTime);
     } catch (e) {
+        console.error(`Erro ao comparar datas: ${isoDate} e ${startTime}`, e);
         return false;
     }
 }
 
-async function fetchFromSection(url) {
-    const { data: html } = await axios.get(url, {
-        headers: { 'User-Agent': 'BubuiaNews-Bot/1.0' }
-    });
+async function fetchFromSection(url: string): Promise<NoticiaCrua[]> {
+    const { data: html } = await axios.get(url, { headers: { 'User-Agent': 'BubuiaNews-Bot/1.0' } });
     const $ = cheerio.load(html);
-    const articles = [];
+    const articles: NoticiaCrua[] = [];
     $('div.editorianoticia').each((index, element) => {
         const textContainer = $(element);
         const titleElement = textContainer.find('h3.destaque.titulo a');
@@ -62,30 +61,29 @@ async function fetchFromSection(url) {
             const dateText = textContainer.find('p.destaque.ha').text().trim();
             const publishedDate = parseRelativeDate(dateText);
 
-            // Coleta a notícia mesmo que seja antiga; o filtro será aplicado depois
-            articles.push({
-                title,
-                link: fullLink,
-                source: SOURCE_NAME,
-                publishedDate,
-                summary: summary || 'Resumo não disponível.',
-            });
+            if (publishedDate) {
+                articles.push({
+                    titulo: title,
+                    link: fullLink,
+                    fonte: SOURCE_NAME,
+                    dataPublicacao: publishedDate,
+                    resumo: summary || 'Resumo não disponível.',
+                });
+            }
         }
     });
     return articles;
 }
 
-// A função agora usa o 'startTime' para filtrar as notícias
-async function fetchFromPortalDoHolanda({ startTime }) {
+async function fetchFromPortalDoHolanda({ startTime }: { startTime: string }): Promise<NoticiaCrua[]> {
   try {
     const sectionsResults = await Promise.all(PORTAL_DO_HOLANDA_URLS.map(url => fetchFromSection(url)));
-    let allArticles = sectionsResults.flat().filter(article => article !== null);
+    let allArticles = sectionsResults.flat();
     
-    // Aplica o filtro dinâmico aqui
-    allArticles = allArticles.filter(article => isAfterStartTime(article.publishedDate, startTime));
+    allArticles = allArticles.filter(article => isAfterStartTime(article.dataPublicacao, startTime));
 
-    const uniqueArticles = [];
-    const processedLinks = new Set();
+    const uniqueArticles: NoticiaCrua[] = [];
+    const processedLinks = new Set<string>();
     for (const article of allArticles) {
         if (!processedLinks.has(article.link)) {
             uniqueArticles.push(article);
@@ -98,14 +96,13 @@ async function fetchFromPortalDoHolanda({ startTime }) {
     }
 
     return uniqueArticles;
-
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Erro ao buscar notícias do ${SOURCE_NAME}:`, error.message);
     return [];
   }
 }
 
-export default {
+export const portalDoHolandaCollector: Collector = {
+  name: SOURCE_NAME,
   fetch: fetchFromPortalDoHolanda,
-  sourceName: SOURCE_NAME,
 };
