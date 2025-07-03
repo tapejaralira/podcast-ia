@@ -1,33 +1,31 @@
-# Ignorar arquivos de ambiente
-.env
-
-# Node modules
+# Dependências e ambiente
 node_modules/
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Saída de compilação do TypeScript
+dist/
+build/
+out/
+*.tsbuildinfo
 
 # Logs
 logs/
 *.log
 
-# Diretórios temporários
-tmp/
-temp/
-
-# Arquivos do sistema operacional
+# Arquivos de sistema operacional
 .DS_Store
 Thumbs.db
 
-# Saída de builds
-dist/
-build/
-out/
+# Pastas com dados gerados pelo pipeline
+# Estes arquivos são criados a cada execução e não devem ser versionados.
+data/
+audios_gerados/
+episodios_finais/
+episodios/
 
-# Arquivos de áudio
-*.mp3
-*.wav
-*.ogg
-*.flac
-*.aac
-*.m4a
-*.wma
-*.aiff
-*.alac
+# Arquivos temporários
+tmp/
+temp/
