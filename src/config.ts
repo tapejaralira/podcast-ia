@@ -1,9 +1,14 @@
 import path from 'path';
 
+// Usar __dirname para garantir caminhos absolutos robustos
+const __dirname = path.resolve(path.dirname('')); // Simula __dirname em módulos ES
+
+export const SRC_DIR = path.resolve(__dirname, 'src');
+export const DATA_DIR = path.resolve(__dirname, 'data');
+export const EPISODIOS_DIR = path.resolve(__dirname, 'episodios');
+
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-const DATA_DIR = path.join(ROOT_DIR, 'data');
-const EPISODIOS_DIR = path.join(ROOT_DIR, 'episodios');
 const AUDIOS_GERADOS_DIR = path.join(ROOT_DIR, 'audios_gerados');
 const ROTEIRO_DIR = path.join(ROOT_DIR, 'roteiro');
 
@@ -72,13 +77,13 @@ export const config = {
       'Portal do Holanda': 9
     },
     classificationGuide: {
-      "⚫️ 1": "Segurança & BOs de Impacto",
-      "🟡 2": "Política de Baré",
-      "🔴 3": "Perrengues da Cidade",
-      "🚀 4": "Tecnologia & Inovação do Igarapé",
-      "🎬 5": "Cultura Pop & Geek de Rede",
-      "🎭 6": "Rolê Cultural",
-      "👽 7": "Bizarrices da Bubuia"
+      "⚫️ 1": { label: "Segurança & BOs de Impacto", categoria: "cidades" },
+      "🟡 2": { label: "Política de Baré", categoria: "politica" },
+      "🔴 3": { label: "Perrengues da Cidade", categoria: "cidades" },
+      "🚀 4": { label: "Tecnologia & Inovação do Igarapé", categoria: "economia" },
+      "🎬 5": { label: "Cultura Pop & Geek de Rede", categoria: "cultura" },
+      "🎭 6": { label: "Rolê Cultural", categoria: "cultura" },
+      "👽 7": { label: "Bizarrices da Bubuia", categoria: "cultura" }
     }
   },
 

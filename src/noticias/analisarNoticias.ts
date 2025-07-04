@@ -6,11 +6,12 @@ import 'dotenv/config';
 
 import { config } from '../config.js';
 import {
-    Noticia,
+    NoticiaCrua,
     NoticiaAgrupada,
     NoticiaClassificada,
     PautaDoDia,
-    Classification
+    Classification,
+    FonteNoticia
 } from '../types.js';
 
 // --- Configurações e Constantes ---
@@ -19,7 +20,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const { relevanceKeywords, sourceWeights, classificationGuide } = config.analise;
 
 const CLASSIFICATION_GUIDE_TEXT = Object.entries(classificationGuide)
-    .map(([key, value]) => `* **${key}**: ${value}`)
+    .map(([key, value]) => `* **${key}**: ${value.label}`)
     .join('\n');
 
 // --- Tipos Específicos ---
@@ -28,15 +29,16 @@ interface OpenAIResponse {
     is_adequate: boolean;
 }
 
-interface NoticiaAnalisada extends Noticia {
+// Notícia crua enriquecida com dados da análise
+interface NoticiaAnalisada extends NoticiaCrua {
     relevanceScore: number;
     classification: Classification;
 }
 
 // --- Funções Principais ---
 
-async function chamarIAparaClassificar(article: Noticia): Promise<Classification> {
-    console.log(`  -> Classificando com OpenAI: "${article.titulo_principal.substring(0, 40)}..."`);
+async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classification> {
+    console.log(`  -> Classificando com IA: "${article.titulo.substring(0, 40)}..."`);
     try {
         const prompt = `
       Você é o editor-chefe do podcast "Bubuia News" de Manaus. Sua tarefa é analisar e classificar uma notícia com um rigoroso controle de qualidade.
@@ -55,7 +57,7 @@ async function chamarIAparaClassificar(article: Noticia): Promise<Classification
       ${CLASSIFICATION_GUIDE_TEXT}
 
       #### Artigo para Análise
-      - Título: ${article.titulo_principal}
+      - Título: ${article.titulo}
       - Resumo: ${article.resumo}
 
       Responda APENAS com o objeto JSON.
@@ -75,25 +77,25 @@ async function chamarIAparaClassificar(article: Noticia): Promise<Classification
         if (!classificationId || !classificationGuide[classificationId]) {
             console.warn(`  [AVISO] IA retornou ID inválido: ${classificationId}. Usando padrão.`);
             const fallbackId = "🔴 3" as keyof typeof classificationGuide;
-            return { id: fallbackId, label: classificationGuide[fallbackId], isAdequate: true };
+            return { id: fallbackId, label: classificationGuide[fallbackId].label, isAdequate: true };
         }
         return {
             id: classificationId,
-            label: classificationGuide[classificationId],
+            label: classificationGuide[classificationId].label,
             isAdequate: parsedResponse.is_adequate !== false
         };
     } catch (error: any) {
-        console.error(`❌ Erro ao chamar a API da OpenAI: ${error.message}`);
+        console.error(`❌ Erro ao chamar a API de classificação: ${error.message}`);
         const fallbackId = "🔴 3" as keyof typeof classificationGuide;
-        return { id: fallbackId, label: classificationGuide[fallbackId], isAdequate: true }; // Fallback seguro
+        return { id: fallbackId, label: classificationGuide[fallbackId].label, isAdequate: true }; // Fallback seguro
     }
 }
 
-function calcularRelevanceScore(article: Noticia, classification: Classification): number {
+function calcularRelevanceScore(article: NoticiaCrua, classification: Classification): number {
     if (!classification.isAdequate) return -100;
     
     let score = 0;
-    const title = article.titulo_principal.toLowerCase();
+    const title = article.titulo.toLowerCase();
     const source = article.fonte as keyof typeof sourceWeights;
 
     score += sourceWeights[source] || 3;
@@ -111,7 +113,7 @@ function calcularRelevanceScore(article: Noticia, classification: Classification
     return score;
 }
 
-function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaAgrupada[] {
+function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaClassificada[] {
     console.log('\n[LOG] Fase de agrupamento iniciada...');
     const grupos: { [key: string]: NoticiaAnalisada[] } = {};
     for (const noticia of noticias) {
@@ -120,7 +122,7 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaAgrupada[] {
         grupos[categoria].push(noticia);
     }
 
-    const noticiasAgrupadas: NoticiaAgrupada[] = [];
+    const noticiasAgrupadas: NoticiaClassificada[] = [];
     const processados = new Set<string>();
 
     for (const categoria in grupos) {
@@ -130,11 +132,11 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaAgrupada[] {
             if (processados.has(noticiaBase.link)) continue;
 
             const grupoSimilar = [noticiaBase];
-            const palavrasBase = new Set(noticiaBase.titulo_principal.toLowerCase().split(' ').filter(p => p.length > 3));
+            const palavrasBase = new Set(noticiaBase.titulo.toLowerCase().split(' ').filter(p => p.length > 3));
 
             for (let i = grupoCategoria.length - 1; i >= 0; i--) {
                 const noticiaComparar = grupoCategoria[i];
-                const palavrasComparar = new Set(noticiaComparar.titulo_principal.toLowerCase().split(' '));
+                const palavrasComparar = new Set(noticiaComparar.titulo.toLowerCase().split(' '));
                 const intersecao = new Set([...palavrasBase].filter(p => palavrasComparar.has(p)));
                 if ((intersecao.size / palavrasBase.size) > 0.4) {
                     grupoSimilar.push(noticiaComparar);
@@ -148,12 +150,13 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaAgrupada[] {
 
             noticiasAgrupadas.push({
                 isSuperNoticia: grupoSimilar.length > 1,
-                titulo_principal: noticiaPrincipal.titulo_principal,
+                tituloPrincipal: noticiaPrincipal.titulo,
                 classification: noticiaPrincipal.classification,
                 relevanceScore: noticiaPrincipal.relevanceScore,
                 fontes: grupoSimilar.map(n => ({
                     link: n.link,
                     resumo: n.resumo,
+                    fonte: n.fonte
                 })),
             });
         }
@@ -168,16 +171,16 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaAgrupada[] {
 
 export async function analisarNoticias() {
     console.log('🧠 Bubuia News - Iniciando análise e curadoria...');
-    const inputFile = path.join(config.paths.data, 'noticias-recentes.json');
-    const outputFile = path.join(config.paths.data, 'episodio-do-dia.json');
-    let todasAsNoticias: Noticia[];
+    const inputFile = config.paths.noticiasRecentesFile;
+    const outputFile = config.paths.pautaDoDiaFile;
+    let todasAsNoticias: NoticiaCrua[];
 
     try {
         const fileContent = await fs.readFile(inputFile, 'utf-8');
         todasAsNoticias = JSON.parse(fileContent);
     } catch (error) {
-        console.error(`🔥 Erro ao ler o arquivo de notícias: ${inputFile}. Execute o 'buscarNoticias.ts' primeiro.`);
-        return;
+        console.error(`🔥 Erro ao ler o arquivo de notícias: ${inputFile}. Execute a etapa de busca primeiro.`);
+        throw error;
     }
 
     console.log(`\n[LOG] ${todasAsNoticias.length} artigos brutos encontrados. Iniciando classificação...`);
@@ -193,64 +196,46 @@ export async function analisarNoticias() {
     console.log(`[LOG] ${noticiasAnalisadas.length} notícias foram consideradas adequadas após a classificação da IA.`);
 
     const pautaAgrupada = agruparNoticias(noticiasAnalisadas);
-    pautaAgrupada.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
+    pautaAgrupada.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-    const pautaRestante = pautaAgrupada;
-
-    const noticiasPrincipais: NoticiaClassificada[] = [];
-    const categoriasUsadas = new Set<string>();
-
-    for (const noticia of pautaRestante) {
-        if (noticiasPrincipais.length >= 4) break;
-        if (!categoriasUsadas.has(noticia.classification.id)) {
-            noticiasPrincipais.push(noticia as NoticiaClassificada);
-            categoriasUsadas.add(noticia.classification.id);
-        }
-    }
-    
-    if (noticiasPrincipais.length < 4) {
-        for (const noticia of pautaRestante) {
-            if (noticiasPrincipais.length >= 4) break;
-            if (!noticiasPrincipais.some(n => n.titulo_principal === noticia.titulo_principal)) {
-                noticiasPrincipais.push(noticia as NoticiaClassificada);
-            }
-        }
+    if (pautaAgrupada.length === 0) {
+        console.warn('\n[AVISO] Nenhuma notícia adequada foi encontrada para formar a pauta. O processo será interrompido.');
+        throw new Error('Nenhuma notícia para a pauta.');
     }
 
-    console.log(`[LOG] Selecionadas ${noticiasPrincipais.length} notícias para o bloco principal.`);
+    // --- Montagem da Pauta Final (LÓGICA CORRIGIDA) ---
 
-    if (noticiasPrincipais.length === 0) {
-        console.error('🔥 Nenhuma notícia principal foi selecionada. Encerrando a análise.');
-        // Cria um arquivo de pauta vazio para não quebrar o pipeline
-        const pautaVazia: PautaDoDia = { 
-            data: new Date().toISOString(), 
-            coldOpen: null as any, // O ideal seria ter um tipo que permita nulo
-            noticiasPrincipais: [], 
-            outrasNoticias: [] 
-        };
-        await fs.writeFile(outputFile, JSON.stringify(pautaVazia, null, 2));
-        return;
-    }
+    // A notícia mais relevante vira a manchete
+    const manchete = pautaAgrupada.shift()!;
 
-    // A notícia mais relevante vira o Cold Open, o resto vai para o bloco principal
-    const coldOpenNoticia = noticiasPrincipais[0];
-    const blocoPrincipalNoticias = noticiasPrincipais.slice(1);
-
-    const pautaJSON: PautaDoDia = {
+    // Inicializa a pauta final com a estrutura correta
+    const pautaFinal: PautaDoDia = {
         data: new Date().toISOString(),
-        coldOpen: coldOpenNoticia,
-        noticiasPrincipais: blocoPrincipalNoticias,
-        outrasNoticias: [], // O script original não populava isso, mantendo consistência
+        manchete: manchete.tituloPrincipal,
+        efemerides: [], // Efemérides serão adicionadas em outra etapa (se necessário)
+        pauta: {
+            politica: [],
+            economia: [],
+            cidades: [],
+            cultura: [],
+            esportes: [],
+        },
     };
 
-    await fs.writeFile(outputFile, JSON.stringify(pautaJSON, null, 2));
+    // Adiciona a manchete à sua categoria correspondente
+    const categoriaManchete = classificationGuide[manchete.classification.id as keyof typeof classificationGuide].categoria as keyof PautaDoDia['pauta'];
+    if (pautaFinal.pauta[categoriaManchete]) {
+        pautaFinal.pauta[categoriaManchete].push(manchete);
+    }
 
-    console.log('\n✅ Curadoria finalizada!');
-    console.log('\n  🎙️  Cold Open:');
-    console.log(`    - [${pautaJSON.coldOpen.classification.id}] ${pautaJSON.coldOpen.titulo_principal} (Score: ${pautaJSON.coldOpen.relevanceScore})`);
-    console.log('\n  📰 Notícias Principais:');
-    pautaJSON.noticiasPrincipais.forEach((n, index) => {
-        console.log(`    ${index + 1}. [${n.classification.id}] ${n.titulo_principal} (Score: ${n.relevanceScore})`);
-    });
-    console.log(`\nArquivo de pauta salvo em: ${outputFile}`);
+    // Distribui as notícias restantes nas suas respectivas categorias
+    for (const noticia of pautaAgrupada) {
+        const categoria = classificationGuide[noticia.classification.id as keyof typeof classificationGuide].categoria as keyof PautaDoDia['pauta'];
+        if (pautaFinal.pauta[categoria] && pautaFinal.pauta[categoria].length < 4) { // Limita notícias por categoria
+            pautaFinal.pauta[categoria].push(noticia);
+        }
+    }
+
+    await fs.writeFile(outputFile, JSON.stringify(pautaFinal, null, 2));
+    console.log(`\n✅ Análise finalizada! Pauta do dia com ${pautaAgrupada.length + 1} notícias categorizadas foi salva em ${outputFile}`);
 }

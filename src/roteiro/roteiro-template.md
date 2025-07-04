@@ -1,49 +1,58 @@
-BUBUIA NEWS - Roteiro do Dia: {{DATA_ATUAL}}
-[AUDIO: VINHETA_ABERTURA.mp3]
----
-COLD OPEN
-{{COLD_OPEN_DIALOGO}}
+# Roteiro Bubuia News - {{data}}
 
-[AUDIO: VINHETA_CURTA_DE_TRANSICAO.mp3]
-[TRILHA_INICIO: {{TRILHA_ABERTURA}}, -24dB]
-BLOCO 1: SAUDAÇÃO E CARDÁPIO
-Tainá: {{SAUDACAO_TAINA}}
+**Episódio:** {{numeroEpisodio}}
+**Título Sugerido:** {{tituloSugerido}}
 
-Iraí: {{SAUDACAO_IRAI}}
 ---
-[AUDIO: VINHETA_CURTA_DE_TRANSICAO.mp3]
-Iraí: {{CARDAPIO_NOTICIAS}}
-[TRILHA_FIM: {{TRILHA_ABERTURA}}]
----
-[AUDIO: VINHETA_CURTA_DE_TRANSICAO.mp3]
-BLOCO 2: NOTÍCIAS PRINCIPAIS
-Notícia 1: {{NOTICIA_1_TITULO}}
-[TRILHA_INICIO: {{NOTICIA_1_TRILHA}}, -24dB]
-{{NOTICIA_1_DIALOGO}}
-[TRILHA_FIM: {{NOTICIA_1_TRILHA}}]
----
-[AUDIO: VINHETA_CURTA_DE_TRANSICAO.mp3]
-Notícia 2: {{NOTICIA_2_TITULO}}
-[TRILHA_INICIO: {{NOTICIA_2_TRILHA}}, -24dB]
-{{NOTICIA_2_DIALOGO}}
-[TRILHA_FIM: {{NOTICIA_2_TRILHA}}]
----
-[AUDIO: VINHETA_CURTA_DE_TRANSICAO.mp3]
-Notícia 3: {{NOTICIA_3_TITULO}}
-[TRILHA_INICIO: {{NOTICIA_3_TRILHA}}, -24dB]
-{{NOTICIA_3_DIALOGO}}
-[TRILHA_FIM: {{NOTICIA_3_TRILHA}}]
----
-[AUDIO: VINHETA_CURTA_DE_TRANSICAO.mp3]
-Notícia 4: {{NOTICIA_4_TITULO}}
-[TRILHA_INICIO: {{NOTICIA_4_TRILHA}}, -24dB]
-{{NOTICIA_4_DIALOGO}}
-[TRILHA_FIM: {{NOTICIA_4_TRILHA}}]
----
-BLOCO 3: ENCERRAMENTO
-[AUDIO: VINHETA_CURTA_DE_TRANSICAO.mp3]
-Iraí: {{DESPEDIDA_IRAI}}
 
-Tainá: {{DESPEDIDA_TAINA}}
+## Bloco 0: Abertura (Cold Open)
 
-[AUDIO: VINHETA_ENCERRAMENTO.mp3]
+**(0-20 segundos)**
+
+**Tipo:** {{tipoColdOpen}}
+
+**Ideia:** {{ideiaColdOpen}}
+
+**Apresentador(a):** {{apresentadorColdOpen}}
+
+> {{textoColdOpen}}
+
+**(Soa a vinheta de abertura)**
+
+---
+
+## Bloco 1: Introdução
+
+**(Apresentadores Tainá e Iraí)**
+
+**Tainá:** (Saudação energética, usando gírias locais)
+
+> {{saudacaoTaina}}
+
+**Iraí:** (Saudação mais calma e analítica)
+
+> {{saudacaoIrai}}
+
+**(Breve resumo do que vai rolar no episódio, usando os ganchos)**
+
+> {{resumoEpisodio}}
+
+---
+
+## Bloco 2: Giro de Notícias
+
+{{blocoNoticias}}
+
+---
+
+## Bloco 3: Encerramento
+
+**Tainá:**
+
+> {{despedidaTaina}}
+
+**Iraí:**
+
+> {{despedidaIrai}}
+
+**(Soa a vinheta de encerramento)**

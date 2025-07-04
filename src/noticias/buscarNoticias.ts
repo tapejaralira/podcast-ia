@@ -4,49 +4,46 @@ import path from 'path';
 import { pathToFileURL } from 'url';
 
 import { config } from '../config.js';
-import { Noticia } from '../types.js';
+import { NoticiaCrua, Collector } from '../types.js';
 
-// Define a interface para um módulo coletor
+// Define a interface para um módulo coletor importado dinamicamente
 interface CollectorModule {
-    default: {
-        sourceName: string;
-        fetch: (options: { startTime: Date }) => Promise<Noticia[]>;
-    };
+    default: Collector;
 }
 
 export async function buscarNoticias() {
     console.log('🤖 Bubuia News - Iniciando busca por notícias...');
     
-    const estadoFile = path.join(config.paths.data, 'estado_coleta.json');
-    let startTime: Date;
+    const estadoFile = config.paths.estadoColetaFile;
+    let startTime: string;
 
     try {
         const estadoContent = await fs.readFile(estadoFile, 'utf-8');
         const estado = JSON.parse(estadoContent);
         if (estado.ultimaColeta) {
-            startTime = new Date(estado.ultimaColeta);
-            console.log(`Última coleta registrada em: ${startTime.toLocaleString('pt-BR')}. Buscando notícias desde então.`);
+            startTime = new Date(estado.ultimaColeta).toISOString();
+            console.log(`Última coleta registrada em: ${new Date(startTime).toLocaleString('pt-BR')}. Buscando notícias desde então.`);
         } else {
             throw new Error('Formato de estado inválido');
         }
     } catch (error) {
         console.log('Nenhum registro de coleta anterior válido. Buscando notícias das últimas 48 horas.');
-        startTime = new Date();
-        startTime.setHours(startTime.getHours() - 48);
+        const date = new Date();
+        date.setHours(date.getHours() - 48);
+        startTime = date.toISOString();
     }
 
-    const todosOsArtigos: Noticia[] = [];
+    const todosOsArtigos: NoticiaCrua[] = [];
     const linksProcessados = new Set<string>();
     const runStartTime = new Date();
-    const collectorsDir = path.join(__dirname, 'collectors'); // O __dirname ainda é relativo ao arquivo JS transpilado
+    const collectorsDir = path.join(__dirname, 'collectors');
 
     try {
         const collectorFiles = await fs.readdir(collectorsDir);
         const coletoresPromises = collectorFiles
-            .filter(file => file.endsWith('.js')) // Os coletores ainda serão .js após a transpilação
+            .filter(file => file.endsWith('.js')) // O import dinâmico carrega os arquivos JS transpilados
             .map(file => {
                 const fullPath = path.join(collectorsDir, file);
-                // A importação dinâmica continua a mesma, pois o Node.js a executará
                 return import(pathToFileURL(fullPath).href) as Promise<CollectorModule>;
             });
         
@@ -73,7 +70,7 @@ export async function buscarNoticias() {
             }
         }
         
-        const outputFile = path.join(config.paths.data, 'noticias-recentes.json');
+        const outputFile = config.paths.noticiasRecentesFile;
         await fs.mkdir(path.dirname(outputFile), { recursive: true });
         await fs.writeFile(outputFile, JSON.stringify(todosOsArtigos, null, 2));
         
@@ -85,5 +82,6 @@ export async function buscarNoticias() {
 
     } catch (error) {
         console.error('🔥 Ocorreu um erro geral no processo de busca:', error);
+        throw error; // Lança o erro para o pipeline principal
     }
 }

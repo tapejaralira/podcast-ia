@@ -108,6 +108,6 @@ async function fetchFromD24AM({ startTime }: { startTime: string }): Promise<Not
 }
 
 export const d24amCollector: Collector = {
-    name: SOURCE_NAME,
+    sourceName: SOURCE_NAME,
     fetch: fetchFromD24AM,
 };

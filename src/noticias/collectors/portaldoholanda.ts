@@ -103,6 +103,6 @@ async function fetchFromPortalDoHolanda({ startTime }: { startTime: string }): P
 }
 
 export const portalDoHolandaCollector: Collector = {
-  name: SOURCE_NAME,
+  sourceName: SOURCE_NAME,
   fetch: fetchFromPortalDoHolanda,
 };

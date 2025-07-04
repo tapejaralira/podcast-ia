@@ -1,162 +1,147 @@
-// src/types.ts
+// ============================================================================
+//                          TIPOS CENTRAIS DO PROJETO
+//         Esta é a única fonte da verdade para as estruturas de dados.
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// ETAPA 1: COLETA DE NOTÍCIAS
+// ----------------------------------------------------------------------------
 
 /**
- * Define a estrutura para uma notícia crua, como coletada de uma fonte.
+ * Representa uma notícia em seu estado mais bruto, recém-coletada de uma fonte.
  */
 export interface NoticiaCrua {
   titulo: string;
   resumo: string;
   link: string;
   fonte: string;
-  dataPublicacao: string;
+  dataPublicacao: string; // Formato ISO 8601
 }
 
 /**
- * Define a interface para um coletor de notícias.
+ * Define a interface para um módulo coletor de notícias.
+ * Cada coletor (G1, A Crítica, etc.) deve implementar esta interface.
  */
 export interface Collector {
-  name: string;
+  sourceName: string;
   fetch: (options: { startTime: string }) => Promise<NoticiaCrua[]>;
 }
 
+// ----------------------------------------------------------------------------
+// ETAPA 2: ANÁLISE E CLASSIFICAÇÃO
+// ----------------------------------------------------------------------------
+
 /**
- * Define a estrutura para uma única fonte de notícia.
- * @deprecated Substituído por NoticiaCrua e NoticiaAgrupada.
+ * Representa uma única fonte de notícia dentro de um grupo.
  */
 export interface FonteNoticia {
   resumo: string;
   link: string;
+  fonte: string;
 }
 
 /**
- * Define a estrutura para uma sugestão de notícia.
+ * Representa um grupo de notícias sobre o mesmo tópico, após a análise inicial.
  */
-export interface SugestaoNoticia extends NoticiaAgrupada {}
-
-/**
- * Define a estrutura para uma efeméride.
- */
-export interface Efemerie {
-  encontrado?: boolean; // Adicionado para o fluxo da IA
-  titulo: string;
-  texto: string;
+export interface NoticiaAgrupada {
+  tituloPrincipal: string;
+  fontes: FonteNoticia[];
+  relevanceScore: number;
+  isSuperNoticia: boolean;
 }
 
 /**
- * Define a estrutura para as sugestões de abertura (efeméride ou mensagem).
- */
-export interface SugestaoAbertura {
-  sugestao_roteirista: string;
-  noticia: SugestaoNoticia | null;
-  efemeride: Efemerie | null;
-}
-
-/**
- * Define a estrutura do arquivo de sugestões que combina notícia e efeméride.
- */
-export interface Sugestoes {
-  noticia: SugestaoNoticia | null;
-  efemeride: Efemerie | null;
-}
-
-/**
- * Define a estrutura para os apresentadores.
- */
-export interface Apresentador {
-  nome: string;
-  perfil_geral: string;
-  formas_de_chamar_o_outro: string[];
-}
-
-/**
- * Define a estrutura para o perfil da audiência.
- */
-export interface Audiencia {
-  perfil: string;
-  formas_de_chamar: string[];
-}
-
-/**
- * Define a estrutura do arquivo de personagens.
- */
-export interface Personagens {
-  apresentadores: Apresentador[];
-  audiencia: Audiencia;
-}
-
-/**
- * Define a estrutura para a classificação de uma notícia.
+ * Representa a classificação final de uma notícia.
  */
 export interface Classification {
-  id: string;
-  label: string;
+  id: string;      // Ex: "⚫️ 1"
+  label: string;   // Ex: "Segurança & BOs de Impacto"
   isAdequate: boolean;
 }
 
 /**
- * Define a estrutura principal para uma notícia classificada.
+ * A estrutura final de uma notícia, enriquecida com classificação e pronta para o roteiro.
+ * Herda de NoticiaAgrupada e adiciona mais informações.
  */
 export interface NoticiaClassificada extends NoticiaAgrupada {
-  texto_completo?: string; // Adicionado para armazenar o texto completo buscado
+  classification: Classification;
+  textoCompleto?: string; // Opcional, para armazenar o texto completo se buscado
+}
+
+// ----------------------------------------------------------------------------
+// ETAPA 3: ROTEIRIZAÇÃO
+// ----------------------------------------------------------------------------
+
+/**
+ * Representa uma efeméride, curiosidade ou fato histórico para a abertura.
+ */
+export interface Efemerie {
+  titulo: string;
+  texto: string;
+  fonte: string;
 }
 
 /**
- * Define a estrutura do arquivo de pauta diária.
+ * Representa uma única sugestão de gancho para a abertura.
+ */
+export interface SugestaoGancho {
+  gancho: string;
+  trilhaSonora: string;
+}
+
+/**
+ * Estrutura do arquivo de sugestões de abertura gerado pela IA.
+ */
+export interface SugestoesAbertura {
+  sugestaoPrincipal: SugestaoGancho;
+  alternativas: SugestaoGancho[];
+}
+
+/**
+ * Estrutura final do arquivo de pauta do dia, pronto para a geração do roteiro.
  */
 export interface PautaDoDia {
-  data: string;
-  coldOpen: NoticiaClassificada; // Adicionado para a notícia de abertura
-  noticiasPrincipais: NoticiaClassificada[];
-  outrasNoticias: NoticiaAgrupada[];
+  data: string; // Formato ISO 8601
+  manchete: string;
+  efemerides: Efemerie[];
+  pauta: {
+    politica: NoticiaClassificada[];
+    economia: NoticiaClassificada[];
+    cidades: NoticiaClassificada[];
+    cultura: NoticiaClassificada[];
+    esportes: NoticiaClassificada[];
+  };
 }
 
 /**
- * Define a estrutura para os apresentadores.
+ * Define a estrutura para os personagens do podcast.
  */
-export interface Apresentadores {
-    taina: Apresentador;
-    irai: Apresentador;
+export interface Personagem {
+  nome: string;
+  perfil_geral: string;
+  especialidade?: string; // Adicionado para diferenciar comentaristas
 }
 
-/**
- * Define a estrutura para as configurações do roteiro.
- */
-export interface ConfigRoteiro {
-    prioridade_cold_open: 'noticia' | 'efemeride';
+export interface PersonagensConfig {
+  apresentadores: Personagem[];
+  audiencia: {
+    perfil: string;
+    formas_de_chamar: string[];
+  };
 }
 
-/**
- * Define a estrutura para uma notícia.
- * @deprecated Use NoticiaCrua ou NoticiaClassificada em vez disso.
- */
-export interface Noticia {
-  titulo_principal: string;
-  resumo: string;
-  link: string;
-  fonte: string;
-  data_publicacao: string;
-}
-
-// Representa uma notícia após a análise e agrupamento de fontes.
-export interface NoticiaAgrupada {
-  titulo_principal: string;
-  fontes: {
-    resumo: string;
-    link: string;
-  }[];
-  classification: Classification;
-  relevanceScore: number;
-  isSuperNoticia: boolean;
-}
+// ----------------------------------------------------------------------------
+// ETAPA 4: PRODUÇÃO DE ÁUDIO (TTS)
+// ----------------------------------------------------------------------------
 
 /**
  * Define a estrutura para as configurações de Text-to-Speech (TTS).
  */
 export interface TtsConfig {
   voices: {
-    [key: string]: string;
+    [key: string]: string; // Mapeia nome do personagem para voice_id
   };
-  estilos_de_voz: {
+  estilosDeVoz: {
     [key: string]: {
       stability: number;
       similarity_boost: number;

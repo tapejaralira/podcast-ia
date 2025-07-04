@@ -41,6 +41,6 @@ async function fetchFromG1AM({ startTime }: { startTime: string }): Promise<Noti
 }
 
 export const g1amazonasCollector: Collector = {
-  name: SOURCE_NAME,
+  sourceName: SOURCE_NAME,
   fetch: fetchFromG1AM,
 };

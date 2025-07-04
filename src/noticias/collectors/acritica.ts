@@ -81,9 +81,7 @@ const fetchFromACritica: Collector['fetch'] = async ({ startTime }) => {
   }
 }
 
-const acriticaCollector: Collector = {
-  name: SOURCE_NAME,
+export const acriticaCollector: Collector = {
+  sourceName: SOURCE_NAME,
   fetch: fetchFromACritica,
 };
-
-export default acriticaCollector;
