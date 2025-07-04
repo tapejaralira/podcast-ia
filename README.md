@@ -20,19 +20,21 @@ Para colocar o Bubuia News para funcionar, você só precisa de alguns passos:
 
 ### Pré-requisitos
 
-*   Node.js (v18 ou superior)
-*   FFmpeg (instalado e acessível no PATH do sistema)
-*   Credenciais de API (para os serviços de IA que você usar)
+- Node.js (v18 ou superior)
+- FFmpeg (instalado e acessível no PATH do sistema)
+- Credenciais de API (para os serviços de IA que você usar)
 
 ### Instalação
 
 1.  Clone este repositório:
+
     ```bash
     git clone https://github.com/seu-usuario/bubuia-news.git
     cd bubuia-news
     ```
 
 2.  Instale as dependências:
+
     ```bash
     npm install
     ```
@@ -53,18 +55,18 @@ O episódio final será salvo na pasta `episodios_finais`.
 
 Você também pode executar cada etapa do pipeline individualmente:
 
-*   `npm run buscar`: Busca as notícias mais recentes.
-*   `npm run analisar`: Analisa as notícias baixadas.
-*   `npm run roteiro`: Gera o roteiro do dia.
-*   `npm run audio`: Gera os áudios para o roteiro.
-*   `npm run montar`: Monta o episódio final.
-*   `npm run lint`: Verifica a qualidade do código.
-*   `npm run format`: Formata o código usando Prettier.
+- `npm run buscar`: Busca as notícias mais recentes.
+- `npm run analisar`: Analisa as notícias baixadas.
+- `npm run roteiro`: Gera o roteiro do dia.
+- `npm run audio`: Gera os áudios para o roteiro.
+- `npm run montar`: Monta o episódio final.
+- `npm run lint`: Verifica a qualidade do código.
+- `npm run format`: Formata o código usando Prettier.
 
 ## 📂 Estrutura do Projeto
 
 ```
-.bubuia-news/
+podcast-ia/
 ├── src/                # Todo o código-fonte em TypeScript
 │   ├── noticias/       # Módulos de busca e análise de notícias
 │   ├── roteiro/        # Módulos de geração de roteiro
@@ -73,8 +75,9 @@ Você também pode executar cada etapa do pipeline individualmente:
 │   ├── config.ts       # Configurações centrais do projeto
 │   ├── types.ts        # Tipos e interfaces
 │   └── index.ts        # Orquestrador principal do pipeline
-├── data/               # Dados gerados (notícias, roteiros, etc.)
+├── data/               # Dados gerados (notícias, pautas, roteiros)
 ├── audios/             # Arquivos de áudio base (trilhas, vinhetas)
+├── audios_gerados/     # Áudios de narração gerados pela IA
 ├── episodios_finais/   # Onde a mágica acontece: seus podcasts!
 ├── package.json        # Dependências e scripts
 └── tsconfig.json       # Configurações do TypeScript
@@ -82,8 +85,8 @@ Você também pode executar cada etapa do pipeline individualmente:
 
 ## 🤝 Contribuindo
 
-O Bubuia News é um projeto em constante evolução! Sinta-se à vontade para abrir *issues* com sugestões, reportar bugs ou enviar *pull requests* com melhorias.
+O Bubuia News é um projeto em constante evolução! Sinta-se à vontade para abrir _issues_ com sugestões, reportar bugs ou enviar _pull requests_ com melhorias.
 
 ---
 
-Feito com ❤️, ☕ e muito código por [Seu Nome](https://github.com/seu-usuario).
+Feito com ❤️, ☕ e muito código por [Tapejara Lira](https://github.com/tapejaralira).
