@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { pathToFileURL } from 'url';
 
-import { config } from '../config.js';
+import { config, filePaths } from '../config.js';
 import { NoticiaCrua, Collector } from '../types.js';
 
 // Define a interface para um módulo coletor importado dinamicamente
@@ -14,7 +14,7 @@ interface CollectorModule {
 export async function buscarNoticias() {
     console.log('🤖 Bubuia News - Iniciando busca por notícias...');
     
-    const estadoFile = config.paths.estadoColetaFile;
+    const estadoFile = filePaths.estadoColetaFile;
     let startTime: string;
 
     try {
@@ -70,7 +70,7 @@ export async function buscarNoticias() {
             }
         }
         
-        const outputFile = config.paths.noticiasRecentesFile;
+        const outputFile = filePaths.noticiasRecentesFile;
         await fs.mkdir(path.dirname(outputFile), { recursive: true });
         await fs.writeFile(outputFile, JSON.stringify(todosOsArtigos, null, 2));
         

@@ -22,8 +22,8 @@ Thumbs.db
 # Pastas com dados gerados pelo pipeline
 # Estes arquivos são criados a cada execução e não devem ser versionados.
 data/
-audios_gerados/
-episodios_finais/
+output/audio/
+output/episodes/
 episodios/
 
 # Arquivos temporários

@@ -4,7 +4,7 @@ import path from 'path';
 import OpenAI from 'openai';
 import 'dotenv/config';
 
-import { config } from '../config.js';
+import { config, filePaths } from '../config.js';
 import {
     NoticiaCrua,
     NoticiaAgrupada,
@@ -64,7 +64,7 @@ async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classifica
     `;
 
         const response = await openai.chat.completions.create({
-            model: config.models.analise,
+            model: config.ai.gemini.model,
             messages: [{ role: "user", content: prompt }],
             response_format: { type: "json_object" },
             temperature: 0.1,
@@ -171,8 +171,8 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaClassificada[] {
 
 export async function analisarNoticias() {
     console.log('🧠 Bubuia News - Iniciando análise e curadoria...');
-    const inputFile = config.paths.noticiasRecentesFile;
-    const outputFile = config.paths.pautaDoDiaFile;
+    const inputFile = filePaths.noticiasRecentesFile;
+    const outputFile = filePaths.pautaDoDiaFile;
     let todasAsNoticias: NoticiaCrua[];
 
     try {

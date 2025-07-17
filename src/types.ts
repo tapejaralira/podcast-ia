@@ -460,6 +460,21 @@ export interface ProjectConfig {
   /** Caminhos importantes do projeto */
   paths: {
     data: string;
+    /** Estrutura nova AI-friendly */
+    assets: {
+      audio: string;
+      templates: string;
+      examples: string;
+    };
+    output: {
+      audio: string;
+      episodes: string;
+      reports: string;
+      cache: string;
+    };
+    docs: string;
+    tests: string;
+    /** Caminhos de compatibilidade (legacy) */
     audios: string;
     episodios: string;
     roteiros: string;

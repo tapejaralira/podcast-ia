@@ -2,7 +2,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { PautaDoDia, SugestoesAbertura, PersonagensConfig, NoticiaClassificada, Efemerie, Personagem } from '../types.js';
-import { DATA_DIR, EPISODIOS_DIR, SRC_DIR } from '../config.js';
+import { DATA_DIR, ROTEIROS_DIR, SRC_DIR } from '../config.js';
 
 const ROTEIRO_TEMPLATE_PATH = path.join(SRC_DIR, 'roteiro', 'roteiro-template.md');
 const PAUTA_DO_DIA_PATH = path.join(DATA_DIR, 'pauta-do-dia.json');
@@ -66,7 +66,7 @@ export async function gerarRoteiro() {
 
         // Salvar o roteiro final
         const nomeArquivo = formatarDataParaNomeArquivo(new Date(data));
-        const outputPath = path.join(EPISODIOS_DIR, nomeArquivo);
+        const outputPath = path.join(ROTEIROS_DIR, nomeArquivo);
         await fs.writeFile(outputPath, roteiroFinal);
 
         console.log(`Roteiro gerado com sucesso em: ${outputPath}`);

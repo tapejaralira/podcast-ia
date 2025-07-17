@@ -13,7 +13,7 @@ const __dirname = path.resolve(path.dirname(''));
 const ROOT_DIR = path.resolve(__dirname, '..');
 export const SRC_DIR = path.resolve(__dirname, 'src');
 export const DATA_DIR = path.resolve(__dirname, 'data');
-export const ROTEIROS_DIR = path.join(ROOT_DIR, 'output', 'scripts');
+export const EPISODIOS_DIR = path.resolve(__dirname, 'episodios');
 
 /**
  * Valida se todas as variáveis de ambiente necessárias estão definidas
@@ -97,7 +97,7 @@ export const config: ProjectConfig & {
     // Caminhos de compatibilidade
     audios: path.join(ROOT_DIR, 'assets', 'audio'),
     episodios: path.join(ROOT_DIR, 'output', 'episodes'),
-    roteiros: ROTEIROS_DIR
+    roteiros: EPISODIOS_DIR
   },
 
   // Configurações do pipeline
@@ -150,8 +150,8 @@ export const config: ProjectConfig & {
     sugestoesAberturaFile: path.join(DATA_DIR, 'sugestoes-abertura.json'),
     personagensFile: path.join(DATA_DIR, 'personagens.json'),
     ttsConfigFile: path.join(DATA_DIR, 'tts-config.json'),
-    roteiroTemplateFile: path.join(ROOT_DIR, 'assets', 'templates', 'roteiro-template.md'),
-    roteirosDir: ROTEIROS_DIR,
+    roteiroTemplateFile: path.join(__dirname, 'roteiro', 'roteiro-template.md'),
+    roteirosDir: EPISODIOS_DIR,
     audioOutputDir: path.join(ROOT_DIR, 'output', 'audio')
   },
 

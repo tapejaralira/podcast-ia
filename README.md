@@ -49,7 +49,7 @@ Para rodar o pipeline completo e gerar um novo episódio, execute:
 npm start
 ```
 
-O episódio final será salvo na pasta `episodios_finais`.
+O episódio final será salvo na pasta `output/episodes`.
 
 ## 🛠️ Scripts Disponíveis
 
@@ -77,8 +77,8 @@ podcast-ia/
 │   └── index.ts        # Orquestrador principal do pipeline
 ├── data/               # Dados gerados (notícias, pautas, roteiros)
 ├── audios/             # Arquivos de áudio base (trilhas, vinhetas)
-├── audios_gerados/     # Áudios de narração gerados pela IA
-├── episodios_finais/   # Onde a mágica acontece: seus podcasts!
+├── output/audio/         # Áudios de narração gerados pela IAnarração gerados pela IA
+├── output/episodes/     # Onde a mágica acontece: seus podcasts!nde a mágica acontece: seus podcasts!
 ├── package.json        # Dependências e scripts
 └── tsconfig.json       # Configurações do TypeScript
 ```

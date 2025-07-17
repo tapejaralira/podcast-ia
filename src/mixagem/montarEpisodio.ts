@@ -12,7 +12,7 @@ if (config.mixagem.ffmpegPath) {
     console.warn("   -> Defina a variável de ambiente FFMPEG_PATH ou edite 'src/config.ts'.");
 }
 
-const TEMP_DIR = path.join(config.paths.src, 'mixagem', 'temp');
+const TEMP_DIR = path.join(config.paths.output.cache, 'mixagem-temp');
 
 // --- Tipos e Interfaces ---
 
@@ -135,8 +135,8 @@ export async function montarEpisodio(): Promise<void> {
     console.log('\n🎧 Bubuia News - Iniciando montagem do episódio...');
 
     const dataDeHoje = new Date().toISOString().split('T')[0];
-    const roteiroFilename = path.join(config.paths.roteirosDir, `roteiro-${dataDeHoje}.md`);
-    const episodioAudioDir = path.join(config.paths.audioOutputDir, `episodio-${dataDeHoje}`);
+    const roteiroFilename = path.join(config.paths.roteiros, `roteiro-${dataDeHoje}.md`);
+    const episodioAudioDir = path.join(config.paths.output.audio, `episodio-${dataDeHoje}`);
     
     const silencio1s = path.join(config.paths.audios, 'assets', 'silencio_1s.mp3');
     const silencio3s = path.join(config.paths.audios, 'assets', 'silencio_3s.mp3');
@@ -160,7 +160,7 @@ export async function montarEpisodio(): Promise<void> {
 
     await fs.rm(TEMP_DIR, { recursive: true, force: true }).catch(() => {});
     await fs.mkdir(TEMP_DIR, { recursive: true });
-    await fs.mkdir(config.paths.episodios_finais, { recursive: true });
+    await fs.mkdir(config.paths.output.episodes, { recursive: true });
 
     let roteiroContent: string;
     try {
@@ -268,7 +268,7 @@ export async function montarEpisodio(): Promise<void> {
     }
 
     console.log('\n🎬 Montando o episódio final com crossfade entre os blocos...');
-    const outputFinal = path.join(config.paths.episodios_finais, `bubuia_news_${dataDeHoje}.mp3`);
+    const outputFinal = path.join(config.paths.output.episodes, `bubuia_news_${dataDeHoje}.mp3`);
     await concatenarComCrossfade(blocosFinaisParaCrossfade, outputFinal);
 
     console.log(`\n✅ Episódio finalizado com sucesso! Salvo em: ${outputFinal}`);

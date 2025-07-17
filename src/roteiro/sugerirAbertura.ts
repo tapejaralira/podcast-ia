@@ -11,7 +11,7 @@ import { PautaDoDia, SugestoesAbertura, Efemerie, SugestaoGancho, NoticiaClassif
 // --- Instâncias das APIs ---
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const geminiModel = genAI.getGenerativeModel({ model: config.models.sugestao });
+const geminiModel = genAI.getGenerativeModel({ model: config.ai.gemini.model });
 
 // --- Caminhos (usando a configuração central) ---
 const PAUTA_FILE = path.join(config.paths.data, 'episodio-do-dia.json');
@@ -31,7 +31,7 @@ const FALLBACK_CURIOSIDADE: Efemerie = {
  */
 async function gerarConteudoIA(prompt: string): Promise<string> {
   try {
-    if (config.apiProvider === 'gemini') {
+    if ('gemini' === 'gemini') {
       console.log(`  -> Gerando conteúdo com Gemini...`);
       const result = await geminiModel.generateContent(prompt);
       const response = await result.response;
@@ -41,14 +41,14 @@ async function gerarConteudoIA(prompt: string): Promise<string> {
     } else {
       console.log(`  -> Gerando conteúdo com OpenAI...`);
       const response = await openai.chat.completions.create({
-        model: config.models.sugestao,
+        model: config.ai.gemini.model,
         messages: [{ role: 'user', content: prompt }],
         response_format: { type: 'json_object' },
       });
       return response.choices[0].message.content || '';
     }
   } catch (error) {
-    console.error(`❌ Erro ao gerar conteúdo com ${config.apiProvider}:`, error);
+    console.error(`❌ Erro ao gerar conteúdo com ${'gemini'}:`, error);
     // Retorna um JSON de erro padronizado para não quebrar o parsing
     return JSON.stringify({ encontrado: false, erro: (error as Error).message });
   }

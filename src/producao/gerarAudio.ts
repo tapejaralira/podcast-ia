@@ -2,7 +2,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import 'dotenv/config';
-import { config } from '../config.js';
+import { config, filePaths } from '../config.js';
 import { TtsConfig } from '../types.js';
 
 // --- Função para normalizar strings ---
@@ -55,9 +55,9 @@ async function textoParaAudio(
 export async function gerarAudiosDoRoteiro(): Promise<void> {
     console.log('🔊 Bubuia News - Iniciando geração de áudios...');
 
-    const ttsConfig: TtsConfig = JSON.parse(await fs.readFile(config.paths.ttsConfigFile, 'utf-8'));
+    const ttsConfig: TtsConfig = JSON.parse(await fs.readFile(filePaths.ttsConfigFile, 'utf-8'));
     const dataDeHoje = new Date().toISOString().split('T')[0];
-    const roteiroFilename = path.join(config.paths.roteirosDir, `roteiro-${dataDeHoje}.md`);
+    const roteiroFilename = path.join(config.paths.roteiros, `roteiro-${dataDeHoje}.md`);
     
     let roteiroContent: string;
     try {
@@ -67,7 +67,7 @@ export async function gerarAudiosDoRoteiro(): Promise<void> {
         return;
     }
 
-    const episodioAudioDir = path.join(config.paths.audioOutputDir, `episodio-${dataDeHoje}`);
+    const episodioAudioDir = path.join(config.paths.output.audio, `episodio-${dataDeHoje}`);
     await fs.mkdir(episodioAudioDir, { recursive: true });
 
     const blocos = roteiroContent.split('---');
