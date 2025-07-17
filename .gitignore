@@ -22,10 +22,39 @@ Thumbs.db
 # Pastas com dados gerados pelo pipeline
 # Estes arquivos são criados a cada execução e não devem ser versionados.
 data/
-output/audio/
-output/episodes/
+output/
 episodios/
+episodios_finais/
+audios_gerados/
 
 # Arquivos temporários
 tmp/
 temp/
+
+# Arquivos específicos de implementação/migração (Trio de Ouro)
+# Evitar que scripts temporários sejam commitados por engano
+**/setup-*.js
+**/setup-*.sh
+**/test-*.js
+**/test-*.ts
+**/test-*.sh
+**/migration-*.js
+**/migration-*.ts
+**/*-temp.*
+**/*-tmp.*
+test-fase-*.js
+cleanup-*.js
+analyze-*.js
+fix-*.js
+validate-migration.*
+backup-*.js
+restore-*.js
+convert-*.js
+check-*.js
+remove-*.js
+create-*.js
+update-*.js
+
+# Cache do VS Code e ferramentas
+.vscode/settings.json
+.history/
