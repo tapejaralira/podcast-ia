@@ -58,3 +58,10 @@ update-*.js
 # Cache do VS Code e ferramentas
 .vscode/settings.json
 .history/
+
+# Prevenir arquivos vazios problemáticos
+# Estes padrões evitam commit de arquivos corrompidos
+**/*-empty.*
+**/*.backup
+**/.*~
+**/#*#
