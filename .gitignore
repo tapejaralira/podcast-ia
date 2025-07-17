@@ -47,6 +47,12 @@ audios_gerados/
 assets/audio/locucoes/
 assets/audio/trilhas/
 
+# Arquivos grandes de design
+*.psd
+*.ai
+*.sketch
+*.xcf
+
 # Arquivos temporários
 tmp/
 temp/
