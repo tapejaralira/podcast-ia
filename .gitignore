@@ -27,6 +27,26 @@ episodios/
 episodios_finais/
 audios_gerados/
 
+# Arquivos de áudio - IGNORAR TODAS as pastas exceto assets específicos
+# Bloquear TODOS os áudios primeiro
+**/*.mp3
+**/*.wav
+**/*.flac
+**/*.aac
+**/*.m4a
+**/*.wma
+**/*.ogg
+
+# EXCEÇÕES: Permitir apenas assets essenciais específicos
+!assets/audio/assets/**/*.mp3
+!assets/audio/vinhetas/**/*.mp3
+!assets/audio/assets/**/*.wav
+!assets/audio/vinhetas/**/*.wav
+
+# Bloquear outras pastas de áudio em assets/
+assets/audio/locucoes/
+assets/audio/trilhas/
+
 # Arquivos temporários
 tmp/
 temp/
