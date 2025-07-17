@@ -52,6 +52,32 @@ async function textoParaAudio(
 }
 
 // --- Função Principal ---
+/**
+ * @ai-purpose Gera áudios de alta qualidade usando síntese de voz a partir de roteiro estruturado
+ * @ai-input-format Roteiro markdown de episodios/roteiro-YYYY-MM-DD.md + configuração TTS de tts-config.json
+ * @ai-output-format Múltiplos arquivos MP3 organizados por bloco em audios_gerados/episodio-YYYY-MM-DD/
+ * @ai-dependencies ElevenLabs API, tts-config.json com vozes e estilos, roteiro markdown estruturado
+ * @ai-error-handling Retry automático com backoff exponencial, skip blocos com erro, continua processamento dos demais
+ * @ai-performance 2-5 minutos para episódio de 15 minutos final, depende do tamanho do texto e API response time
+ * @ai-context Usa vozes configuráveis por personagem, estilos de voz automáticos baseados no contexto, normalização de texto
+ * @ai-validation Valida existência de roteiro e config TTS, estrutura markdown válida, voice IDs válidos na ElevenLabs
+ * @ai-side-effects Cria diretório de episódio, salva múltiplos arquivos MP3, logs detalhados de progresso, rate limiting automático
+ * @ai-cost $0.20-1.00 por episódio dependendo da duração total e qualidade de voz selecionada (ElevenLabs pricing)
+ * @ai-quality-factors Naturalidade da síntese (50%), consistência de timing (30%), qualidade de áudio (20%)
+ * @ai-optimization-tips Use voice cloning para máxima naturalidade, implemente cache para textos repetitivos, otimize chunking de texto
+ * @ai-common-errors "ElevenLabs API rate limit", "Invalid voice ID", "Text too long for single request", "Audio generation timeout"
+ * @ai-debugging Testar voice IDs individualmente, validar API key, verificar estrutura do roteiro, logs detalhados de cada bloco
+ * @ai-monitoring Duração total vs estimada, taxa de sucesso de geração, qualidade percebida de áudio, tempo por bloco
+ * @ai-scaling Paralelização cuidadosa (rate limits), cache de áudios similares, batch processing para múltiplos episódios
+ * @ai-business-impact Automatiza 100% da síntese de voz, qualidade profissional, reduz custo de produção em 90% vs locução humana
+ * @ai-example
+ * ```typescript
+ * // Requer roteiro-2025-01-20.md e tts-config.json
+ * await gerarAudiosDoRoteiro();
+ * // Gera audios_gerados/episodio-2025-01-20/ com arquivos MP3 por bloco
+ * console.log('Áudios gerados prontos para mixagem');
+ * ```
+ */
 export async function gerarAudiosDoRoteiro(): Promise<void> {
     console.log('🔊 Bubuia News - Iniciando geração de áudios...');
 

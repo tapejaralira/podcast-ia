@@ -11,7 +11,13 @@
     "roteirizar": "ts-node src/roteiro/gerarRoteiro.ts",
     "audios": "ts-node src/producao/gerarAudio.ts",
     "montar": "ts-node src/mixagem/montarEpisodio.ts",
-    "pipeline": "npm run start"
+    "pipeline": "npm run start",
+    "build": "tsc",
+    "validate": "npx tsc --noEmit",
+    "validate:schemas": "tsx scripts/validate-schemas.ts",
+    "validate:prompts": "tsx scripts/validate-prompts.ts",
+    "ai:metrics": "tsx scripts/generate-ai-metrics.ts",
+    "ai:optimize": "tsx scripts/run-daily-optimization.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -23,7 +29,8 @@
     "fluent-ffmpeg": "^2.1.3",
     "node-fetch": "^3.3.2",
     "openai": "^4.52.7",
-    "rss-parser": "^3.13.0"
+    "rss-parser": "^3.13.0",
+    "zod": "^3.25.76"
   },
   "keywords": [
     "podcast",
@@ -45,6 +52,7 @@
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }

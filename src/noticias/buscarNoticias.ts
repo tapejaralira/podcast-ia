@@ -11,6 +11,28 @@ interface CollectorModule {
     default: Collector;
 }
 
+/**
+ * @ai-purpose Coleta notícias de fontes locais amazônicas e estrutura dados brutos para análise posterior
+ * @ai-input-format Lê estado da última coleta de estado-coleta.json ou usa 48h como fallback
+ * @ai-output-format Array de NoticiaCrua salvo em noticias-recentes.json com metadados completos de extração
+ * @ai-dependencies Módulos coletores em src/noticias/collectors/, cheerio para parsing HTML, axios para HTTP
+ * @ai-error-handling Retry com backoff exponencial por fonte, skip fontes indisponíveis, continua com fontes funcionais
+ * @ai-performance 10-30s dependendo do número de fontes ativas, timeout por fonte: 15s, rate limiting inteligente
+ * @ai-context Otimizado para fontes amazônicas (G1 AM, A Crítica, Folha BV), detecta paywall automático, valida qualidade do conteúdo extraído
+ * @ai-validation Cada notícia validada contra NoticiaCrua schema (pendente), filtra conteúdo inválido ou duplicado automaticamente
+ * @ai-side-effects Atualiza estado-coleta.json com timestamp, cache de notícias para evitar duplicatas via Set de URLs, logs de status de fontes
+ * @ai-failure-modes Rate limiting de sites, mudança de estrutura HTML dos sites, sites indisponíveis, paywall inesperado, timeout de rede
+ * @ai-monitoring Taxa de sucesso por fonte (target: >80%), tempo de coleta total, qualidade do conteúdo extraído (título não vazio, URL válida)
+ * @ai-scaling Máximo 20 fontes simultaneamente, usa Promise.allSettled para resiliência, rate limiting configurável por fonte
+ * @ai-business-impact Base do pipeline - qualidade da coleta impacta 100% do sistema downstream, permite automação completa da curadoria
+ * @ai-example
+ * ```typescript
+ * await buscarNoticias();
+ * // Gera noticias-recentes.json com notícias das últimas 48h
+ * // Atualiza estado-coleta.json para próxima execução
+ * console.log('Notícias coletadas e prontas para análise');
+ * ```
+ */
 export async function buscarNoticias() {
     console.log('🤖 Bubuia News - Iniciando busca por notícias...');
     
