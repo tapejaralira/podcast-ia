@@ -7,8 +7,21 @@ Tornar o projeto Bubuia News mais **AI friendly**, facilitando a manutenção, e
 ## Princípios Orientadores
 
 - ✅ **Segurança primeiro**: Implementar melhorias sem quebrar funcionalidades existentes
-- 🧪 **Testes contínuos**: Validar cada etapa antes de prosseguir
-- 📚 **Documentação viva**: Manter documentação sempre atualizada
+- 🧪 **Testes contínuos**: Validar cada etapa antes de prossegu### Checkpoints Obrigatórios
+
+- [x] **Fim da Fase 1**: Pipeline ainda funciona 100% ✅ **CONCLUÍDO**
+  - ✅ JSDoc implementado em todos os tipos principais
+  - ✅ Configuração centralizada com validação
+  - ✅ Utilitários básicos (logger, fileHelpers) criados
+  - ✅ Estrutura de tipos expandida e documentada
+  - ✅ Compatibilidade retroativa mantida
+  - ✅ Testes básicos da Fase 1 passando
+- [ ] **Próximo**: Testar pipeline completo com dados reais antes da Fase 2
+- [ ] **Fim da Fase 2**: Testes cobrem cenários críticos
+- [ ] **Fim da Fase 3**: Código mais legível e manutenível
+- [ ] **Fim da Fase 4**: Funcionalidades avançadas agregam valor
+- [ ] **Fim da Fase 5**: Documentação facilita onboarding
+- [ ] **Fim da Fase 6**: Processo de desenvolvimento automatizado **Documentação viva**: Manter documentação sempre atualizada
 - 🔄 **Iteração incremental**: Pequenas mudanças com grandes impactos
 
 ---
@@ -219,6 +232,39 @@ _Objetivo: Melhorar legibilidade e manutenibilidade_
   }
   ```
 
+### 3.4 Limpeza de Código Legacy
+
+- [ ] **Migrar todos os scripts para nova estrutura de configuração**
+  - Substituir imports de `config` por `newConfig` onde aplicável
+  - Atualizar scripts em `noticias/`, `roteiro/`, `producao/`, `mixagem/`
+  - Testar cada script após migração
+
+- [ ] **Remover configuração legacy (`configLegacy`)**
+  - Verificar que nenhum arquivo ainda usa propriedades antigas
+  - Remover `configLegacy` e export `{ configLegacy as config }`
+  - Limpar propriedades obsoletas em `src/types.ts`
+
+- [ ] **Consolidar utilitários antigos**
+  - Migrar funções utilitárias espalhadas para `src/utils/`
+  - Remover duplicações de código
+  - Padronizar tratamento de erros
+
+- [ ] **Documentar mudanças breaking**
+  - Criar `MIGRATION.md` com guia de migração
+  - Listar todas as propriedades removidas/alteradas
+  - Exemplos antes/depois para cada mudança
+
+**Checklist de Migração:**
+```typescript
+// ❌ Padrão antigo (a ser removido)
+import { config } from './src/config.js';
+const model = config.models.roteiro;
+
+// ✅ Padrão novo (migrado)
+import { newConfig } from './src/config.js';
+const model = newConfig.ai.gemini.model;
+```
+
 ---
 
 ## 🚀 Fase 4: Funcionalidades Avançadas (2-3 semanas)
@@ -346,6 +392,8 @@ _Objetivo: Garantir qualidade contínua_
 - [ ] **Tempo de build < 30s**
 - [ ] **Lint warnings = 0**
 - [ ] **TSDoc coverage > 90%**
+- [ ] **Zero código legacy restante**
+- [ ] **100% migração para nova estrutura de config**
 
 ### Métricas Qualitativas
 
@@ -372,11 +420,25 @@ _Objetivo: Garantir qualidade contínua_
    - ✅ Manter APIs de IA mockáveis
    - ✅ Ter fallbacks para serviços externos
 
+4. **Acúmulo de débito técnico (Legacy Code)**
+   - ✅ Remover código legacy assim que migração for validada
+   - ✅ Documentar todas as mudanças breaking em `MIGRATION.md`
+   - ✅ Manter apenas uma forma de fazer cada coisa (eliminar duplicações)
+   - ✅ Validar que pipeline funciona antes de remover código antigo
+   - ✅ Ter fallbacks para serviços externos
+
 ### Checkpoints Obrigatórios
 
-- [ ] **Fim da Fase 1**: Pipeline ainda funciona 100%
+- [x] **Fim da Fase 1**: Pipeline ainda funciona 100% ✅ **CONCLUÍDO**
+  - ✅ JSDoc implementado em todos os tipos principais
+  - ✅ Configuração centralizada com validação
+  - ✅ Utilitários básicos (logger, fileHelpers) criados
+  - ✅ Estrutura de tipos expandida e documentada
+  - ✅ Compatibilidade retroativa mantida
+  - ✅ Testes básicos da Fase 1 passando
+- [ ] **Próximo**: Testar pipeline completo com dados reais antes da Fase 2
 - [ ] **Fim da Fase 2**: Testes cobrem cenários críticos
-- [ ] **Fim da Fase 3**: Código mais legível e manutenível
+- [ ] **Fim da Fase 3**: Código mais legível e manutenível + **Zero código legacy**
 - [ ] **Fim da Fase 4**: Funcionalidades avançadas agregam valor
 - [ ] **Fim da Fase 5**: Documentação facilita onboarding
 - [ ] **Fim da Fase 6**: Processo de desenvolvimento automatizado

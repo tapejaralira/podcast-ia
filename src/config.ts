@@ -3,7 +3,7 @@
  * Centraliza todas as configurações, caminhos e constantes
  */
 
-import path from 'path';
+import * as path from 'path';
 import { ProjectConfig, AIApiConfig } from './types.js';
 import { logError, logInfo } from './utils/logger.js';
 
@@ -39,9 +39,9 @@ export function validateConfig(): void {
 }
 
 /**
- * Configuração principal do projeto
+ * Configuração principal do projeto (nova estrutura)
  */
-export const config: ProjectConfig & {
+export const newConfig: ProjectConfig & {
   // Extensões específicas do Bubuia News
   podcast: {
     prioridade_cold_open: 'noticia' | 'efemeride';
@@ -176,14 +176,48 @@ export const config: ProjectConfig & {
  * Mantidos separados para retrocompatibilidade
  */
 export const filePaths = {
-  noticiasRecentesFile: path.join(config.paths.data, 'noticias-recentes.json'),
-  pautaDoDiaFile: path.join(config.paths.data, 'episodio-do-dia.json'),
-  estadoColetaFile: path.join(config.paths.data, 'estado_coleta.json'),
-  sugestoesAberturaFile: path.join(config.paths.data, 'sugestoes-abertura.json'),
-  personagensFile: path.join(config.paths.data, 'personagens.json'),
-  ttsConfigFile: path.join(config.paths.data, 'tts-config.json'),
-  roteiroTemplateFile: path.join(config.tts.roteiroTemplateFile)
+  noticiasRecentesFile: path.join(newConfig.paths.data, 'noticias-recentes.json'),
+  pautaDoDiaFile: path.join(newConfig.paths.data, 'episodio-do-dia.json'),
+  estadoColetaFile: path.join(newConfig.paths.data, 'estado_coleta.json'),
+  sugestoesAberturaFile: path.join(newConfig.paths.data, 'sugestoes-abertura.json'),
+  personagensFile: path.join(newConfig.paths.data, 'personagens.json'),
+  ttsConfigFile: path.join(newConfig.paths.data, 'tts-config.json'),
+  roteiroTemplateFile: path.join(newConfig.tts.roteiroTemplateFile)
 };
+
+/**
+ * Configuração estendida para retrocompatibilidade
+ * TODO: Remover quando todos os arquivos forem migrados para usar a nova estrutura
+ */
+export const configLegacy = {
+  ...newConfig,
+  // Propriedades antigas mantidas para compatibilidade
+  apiProvider: getActiveApiProvider(),
+  models: {
+    roteiro: newConfig.ai.gemini.model,
+    sugestao: newConfig.ai.gemini.model,
+    analise: newConfig.ai.openai.model,
+  },
+  paths: {
+    ...newConfig.paths,
+    // Caminhos antigos
+    src: SRC_DIR,
+    audioOutputDir: AUDIOS_GERADOS_DIR,
+    roteirosDir: EPISODIOS_DIR,
+    episodios_finais: path.join(ROOT_DIR, 'episodios_finais'),
+    // Arquivos específicos
+    noticiasRecentesFile: filePaths.noticiasRecentesFile,
+    pautaDoDiaFile: filePaths.pautaDoDiaFile,
+    estadoColetaFile: filePaths.estadoColetaFile,
+    sugestoesAberturaFile: filePaths.sugestoesAberturaFile,
+    personagensFile: filePaths.personagensFile,
+    ttsConfigFile: filePaths.ttsConfigFile,
+  }
+};
+
+// Exporta a configuração legacy como padrão para compatibilidade
+// TODO: Migrar todos os imports para usar `newConfig` (nova estrutura)
+export { configLegacy as config };
 
 /**
  * Obtém a configuração da API atualmente ativa
@@ -191,7 +225,7 @@ export const filePaths = {
  * @returns Configuração da API
  */
 export function getApiConfig(provider: 'openai' | 'gemini'): AIApiConfig {
-  const apiConfig = config.ai[provider];
+  const apiConfig = newConfig.ai[provider];
   if (!apiConfig.apiKey) {
     throw new Error(`API Key não configurada para ${provider}`);
   }

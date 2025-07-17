@@ -409,6 +409,9 @@ export interface PersonagensConfig {
  *   estilosDeVoz: {
  *     "natural": { stability: 0.5, similarity_boost: 0.8 },
  *     "energetico": { stability: 0.3, similarity_boost: 0.9 }
+ *   },
+ *   estilos_de_voz: {
+ *     "padrao": { stability: 0.5, similarity_boost: 0.8 }
  *   }
  * };
  * ```
@@ -424,6 +427,17 @@ export interface TtsConfig {
       /** Estabilidade da voz (0-1) */
       stability: number;
       /** Boost de similaridade (0-1) */
+      similarity_boost: number;
+    };
+  };
+  /** @deprecated Use estilosDeVoz. Mantido para compatibilidade */
+  estilos_de_voz: {
+    padrao: {
+      stability: number;
+      similarity_boost: number;
+    };
+    [estilo: string]: {
+      stability: number;
       similarity_boost: number;
     };
   };
