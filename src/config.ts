@@ -1,55 +1,109 @@
+/**
+ * Configuração central do projeto Bubuia News
+ * Centraliza todas as configurações, caminhos e constantes
+ */
+
 import path from 'path';
+import { ProjectConfig, AIApiConfig } from './types.js';
+import { logError, logInfo } from './utils/logger.js';
 
 // Usar __dirname para garantir caminhos absolutos robustos
-const __dirname = path.resolve(path.dirname('')); // Simula __dirname em módulos ES
+const __dirname = path.resolve(path.dirname(''));
+const ROOT_DIR = path.resolve(__dirname, '..');
 
 export const SRC_DIR = path.resolve(__dirname, 'src');
 export const DATA_DIR = path.resolve(__dirname, 'data');
 export const EPISODIOS_DIR = path.resolve(__dirname, 'episodios');
-
-const ROOT_DIR = path.resolve(__dirname, '..');
-
 const AUDIOS_GERADOS_DIR = path.join(ROOT_DIR, 'audios_gerados');
 const ROTEIRO_DIR = path.join(ROOT_DIR, 'roteiro');
 
-export const config = {
-  // Qual API usar para a geração de conteúdo
-  apiProvider: process.env.API_PROVIDER || 'gemini', // Opções: 'openai', 'gemini'
+/**
+ * Valida se todas as variáveis de ambiente necessárias estão definidas
+ * @throws {Error} Se alguma variável obrigatória estiver ausente
+ */
+export function validateConfig(): void {
+  const required = [
+    'OPENAI_API_KEY',
+    'GEMINI_API_KEY'
+  ];
 
-  // Modelos de IA a serem usados
-  models: {
-    roteiro: process.env.MODEL_ROTEIRO || 'gemini-1.5-pro-latest',
-    sugestao: process.env.MODEL_SUGESTAO || 'gemini-1.5-flash',
-    analise: process.env.MODEL_ANALISE || 'gemini-1.5-flash',
-  },
+  const missing = required.filter(key => !process.env[key]);
+  
+  if (missing.length > 0) {
+    const errorMsg = `Variáveis de ambiente obrigatórias ausentes: ${missing.join(', ')}`;
+    logError('Configuração inválida', { missing });
+    throw new Error(errorMsg);
+  }
 
-  // Configurações do Podcast
+  logInfo('✅ Configuração validada com sucesso');
+}
+
+/**
+ * Configuração principal do projeto
+ */
+export const config: ProjectConfig & {
+  // Extensões específicas do Bubuia News
   podcast: {
-    prioridade_cold_open: 'noticia' as 'noticia' | 'efemeride',
+    prioridade_cold_open: 'noticia' | 'efemeride';
+  };
+  analise: {
+    relevanceKeywords: string[];
+    sourceWeights: Record<string, number>;
+    classificationGuide: Record<string, { label: string; categoria: string }>;
+  };
+  tts: {
+    sugestoesAberturaFile: string;
+    personagensFile: string;
+    ttsConfigFile: string;
+    roteiroTemplateFile: string;
+    roteirosDir: string;
+    audioOutputDir: string;
+  };
+  geracaoAudio: {
+    categoriaParaEstilo: Record<string, string>;
+  };
+  mixagem: {
+    ffmpegPath: string;
+    crossfadeDuration: number;
+  };
+} = {
+  // Configurações das APIs de IA
+  ai: {
+    openai: {
+      apiKey: process.env.OPENAI_API_KEY!,
+      model: process.env.OPENAI_MODEL || 'gpt-4o',
+      maxTokens: parseInt(process.env.OPENAI_MAX_TOKENS || '2000'),
+      temperature: parseFloat(process.env.OPENAI_TEMPERATURE || '0.1')
+    },
+    gemini: {
+      apiKey: process.env.GEMINI_API_KEY!,
+      model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+      maxTokens: parseInt(process.env.GEMINI_MAX_TOKENS || '2000'),
+      temperature: parseFloat(process.env.GEMINI_TEMPERATURE || '0.1')
+    }
   },
 
-  // Caminhos do projeto (relativos à raiz)
+  // Caminhos importantes do projeto
   paths: {
-    // Diretórios base
     data: DATA_DIR,
-    episodios: EPISODIOS_DIR,
     audios: path.join(ROOT_DIR, 'audios'),
-    episodios_finais: path.join(ROOT_DIR, 'episodios_finais'),
-    src: path.join(ROOT_DIR, 'src'),
-    audioOutputDir: AUDIOS_GERADOS_DIR,
-    roteirosDir: EPISODIOS_DIR,
-
-    // Arquivos específicos
-    noticiasRecentesFile: path.join(DATA_DIR, 'noticias-recentes.json'),
-    pautaDoDiaFile: path.join(DATA_DIR, 'episodio-do-dia.json'),
-    estadoColetaFile: path.join(DATA_DIR, 'estado_coleta.json'),
-    sugestoesAberturaFile: path.join(DATA_DIR, 'sugestoes-abertura.json'),
-    personagensFile: path.join(DATA_DIR, 'personagens.json'),
-    roteiroTemplateFile: path.join(ROTEIRO_DIR, 'roteiro-template.md'),
-    ttsConfigFile: path.join(DATA_DIR, 'tts-config.json'),
+    episodios: path.join(ROOT_DIR, 'episodios_finais'),
+    roteiros: EPISODIOS_DIR
   },
 
-  // Configurações de Análise
+  // Configurações do pipeline
+  pipeline: {
+    maxNoticias: parseInt(process.env.MAX_NOTICIAS || '4'),
+    relevanceThreshold: parseInt(process.env.RELEVANCE_THRESHOLD || '10'),
+    timeoutHours: parseInt(process.env.TIMEOUT_HOURS || '48')
+  },
+
+  // Configurações específicas do Podcast
+  podcast: {
+    prioridade_cold_open: (process.env.COLD_OPEN_PRIORITY as 'noticia' | 'efemeride') || 'noticia'
+  },
+
+  // Configurações de Análise de Notícias
   analise: {
     relevanceKeywords: [
       // Cultura Pop & Geek (Peso Alto)
@@ -87,15 +141,17 @@ export const config = {
     }
   },
 
+  // Configurações de TTS
   tts: {
     sugestoesAberturaFile: path.join(DATA_DIR, 'sugestoes-abertura.json'),
     personagensFile: path.join(DATA_DIR, 'personagens.json'),
     ttsConfigFile: path.join(DATA_DIR, 'tts-config.json'),
     roteiroTemplateFile: path.join(ROTEIRO_DIR, 'roteiro-template.md'),
-    roteirosDir: EPISODIOS_DIR, // Adicionado para roteiros
-    audioOutputDir: path.resolve(__dirname, '..', 'audios_gerados'), // Adicionado para saída de áudio
+    roteirosDir: EPISODIOS_DIR,
+    audioOutputDir: AUDIOS_GERADOS_DIR
   },
 
+  // Configurações de Geração de Áudio
   geracaoAudio: {
     categoriaParaEstilo: {
       '⚫️': 'serio_ou_analitico',
@@ -105,11 +161,50 @@ export const config = {
       '🎬': 'animado',
       '🎭': 'animado',
       '👽': 'curioso_ou_bizarro',
-    },
+    }
   },
 
+  // Configurações de Mixagem
   mixagem: {
     ffmpegPath: process.env.FFMPEG_PATH || 'C:/Program Files/ffmpeg/bin/ffmpeg.exe',
-    crossfadeDuration: 2,
-  },
+    crossfadeDuration: parseInt(process.env.CROSSFADE_DURATION || '2')
+  }
 };
+
+/**
+ * Caminhos de arquivos específicos derivados da configuração
+ * Mantidos separados para retrocompatibilidade
+ */
+export const filePaths = {
+  noticiasRecentesFile: path.join(config.paths.data, 'noticias-recentes.json'),
+  pautaDoDiaFile: path.join(config.paths.data, 'episodio-do-dia.json'),
+  estadoColetaFile: path.join(config.paths.data, 'estado_coleta.json'),
+  sugestoesAberturaFile: path.join(config.paths.data, 'sugestoes-abertura.json'),
+  personagensFile: path.join(config.paths.data, 'personagens.json'),
+  ttsConfigFile: path.join(config.paths.data, 'tts-config.json'),
+  roteiroTemplateFile: path.join(config.tts.roteiroTemplateFile)
+};
+
+/**
+ * Obtém a configuração da API atualmente ativa
+ * @param provider Nome do provedor ('openai' ou 'gemini')
+ * @returns Configuração da API
+ */
+export function getApiConfig(provider: 'openai' | 'gemini'): AIApiConfig {
+  const apiConfig = config.ai[provider];
+  if (!apiConfig.apiKey) {
+    throw new Error(`API Key não configurada para ${provider}`);
+  }
+  return apiConfig;
+}
+
+/**
+ * Obtém o provedor de API ativo baseado na variável de ambiente
+ */
+export function getActiveApiProvider(): 'openai' | 'gemini' {
+  const provider = process.env.API_PROVIDER || 'gemini';
+  if (provider !== 'openai' && provider !== 'gemini') {
+    throw new Error(`Provedor de API inválido: ${provider}. Use 'openai' ou 'gemini'.`);
+  }
+  return provider;
+}
