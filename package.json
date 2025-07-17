@@ -14,6 +14,7 @@
     "pipeline": "npm run start",
     "build": "tsc",
     "validate": "npx tsc --noEmit",
+    "clean": "node scripts/clean-workspace.js",
     "validate:schemas": "tsx scripts/validate-schemas.ts",
     "validate:prompts": "tsx scripts/validate-prompts.ts",
     "ai:metrics": "tsx scripts/generate-ai-metrics.ts",
