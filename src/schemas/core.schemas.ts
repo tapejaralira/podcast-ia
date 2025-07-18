@@ -11,14 +11,10 @@ import { z } from 'zod';
  */
 export const NoticiaCruaSchema = z.object({
   titulo: z.string().min(1, 'Título não pode estar vazio'),
+  resumo: z.string().min(1, 'Resumo não pode estar vazio'),
   link: z.string().url('Link deve ser uma URL válida'),
-  descricao: z.string().min(1, 'Descrição não pode estar vazia'),
-  dataPublicacao: z.string().datetime('Data deve estar no formato ISO'),
   fonte: z.string().min(1, 'Fonte não pode estar vazia'),
-  categoria: z.string().optional(),
-  tags: z.array(z.string()).default([]),
-  relevanciaRegional: z.number().min(0).max(10).default(5),
-  conteudoCompleto: z.string().optional()
+  dataPublicacao: z.string().datetime('Data deve estar no formato ISO')
 });
 
 /**
@@ -27,16 +23,63 @@ export const NoticiaCruaSchema = z.object({
  */
 export const PautaDoDiaSchema = z.object({
   data: z.string().datetime(),
-  noticias: z.array(z.object({
-    id: z.string(),
+  manchete: z.string(),
+  efemerides: z.array(z.object({
     titulo: z.string(),
-    resumo: z.string(),
-    relevancia: z.number().min(0).max(10),
-    categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
-    contextoAmazonico: z.string(),
-    tempoEstimado: z.number().positive(), // segundos
-    prioridade: z.enum(['alta', 'media', 'baixa'])
+    texto: z.string()
   })),
+  pauta: z.object({
+    politica: z.array(z.object({
+      id: z.string(),
+      titulo: z.string(),
+      resumo: z.string(),
+      relevancia: z.number().min(0).max(10),
+      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
+      contextoAmazonico: z.string(),
+      tempoEstimado: z.number().positive(),
+      prioridade: z.enum(['alta', 'media', 'baixa'])
+    })),
+    economia: z.array(z.object({
+      id: z.string(),
+      titulo: z.string(),
+      resumo: z.string(),
+      relevancia: z.number().min(0).max(10),
+      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
+      contextoAmazonico: z.string(),
+      tempoEstimado: z.number().positive(),
+      prioridade: z.enum(['alta', 'media', 'baixa'])
+    })),
+    cidades: z.array(z.object({
+      id: z.string(),
+      titulo: z.string(),
+      resumo: z.string(),
+      relevancia: z.number().min(0).max(10),
+      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
+      contextoAmazonico: z.string(),
+      tempoEstimado: z.number().positive(),
+      prioridade: z.enum(['alta', 'media', 'baixa'])
+    })),
+    cultura: z.array(z.object({
+      id: z.string(),
+      titulo: z.string(),
+      resumo: z.string(),
+      relevancia: z.number().min(0).max(10),
+      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
+      contextoAmazonico: z.string(),
+      tempoEstimado: z.number().positive(),
+      prioridade: z.enum(['alta', 'media', 'baixa'])
+    })),
+    esportes: z.array(z.object({
+      id: z.string(),
+      titulo: z.string(),
+      resumo: z.string(),
+      relevancia: z.number().min(0).max(10),
+      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
+      contextoAmazonico: z.string(),
+      tempoEstimado: z.number().positive(),
+      prioridade: z.enum(['alta', 'media', 'baixa'])
+    }))
+  }),
   temaDestaque: z.string(),
   duracaoTotal: z.number().positive(),
   estatisticas: z.object({

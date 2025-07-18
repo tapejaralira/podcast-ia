@@ -1,6 +1,6 @@
 // src/noticias/analisarNoticias.ts
-import fs from 'fs/promises';
-import path from 'path';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 import OpenAI from 'openai';
 import 'dotenv/config';
 
@@ -13,6 +13,8 @@ import {
     Classification,
     FonteNoticia
 } from '../types.js';
+import { NoticiaCruaSchema, PautaDoDiaSchema } from '../schemas/core.schemas.js';
+import { validateWithSchema, validateArrayWithSchema } from '../utils/validation.js';
 
 // --- Configurações e Constantes ---
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -203,7 +205,22 @@ export async function analisarNoticias() {
 
     try {
         const fileContent = await fs.readFile(inputFile, 'utf-8');
-        todasAsNoticias = JSON.parse(fileContent);
+        const rawNoticias = JSON.parse(fileContent);
+        
+        // Validação das notícias de entrada
+        const validationResult = validateArrayWithSchema(
+            rawNoticias, 
+            NoticiaCruaSchema, 
+            'analisarNoticias.input'
+        );
+        
+        if (validationResult.invalid.length > 0) {
+            console.warn(`⚠️ ${validationResult.invalid.length} notícias inválidas foram ignoradas na entrada`);
+        }
+        
+        todasAsNoticias = validationResult.valid as NoticiaCrua[];
+        console.log(`✅ Validação de entrada: ${validationResult.summary.valid}/${validationResult.summary.total} notícias válidas (${(validationResult.summary.successRate * 100).toFixed(1)}%)`);
+        
     } catch (error) {
         console.error(`🔥 Erro ao ler o arquivo de notícias: ${inputFile}. Execute a etapa de busca primeiro.`);
         throw error;
@@ -262,6 +279,13 @@ export async function analisarNoticias() {
         }
     }
 
-    await fs.writeFile(outputFile, JSON.stringify(pautaFinal, null, 2));
-    console.log(`\n✅ Análise finalizada! Pauta do dia com ${pautaAgrupada.length + 1} notícias categorizadas foi salva em ${outputFile}`);
+    // Validação da pauta final com Zod
+    try {
+        const pautaValidada = validateWithSchema(pautaFinal, PautaDoDiaSchema, 'analisarNoticias.output');
+        await fs.writeFile(outputFile, JSON.stringify(pautaValidada, null, 2));
+        console.log(`\n✅ Análise finalizada! Pauta do dia com ${pautaAgrupada.length + 1} notícias categorizadas e validada foi salva em ${outputFile}`);
+    } catch (error) {
+        console.error('🔥 Erro de validação da pauta final:', error);
+        throw new Error('Erro na geração da pauta do dia. Verifique os logs para mais detalhes.');
+    }
 }

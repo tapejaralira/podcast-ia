@@ -1,10 +1,12 @@
 // src/noticias/buscarNoticias.ts
-import fs from 'fs/promises';
-import path from 'path';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 import { pathToFileURL } from 'url';
 
 import { config, filePaths } from '../config.js';
 import { NoticiaCrua, Collector } from '../types.js';
+import { NoticiaCruaSchema } from '../schemas/core.schemas.js';
+import { validateWithSchema, validateArrayWithSchema, safeValidateWithSchema } from '../utils/validation.js';
 
 // Define a interface para um módulo coletor importado dinamicamente
 interface CollectorModule {
@@ -80,8 +82,13 @@ export async function buscarNoticias() {
                     console.log(`  -> Encontrados: ${artigos.length} artigos recentes.`);
                     for (const artigo of artigos) {
                         if (artigo && artigo.link && !linksProcessados.has(artigo.link)) {
-                            todosOsArtigos.push(artigo);
-                            linksProcessados.add(artigo.link);
+                            const validationResult = safeValidateWithSchema(artigo, NoticiaCruaSchema, `buscarNoticias.artigo.${artigo.link}`);
+                            if (validationResult.success && validationResult.data) {
+                                todosOsArtigos.push(validationResult.data as NoticiaCrua);
+                                linksProcessados.add(artigo.link);
+                            } else {
+                                console.warn(`⚠️ Artigo inválido pelo schema, ignorado: ${artigo.link}`, validationResult.error?.message);
+                            }
                         }
                     }
                 } catch (error: any) {
@@ -92,14 +99,31 @@ export async function buscarNoticias() {
             }
         }
         
+        // Validação final dos dados coletados
+        const validationResult = validateArrayWithSchema(
+            todosOsArtigos, 
+            NoticiaCruaSchema, 
+            'buscarNoticias.output'
+        );
+        
+        console.log(`✅ Validação: ${validationResult.summary.valid}/${validationResult.summary.total} artigos válidos (${(validationResult.summary.successRate * 100).toFixed(1)}%)`);
+        
+        if (validationResult.invalid.length > 0) {
+            console.warn(`⚠️ ${validationResult.invalid.length} artigos inválidos foram ignorados`);
+        }
+        
         const outputFile = filePaths.noticiasRecentesFile;
         await fs.mkdir(path.dirname(outputFile), { recursive: true });
-        await fs.writeFile(outputFile, JSON.stringify(todosOsArtigos, null, 2));
+        await fs.writeFile(outputFile, JSON.stringify(validationResult.valid, null, 2));
         
-        await fs.writeFile(estadoFile, JSON.stringify({ ultimaColeta: runStartTime.toISOString() }, null, 2));
+        await fs.writeFile(estadoFile, JSON.stringify({ 
+            ultimaColeta: runStartTime.toISOString(),
+            totalArtigos: validationResult.valid.length,
+            taxaValidacao: validationResult.summary.successRate
+        }, null, 2));
 
         console.log(`
-✅ Coleta finalizada! ${todosOsArtigos.length} artigos únicos salvos em ${outputFile}`);
+✅ Coleta finalizada! ${validationResult.valid.length} artigos únicos e válidos salvos em ${outputFile}`);
         console.log(`Data da última coleta atualizada para: ${runStartTime.toLocaleString('pt-BR')}`);
 
     } catch (error) {

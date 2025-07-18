@@ -32,34 +32,38 @@ import { MeuSchema, MeuOutputSchema } from '../schemas/core.schemas.js';
 export async function minhaFuncao(input: MeuInput): Promise<MeuOutput> {
   // 1. Validar entrada
   const validInput = validateWithSchema(input, MeuSchema, 'minhaFuncao.input');
-  
+
   // 2. Log início com contexto
-  logInfo('Iniciando minhaFuncao', { 
+  logInfo('Iniciando minhaFuncao', {
     inputSize: validInput.dados.length,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
-  
+
   try {
     // 3. Processamento principal
     const startTime = Date.now();
     const resultado = await processarDados(validInput);
     const duration = Date.now() - startTime;
-    
+
     // 4. Validar saída
-    const validOutput = validateWithSchema(resultado, MeuOutputSchema, 'minhaFuncao.output');
-    
+    const validOutput = validateWithSchema(
+      resultado,
+      MeuOutputSchema,
+      'minhaFuncao.output'
+    );
+
     // 5. Log sucesso com métricas
-    logInfo('minhaFuncao concluída', { 
+    logInfo('minhaFuncao concluída', {
       success: true,
       duration,
-      outputSize: validOutput.resultado.length
+      outputSize: validOutput.resultado.length,
     });
-    
+
     return validOutput;
   } catch (error) {
-    logError('Erro em minhaFuncao', error, { 
+    logError('Erro em minhaFuncao', error, {
       input: sanitizeForLog(validInput),
-      context: 'minhaFuncao'
+      context: 'minhaFuncao',
     });
     throw error;
   }
@@ -86,23 +90,27 @@ import { config } from '../config.js';
 // Schemas específicos do módulo
 export const ModuloInputSchema = z.object({
   dados: z.array(z.string()),
-  opcoes: z.object({
-    modo: z.enum(['rapido', 'preciso']).default('preciso'),
-    limite: z.number().positive().default(10)
-  }).optional()
+  opcoes: z
+    .object({
+      modo: z.enum(['rapido', 'preciso']).default('preciso'),
+      limite: z.number().positive().default(10),
+    })
+    .optional(),
 });
 
 export const ModuloOutputSchema = z.object({
-  resultados: z.array(z.object({
-    id: z.string(),
-    valor: z.number(),
-    confianca: z.number().min(0).max(1)
-  })),
+  resultados: z.array(
+    z.object({
+      id: z.string(),
+      valor: z.number(),
+      confianca: z.number().min(0).max(1),
+    })
+  ),
   metadados: z.object({
     totalProcessados: z.number(),
     tempoExecucao: z.number(),
-    sucessoRate: z.number().min(0).max(1)
-  })
+    sucessoRate: z.number().min(0).max(1),
+  }),
 });
 
 export type ModuloInput = z.infer<typeof ModuloInputSchema>;
@@ -128,18 +136,24 @@ export type ModuloOutput = z.infer<typeof ModuloOutputSchema>;
  * @ai-business-impact [SUBSTITUA: Impacto no produto]
  * @ai-example processarModulo({ dados: ["texto1"], opcoes: { modo: "rapido" } })
  */
-export async function processarModulo(input: ModuloInput): Promise<ModuloOutput> {
-  const validInput = validateWithSchema(input, ModuloInputSchema, 'processarModulo.input');
-  
+export async function processarModulo(
+  input: ModuloInput
+): Promise<ModuloOutput> {
+  const validInput = validateWithSchema(
+    input,
+    ModuloInputSchema,
+    'processarModulo.input'
+  );
+
   logInfo('Iniciando processarModulo', {
     totalItems: validInput.dados.length,
-    modo: validInput.opcoes?.modo || 'preciso'
+    modo: validInput.opcoes?.modo || 'preciso',
   });
-  
+
   const startTime = Date.now();
   const resultados = [];
   let sucessos = 0;
-  
+
   try {
     for (const item of validInput.dados) {
       try {
@@ -147,32 +161,38 @@ export async function processarModulo(input: ModuloInput): Promise<ModuloOutput>
         resultados.push(resultado);
         sucessos++;
       } catch (error) {
-        logError('Erro ao processar item', error, { item: item.substring(0, 100) });
+        logError('Erro ao processar item', error, {
+          item: item.substring(0, 100),
+        });
         // Continua processando outros itens
       }
     }
-    
+
     const tempoExecucao = Date.now() - startTime;
     const sucessoRate = sucessos / validInput.dados.length;
-    
+
     const output: ModuloOutput = {
       resultados,
       metadados: {
         totalProcessados: validInput.dados.length,
         tempoExecucao,
-        sucessoRate
-      }
+        sucessoRate,
+      },
     };
-    
-    const validOutput = validateWithSchema(output, ModuloOutputSchema, 'processarModulo.output');
-    
+
+    const validOutput = validateWithSchema(
+      output,
+      ModuloOutputSchema,
+      'processarModulo.output'
+    );
+
     logInfo('processarModulo concluído', {
       sucessos,
       total: validInput.dados.length,
       sucessoRate,
-      tempoExecucao
+      tempoExecucao,
     });
-    
+
     return validOutput;
   } catch (error) {
     logError('Erro fatal em processarModulo', error);
@@ -186,7 +206,7 @@ async function processarItem(item: string, opcoes?: ModuloInput['opcoes']) {
   return {
     id: `item_${Date.now()}`,
     valor: Math.random(),
-    confianca: 0.95
+    confianca: 0.95,
   };
 }
 ```
@@ -206,36 +226,39 @@ export const MeuNovoSchema = z.object({
   // Campos obrigatórios
   id: z.string().min(1, 'ID não pode estar vazio'),
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  
+
   // Campos com validação específica
   email: z.string().email('Email deve ser válido'),
   idade: z.number().int().min(0).max(120, 'Idade deve ser realista'),
-  
+
   // Enums para valores controlados
   status: z.enum(['ativo', 'inativo', 'pendente']).default('pendente'),
-  
+
   // Arrays com validação dos elementos
   tags: z.array(z.string().min(1)).default([]),
-  
+
   // Objetos aninhados
-  configuracao: z.object({
-    tema: z.enum(['claro', 'escuro']).default('claro'),
-    notificacoes: z.boolean().default(true),
-    preferencias: z.record(z.string(), z.any()).optional()
-  }).optional(),
-  
+  configuracao: z
+    .object({
+      tema: z.enum(['claro', 'escuro']).default('claro'),
+      notificacoes: z.boolean().default(true),
+      preferencias: z.record(z.string(), z.any()).optional(),
+    })
+    .optional(),
+
   // Campos opcionais
   descricao: z.string().optional(),
-  
+
   // Campos com transformação
   criadoEm: z.string().datetime('Data deve estar no formato ISO'),
   atualizadoEm: z.string().datetime().optional(),
-  
+
   // Validações customizadas
-  senha: z.string()
+  senha: z
+    .string()
     .min(8, 'Senha deve ter pelo menos 8 caracteres')
     .regex(/[A-Z]/, 'Senha deve ter pelo menos uma maiúscula')
-    .regex(/[0-9]/, 'Senha deve ter pelo menos um número')
+    .regex(/[0-9]/, 'Senha deve ter pelo menos um número'),
 });
 
 /**
@@ -245,16 +268,18 @@ export const MeuNovoSchema = z.object({
 export const MeuNovoResponseSchema = z.object({
   sucesso: z.boolean(),
   dados: MeuNovoSchema.optional(),
-  erro: z.object({
-    codigo: z.string(),
-    mensagem: z.string(),
-    detalhes: z.record(z.any()).optional()
-  }).optional(),
+  erro: z
+    .object({
+      codigo: z.string(),
+      mensagem: z.string(),
+      detalhes: z.record(z.any()).optional(),
+    })
+    .optional(),
   metadados: z.object({
     timestamp: z.string().datetime(),
     versao: z.string(),
-    tempoExecucao: z.number().positive()
-  })
+    tempoExecucao: z.number().positive(),
+  }),
 });
 
 // Exports de tipos
@@ -262,15 +287,15 @@ export type MeuNovoTipo = z.infer<typeof MeuNovoSchema>;
 export type MeuNovoResponse = z.infer<typeof MeuNovoResponseSchema>;
 
 // Schemas derivados
-export const MeuNovoCreateSchema = MeuNovoSchema.omit({ 
-  id: true, 
-  criadoEm: true, 
-  atualizadoEm: true 
+export const MeuNovoCreateSchema = MeuNovoSchema.omit({
+  id: true,
+  criadoEm: true,
+  atualizadoEm: true,
 });
 
-export const MeuNovoUpdateSchema = MeuNovoSchema.partial().omit({ 
-  id: true, 
-  criadoEm: true 
+export const MeuNovoUpdateSchema = MeuNovoSchema.partial().omit({
+  id: true,
+  criadoEm: true,
 });
 
 export type MeuNovoCreate = z.infer<typeof MeuNovoCreateSchema>;
@@ -328,12 +353,12 @@ Formato de resposta esperado:
 Responda APENAS com o JSON válido.`,
   [
     'contexto',
-    'conteudo', 
+    'conteudo',
     'foco',
     'nivelDetalhe',
     'formatoSaida',
     'tom',
-    'limiteCaracteres'
+    'limiteCaracteres',
   ],
   {
     description: 'Template para [SUBSTITUA: descrição detalhada]',
@@ -341,7 +366,7 @@ Responda APENAS com o JSON válido.`,
       'Resposta deve ser JSON válido',
       'Confiança deve ser entre 0 e 1',
       'Justificativa deve explicar o raciocínio',
-      'Metadados devem incluir categorização'
+      'Metadados devem incluir categorização',
     ],
     examples: [
       {
@@ -352,15 +377,15 @@ Responda APENAS com o JSON válido.`,
           nivelDetalhe: 'alto',
           formatoSaida: 'estruturado',
           tom: 'neutro',
-          limiteCaracteres: '500'
+          limiteCaracteres: '500',
         },
-        expectedOutput: '{"resultado": "Positivo", "confianca": 0.87, ...}'
-      }
+        expectedOutput: '{"resultado": "Positivo", "confianca": 0.87, ...}',
+      },
     ],
     config: {
       temperature: 0.3,
-      maxTokens: 1000
-    }
+      maxTokens: 1000,
+    },
   }
 );
 
@@ -385,14 +410,14 @@ export async function usarMeuPrompt(
     nivelDetalhe: opcoes.nivelDetalhe || 'medio',
     formatoSaida: opcoes.formatoSaida || 'estruturado',
     tom: opcoes.tom || 'neutro',
-    limiteCaracteres: opcoes.limiteCaracteres || 500
+    limiteCaracteres: opcoes.limiteCaracteres || 500,
   };
 
   const prompt = renderTemplate(meuPromptTemplate, variables);
-  
+
   // Aqui você chamaria sua API de IA
   // const response = await openai.chat.completions.create(...)
-  
+
   return prompt; // Por enquanto retorna apenas o prompt renderizado
 }
 ```
@@ -420,7 +445,7 @@ describe('minhaFuncao', () => {
       // Arrange
       const input = {
         dados: ['item1', 'item2'],
-        opcoes: { modo: 'rapido' as const }
+        opcoes: { modo: 'rapido' as const },
       };
 
       // Act
@@ -451,9 +476,9 @@ describe('minhaFuncao', () => {
     it('deve tratar erro de API graciosamente', async () => {
       // Mock de falha de API
       jest.spyOn(global, 'fetch').mockRejectedValue(new Error('API Error'));
-      
+
       const input = { dados: ['item1'] };
-      
+
       await expect(minhaFuncao(input)).rejects.toThrow('API Error');
     });
   });
@@ -462,11 +487,11 @@ describe('minhaFuncao', () => {
     it('deve processar grande volume de dados', async () => {
       const input = {
         dados: Array(1000).fill('item'),
-        opcoes: { modo: 'rapido' as const }
+        opcoes: { modo: 'rapido' as const },
       };
 
       const result = await minhaFuncao(input);
-      
+
       expect(result.metadados.totalProcessados).toBe(1000);
     });
 
@@ -489,91 +514,106 @@ describe('minhaFuncao', () => {
 # [Nome do Módulo]
 
 ## 📋 Visão Geral
+
 [SUBSTITUA: Descrição de uma linha do que o módulo faz]
 
 ## 🎯 Propósito
+
 [SUBSTITUA: Explicação detalhada do problema que resolve]
 
 ## 🔧 Como Usar
 
 ### Instalação
+
 \`\`\`bash
+
 # Se for um novo módulo
+
 npm install [dependências]
 \`\`\`
 
 ### Uso Básico
+
 \`\`\`typescript
 import { minhaFuncao } from './[modulo].js';
 
 const resultado = await minhaFuncao({
-  dados: ['exemplo'],
-  opcoes: { modo: 'rapido' }
+dados: ['exemplo'],
+opcoes: { modo: 'rapido' }
 });
 \`\`\`
 
 ### Uso Avançado
+
 \`\`\`typescript
 // Exemplo com todas as opções
 const resultado = await minhaFuncao({
-  dados: dados,
-  opcoes: {
-    modo: 'preciso',
-    limite: 50,
-    configuracaoEspecial: true
-  }
+dados: dados,
+opcoes: {
+modo: 'preciso',
+limite: 50,
+configuracaoEspecial: true
+}
 });
 \`\`\`
 
 ## 📊 Interface
 
 ### Input
+
 \`\`\`typescript
 interface ModuloInput {
-  dados: string[];
-  opcoes?: {
-    modo: 'rapido' | 'preciso';
-    limite: number;
-  };
+dados: string[];
+opcoes?: {
+modo: 'rapido' | 'preciso';
+limite: number;
+};
 }
 \`\`\`
 
 ### Output
+
 \`\`\`typescript
 interface ModuloOutput {
-  sucesso: boolean;
-  dados: ResultadoItem[];
-  metadados: {
-    totalProcessados: number;
-    tempoExecucao: number;
-  };
+sucesso: boolean;
+dados: ResultadoItem[];
+metadados: {
+totalProcessados: number;
+tempoExecucao: number;
+};
 }
 \`\`\`
 
 ## ⚡ Performance
+
 - **Tempo típico**: [SUBSTITUA: tempo esperado]
 - **Limitações**: [SUBSTITUA: limitações conhecidas]
 - **Otimizações**: [SUBSTITUA: dicas de otimização]
 
 ## 🚨 Tratamento de Erros
+
 - **Validação**: Dados de entrada são validados com Zod
 - **API**: Falhas de API são tratadas com retry automático
 - **Logs**: Todos os erros são logados com contexto
 
 ## 🧪 Testes
+
 \`\`\`bash
 npm test -- [modulo].test.ts
 \`\`\`
 
 ## 📈 Métricas
+
 - Taxa de sucesso esperada: >95%
 - Tempo médio de execução: [X]ms
 - Uso de memória: [X]MB
 
 ## 🔗 Dependências
+
 - [SUBSTITUA: listar dependências principais]
 
 ## 📝 Changelog
+
 - v1.0.0: Implementação inicial
 - [SUBSTITUA: adicionar mudanças]
 ```
