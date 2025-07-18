@@ -85,3 +85,6 @@ export const acriticaCollector: Collector = {
   sourceName: SOURCE_NAME,
   fetch: fetchFromACritica,
 };
+
+// Export default necessário para dynamic import
+export default acriticaCollector;

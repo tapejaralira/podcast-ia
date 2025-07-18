@@ -100,11 +100,19 @@ export const config: ProjectConfig & {
     roteiros: ROTEIROS_DIR
   },
 
+  // Configurações de coleta de notícias
+  coleta: {
+    horasDefault: parseInt(process.env.COLETA_HORAS || '25'), // Período de coleta em horas
+    maxRetries: parseInt(process.env.COLETA_MAX_RETRIES || '3'),
+    timeoutPorFonte: parseInt(process.env.COLETA_TIMEOUT_FONTE || '15000'), // 15 segundos
+    rateLimitDelay: parseInt(process.env.COLETA_RATE_LIMIT || '200') // 200ms entre chamadas
+  },
+
   // Configurações do pipeline
   pipeline: {
     maxNoticias: parseInt(process.env.MAX_NOTICIAS || '4'),
     relevanceThreshold: parseInt(process.env.RELEVANCE_THRESHOLD || '10'),
-    timeoutHours: parseInt(process.env.TIMEOUT_HOURS || '48')
+    timeoutHours: parseInt(process.env.TIMEOUT_HOURS || '25') // Atualizado para 25 horas
   },
 
   // Configurações específicas do Podcast

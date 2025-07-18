@@ -77,6 +77,14 @@ export const config: ProjectConfig & {
     }
   },
 
+  // Configurações de coleta de notícias
+  coleta: {
+    horasDefault: parseInt(process.env.COLETA_HORAS || '25'), // Período de coleta em horas
+    maxRetries: parseInt(process.env.COLETA_MAX_RETRIES || '3'),
+    timeoutPorFonte: parseInt(process.env.COLETA_TIMEOUT_FONTE || '15000'), // 15 segundos
+    rateLimitDelay: parseInt(process.env.COLETA_RATE_LIMIT || '200') // 200ms entre chamadas
+  },
+
   // Caminhos importantes do projeto (ESTRUTURA AI-FRIENDLY)
   paths: {
     data: DATA_DIR,

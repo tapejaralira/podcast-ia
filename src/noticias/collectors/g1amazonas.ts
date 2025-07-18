@@ -44,3 +44,6 @@ export const g1amazonasCollector: Collector = {
   sourceName: SOURCE_NAME,
   fetch: fetchFromG1AM,
 };
+
+// Export default necessário para dynamic import
+export default g1amazonasCollector;

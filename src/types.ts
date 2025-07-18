@@ -457,6 +457,17 @@ export interface ProjectConfig {
     openai: AIApiConfig;
     gemini: AIApiConfig;
   };
+  /** Configurações de coleta de notícias */
+  coleta: {
+    /** Período de coleta em horas */
+    horasDefault: number;
+    /** Número máximo de tentativas por fonte */
+    maxRetries: number;
+    /** Timeout por fonte em milissegundos */
+    timeoutPorFonte: number;
+    /** Delay entre chamadas para rate limiting em milissegundos */
+    rateLimitDelay: number;
+  };
   /** Caminhos importantes do projeto */
   paths: {
     data: string;

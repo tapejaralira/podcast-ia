@@ -111,3 +111,6 @@ export const d24amCollector: Collector = {
     sourceName: SOURCE_NAME,
     fetch: fetchFromD24AM,
 };
+
+// Export default necessário para dynamic import
+export default d24amCollector;

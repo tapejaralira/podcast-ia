@@ -106,3 +106,6 @@ export const portalDoHolandaCollector: Collector = {
   sourceName: SOURCE_NAME,
   fetch: fetchFromPortalDoHolanda,
 };
+
+// Export default necessário para dynamic import
+export default portalDoHolandaCollector;
