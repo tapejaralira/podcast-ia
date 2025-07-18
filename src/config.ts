@@ -188,7 +188,7 @@ export const config: ProjectConfig & {
  */
 export const filePaths = {
   noticiasRecentesFile: path.join(config.paths.data, 'noticias-recentes.json'),
-  pautaDoDiaFile: path.join(config.paths.data, 'episodio-do-dia.json'),
+  pautaDoDiaFile: path.join(config.paths.data, 'noticias-categorizadas.json'),
   estadoColetaFile: path.join(config.paths.data, 'estado_coleta.json'),
   sugestoesAberturaFile: path.join(config.paths.data, 'sugestoes-abertura.json'),
   personagensFile: path.join(config.paths.data, 'personagens.json'),

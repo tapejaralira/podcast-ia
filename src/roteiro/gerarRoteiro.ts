@@ -7,7 +7,7 @@ import { PautaDoDiaSchema, RoteiroPodcastSchema } from '../schemas/core.schemas.
 import { validateWithSchema } from '../utils/validation.js';
 
 const ROTEIRO_TEMPLATE_PATH = path.join(SRC_DIR, 'roteiro', 'roteiro-template.md');
-const PAUTA_DO_DIA_PATH = path.join(DATA_DIR, 'pauta-do-dia.json');
+const PAUTA_DO_DIA_PATH = path.join(DATA_DIR, 'noticias-categorizadas.json');
 const SUGESTOES_ABERTURA_PATH = path.join(DATA_DIR, 'sugestoes-abertura.json');
 const PERSONAGENS_PATH = path.join(DATA_DIR, 'personagens.json');
 
@@ -30,9 +30,9 @@ function formatarBlocoNoticias(noticias: any[], tituloBloco: string): string {
 
 /**
  * @ai-purpose Gera roteiro completo de podcast baseado em pauta analisada, combinando template estruturado com conteúdo dinâmico
- * @ai-input-format PautaDoDia de pauta-do-dia.json + SugestoesAbertura + PersonagensConfig + template markdown
+ * @ai-input-format PautaDoDia de noticias-categorizadas.json + SugestoesAbertura + PersonagensConfig + template markdown
  * @ai-output-format Arquivo markdown de roteiro estruturado salvo em episodios/roteiro-YYYY-MM-DD.md
- * @ai-dependencies Template roteiro-template.md, pauta-do-dia.json, sugestoes-abertura.json, personagens.json
+ * @ai-dependencies Template roteiro-template.md, noticias-categorizadas.json, sugestoes-abertura.json, personagens.json
  * @ai-error-handling Fallback para template básico se arquivos de dados faltarem, validação de estrutura mínima necessária
  * @ai-performance Execução rápida ~1-3s (apenas manipulação de templates), sem calls de IA externa nesta função
  * @ai-context Combina dados estruturados com template editorial, respeita tom do personagem selecionado, organiza notícias por prioridade
@@ -47,7 +47,7 @@ function formatarBlocoNoticias(noticias: any[], tituloBloco: string): string {
  * @ai-business-impact Automatiza 90% da produção de roteiro, garante consistência editorial, reduz tempo de produção de 2h para 5min
  * @ai-example
  * ```typescript
- * // Requer pauta-do-dia.json gerada por analisarNoticias()
+ * // Requer noticias-categorizadas.json gerada por analisarNoticias()
  * await gerarRoteiro();
  * // Gera episodios/roteiro-2025-01-20.md pronto para gravação
  * console.log('Roteiro gerado para produção do episódio');

@@ -20,7 +20,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const geminiModel = genAI.getGenerativeModel({ model: config.ai.gemini.model });
 
 // --- Caminhos (usando a configuração central) ---
-const PAUTA_FILE = path.join(config.paths.data, 'episodio-do-dia.json');
+const PAUTA_FILE = path.join(config.paths.data, 'noticias-categorizadas.json');
 const SUGESTOES_FILE = path.join(config.paths.data, 'sugestoes-abertura.json');
 
 const FALLBACK_CURIOSIDADE: Efemerie = {

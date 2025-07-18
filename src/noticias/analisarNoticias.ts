@@ -359,13 +359,13 @@ function mapearCategoriaParaPauta(categoria: string): 'politica' | 'economia' | 
 /**
  * @ai-purpose Analisa e classifica notícias brutas usando IA para relevância local amazônica
  * @ai-input-format Lê arquivo JSON com array de NoticiaCrua de noticias-recentes.json
- * @ai-output-format Gera PautaDoDia estruturada com cold open e notícias priorizadas em pauta-do-dia.json
+ * @ai-output-format Gera PautaDoDia estruturada com cold open e notícias priorizadas em noticias-categorizadas.json
  * @ai-dependencies OpenAI API, configuração de keywords locais, arquivo noticias-recentes.json
  * @ai-error-handling Retry com diferentes modelos, fallback para classificação heurística se IA falhar completamente
  * @ai-performance Média 30s para 10 notícias, escala linear O(n), timeout individual de 15s por classificação
  * @ai-context Especializado em notícias do Amazonas/Norte, threshold de relevância configurável (padrão: -100), rate limiting de 200ms entre chamadas
  * @ai-validation Entrada esperada como NoticiaCrua[], saída validada como PautaDoDia - sem validação Zod ainda implementada
- * @ai-side-effects Salva análise em data/pauta-do-dia.json, logs detalhados de progresso, cache implícito via filesystem
+ * @ai-side-effects Salva análise em data/noticias-categorizadas.json, logs detalhados de progresso, cache implícito via filesystem
  * @ai-cost $0.08-0.25 por execução (depende da quantidade de notícias e modelo GPT usado)
  * @ai-quality-factors Precisão de classificação IA (40%), relevância keywords locais (35%), qualidade editorial fonte (25%)
  * @ai-optimization-tips Use batch processing para muitas notícias, implemente cache de classificações similares, ajuste threshold de relevância baseado em feedback
@@ -378,7 +378,7 @@ function mapearCategoriaParaPauta(categoria: string): 'politica' | 'economia' | 
  * ```typescript
  * // Arquivo noticias-recentes.json deve existir com array de NoticiaCrua
  * await analisarNoticias();
- * // Gera pauta-do-dia.json com notícias classificadas e cold open
+ * // Gera noticias-categorizadas.json com notícias classificadas e cold open
  * console.log('Pauta gerada para produção do episódio');
  * ```
  */
