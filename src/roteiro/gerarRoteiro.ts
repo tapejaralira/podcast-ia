@@ -2,14 +2,14 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { PautaDoDia, SugestoesAbertura, PersonagensConfig, NoticiaClassificada, Efemerie, Personagem } from '../types.js';
-import { DATA_DIR, ROTEIROS_DIR, SRC_DIR } from '../config.js';
+import { config, filePaths } from '../config.js';
 import { PautaDoDiaSchema, RoteiroPodcastSchema } from '../schemas/core.schemas.js';
 import { validateWithSchema } from '../utils/validation.js';
 
-const ROTEIRO_TEMPLATE_PATH = path.join(SRC_DIR, 'roteiro', 'roteiro-template.md');
-const PAUTA_DO_DIA_PATH = path.join(DATA_DIR, 'noticias-categorizadas.json');
-const SUGESTOES_ABERTURA_PATH = path.join(DATA_DIR, 'sugestoes-abertura.json');
-const PERSONAGENS_PATH = path.join(DATA_DIR, 'personagens.json');
+const ROTEIRO_TEMPLATE_PATH = filePaths.roteiroTemplateFile;
+const PAUTA_DO_DIA_PATH = filePaths.noticiasCategorizadasFile;
+const SUGESTOES_ABERTURA_PATH = filePaths.sugestoesAberturaFile;
+const PERSONAGENS_PATH = filePaths.personagensFile;
 
 function formatarDataParaNomeArquivo(data: Date): string {
   const ano = data.getFullYear();
@@ -26,6 +26,74 @@ function formatarBlocoNoticias(noticias: any[], tituloBloco: string): string {
     return `## ${tituloBloco}\n\n` + noticias.map(n =>
         `- **${n.titulo || n.tituloPrincipal || 'Sem título'}**: ${n.resumo || 'Sem resumo'}`
     ).join('\n');
+}
+
+// === FUNÇÕES DE CONVERSÃO PARA COMPATIBILIDADE ===
+
+function converterNoticiasSelecionadasParaPauta(noticiasSelecionadas: any): any {
+    // Converter do novo formato para formato compatível com template
+    const { manchete, blocos, episodio } = noticiasSelecionadas;
+    
+    // Combinar todos os blocos em categorias
+    const todasNoticias = [
+        ...blocos.abertura || [],
+        ...blocos.principal || [],
+        ...blocos.fechamento || []
+    ];
+    
+    // Organizar por categoria
+    const pauta = {
+        politica: todasNoticias.filter((n: any) => n.categoria === 'politica'),
+        economia: todasNoticias.filter((n: any) => ['economia', 'tecnologia'].includes(n.categoria)),
+        cidades: todasNoticias.filter((n: any) => ['social', 'meio-ambiente', 'geral'].includes(n.categoria)),
+        cultura: todasNoticias.filter((n: any) => n.categoria === 'cultura'),
+        esportes: todasNoticias.filter((n: any) => n.categoria === 'esportes')
+    };
+    
+    return {
+        data: episodio.dataEpisodio,
+        manchete: manchete.titulo,
+        efemerides: [], // Não há efemérides no novo formato
+        pauta,
+        temaDestaque: episodio.tema,
+        duracaoTotal: episodio.duracaoEstimada,
+        estatisticas: {
+            totalNoticias: todasNoticias.length,
+            noticiasPorCategoria: {},
+            relevanciaMedia: 7
+        }
+    };
+}
+
+function converterFormatoAntigo(pautaAntiga: any): any {
+    // Se já está no formato antigo, retornar como está
+    if (pautaAntiga.manchete && pautaAntiga.pauta) {
+        return pautaAntiga;
+    }
+    
+    // Se é formato novo, converter
+    if (pautaAntiga.sugestaoAutomatica) {
+        const { sugestaoAutomatica, categorias } = pautaAntiga;
+        
+        return {
+            data: pautaAntiga.data,
+            manchete: sugestaoAutomatica.manchete.titulo,
+            efemerides: [],
+            pauta: {
+                politica: categorias.politica || [],
+                economia: [...(categorias.economia || []), ...(categorias.tecnologia || [])],
+                cidades: [...(categorias.cidades || []), ...(categorias.geral || [])],
+                cultura: categorias.cultura || [],
+                esportes: categorias.esportes || []
+            },
+            temaDestaque: sugestaoAutomatica.manchete.categoria,
+            duracaoTotal: 900,
+            estatisticas: pautaAntiga.estatisticas || {}
+        };
+    }
+    
+    // Fallback padrão
+    return pautaAntiga;
 }
 
 /**
@@ -55,15 +123,34 @@ function formatarBlocoNoticias(noticias: any[], tituloBloco: string): string {
  */
 export async function gerarRoteiro() {
     try {
-        // Carregar dados
-        const rawPautaDoDia = JSON.parse(await fs.readFile(PAUTA_DO_DIA_PATH, 'utf-8'));
-        const pautaDoDia = validateWithSchema(rawPautaDoDia, PautaDoDiaSchema, 'gerarRoteiro.input.pauta');
+        // Tentar carregar do novo formato primeiro
+        let pautaDoDia: any;
+        
+        try {
+            // Tentar carregar noticias-selecionadas.json (novo formato)
+            const rawNoticiasSelecionadas = JSON.parse(
+                await fs.readFile(filePaths.noticiasSelecionadasFile, 'utf-8')
+            );
+            
+            // Converter para formato compatível
+            pautaDoDia = converterNoticiasSelecionadasParaPauta(rawNoticiasSelecionadas);
+            console.log('✅ Usando notícias selecionadas (novo formato)');
+            
+        } catch {
+            // Fallback para formato antigo
+            const rawPautaDoDia = JSON.parse(
+                await fs.readFile(filePaths.noticiasCategorizadasFile, 'utf-8')
+            );
+            
+            pautaDoDia = converterFormatoAntigo(rawPautaDoDia);
+            console.log('✅ Usando formato de compatibilidade');
+        }
         
         const sugestoesAbertura: SugestoesAbertura = JSON.parse(await fs.readFile(SUGESTOES_ABERTURA_PATH, 'utf-8'));
         const personagensConfig: PersonagensConfig = JSON.parse(await fs.readFile(PERSONAGENS_PATH, 'utf-8'));
         const template = await fs.readFile(ROTEIRO_TEMPLATE_PATH, 'utf-8');
 
-        console.log('✅ Pauta do dia validada com sucesso para geração do roteiro');
+        console.log('✅ Dados carregados para geração do roteiro');
 
         // Preparar dados para o template
         const { data, manchete, efemerides, pauta } = pautaDoDia;
@@ -93,7 +180,7 @@ export async function gerarRoteiro() {
             .replace('{{blocoCidades}}', blocoCidades)
             .replace('{{blocoCultura}}', blocoCultura)
             .replace('{{blocoEsportes}}', blocoEsportes)
-            .replace('{{efemerides}}', efemerides.map((e) => `- ${e.titulo}: ${e.texto}`).join('\n'));
+            .replace('{{efemerides}}', efemerides.map((e: any) => `- ${e.titulo}: ${e.texto}`).join('\n'));
 
         // Criar estrutura de roteiro para validação
         const roteiroEstruturado = {
@@ -142,8 +229,8 @@ export async function gerarRoteiro() {
             
             // Salvar tanto a versão estruturada quanto o markdown
             const nomeArquivo = formatarDataParaNomeArquivo(new Date(data));
-            const outputPathMd = path.join(ROTEIROS_DIR, nomeArquivo);
-            const outputPathJson = path.join(ROTEIROS_DIR, nomeArquivo.replace('.md', '.json'));
+            const outputPathMd = path.join(config.paths.output.episodes, nomeArquivo);
+            const outputPathJson = path.join(config.paths.output.episodes, nomeArquivo.replace('.md', '.json'));
             
             await fs.writeFile(outputPathMd, roteiroFinal);
             await fs.writeFile(outputPathJson, JSON.stringify(roteiroValidado, null, 2));
@@ -156,7 +243,7 @@ export async function gerarRoteiro() {
             console.error('🔥 Erro de validação do roteiro:', validationError);
             // Salvar mesmo assim o markdown para debug
             const nomeArquivo = formatarDataParaNomeArquivo(new Date(data));
-            const outputPath = path.join(ROTEIROS_DIR, nomeArquivo);
+            const outputPath = path.join(config.paths.output.episodes, nomeArquivo);
             await fs.writeFile(outputPath, roteiroFinal);
             console.log(`⚠️ Roteiro salvo sem validação em: ${outputPath}`);
         }

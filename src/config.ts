@@ -188,12 +188,17 @@ export const config: ProjectConfig & {
  */
 export const filePaths = {
   noticiasRecentesFile: path.join(config.paths.data, 'noticias-recentes.json'),
-  pautaDoDiaFile: path.join(config.paths.data, 'noticias-categorizadas.json'),
+  noticiasCategorizadasFile: path.join(config.paths.data, 'noticias-categorizadas.json'),
+  noticiasSelecionadasFile: path.join(config.paths.data, 'noticias-selecionadas.json'),
+  selecaoManualFile: path.join(config.paths.data, 'selecao-manual.json'),
   estadoColetaFile: path.join(config.paths.data, 'estado_coleta.json'),
   sugestoesAberturaFile: path.join(config.paths.data, 'sugestoes-abertura.json'),
   personagensFile: path.join(config.paths.data, 'personagens.json'),
   ttsConfigFile: path.join(config.paths.data, 'tts-config.json'),
-  roteiroTemplateFile: config.tts.roteiroTemplateFile
+  roteiroTemplateFile: config.tts.roteiroTemplateFile,
+  
+  // Backwards compatibility
+  pautaDoDiaFile: path.join(config.paths.data, 'noticias-categorizadas.json')
 };
 
 /**

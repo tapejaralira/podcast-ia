@@ -382,12 +382,64 @@ function mapearCategoriaParaPauta(categoria: string): 'politica' | 'economia' | 
  * console.log('Pauta gerada para produção do episódio');
  * ```
  */
+// === INTEGRAÇÃO COM SISTEMA DE SELEÇÃO MANUAL ===
+
+async function verificarSelecaoManual(): Promise<boolean> {
+    try {
+        const content = await fs.readFile(filePaths.selecaoManualFile, 'utf-8');
+        const selecao = JSON.parse(content);
+        
+        // Verificar se é uma seleção válida e recente
+        const dataSelecao = new Date(selecao.data);
+        const hoje = new Date();
+        const mesmoDia = dataSelecao.toDateString() === hoje.toDateString();
+        
+        return mesmoDia && selecao.manchete && selecao.noticiasEscolhidas;
+    } catch {
+        return false;
+    }
+}
+
+async function aplicarSelecaoManualExistente(): Promise<void> {
+    console.log('📝 Carregando seleção manual...');
+    
+    // Importar as funções do módulo completo
+    const { 
+        gerarEstruturaCategorizada, 
+        aplicarSelecaoManual 
+    } = await import('./analisarNoticiasCompleto.js');
+    
+    // Gerar estrutura completa
+    await gerarEstruturaCategorizada();
+    
+    // Carregar e aplicar seleção manual
+    const noticias = JSON.parse(
+        await fs.readFile(filePaths.noticiasCategorizadasFile, 'utf-8')
+    );
+    
+    await aplicarSelecaoManual(noticias);
+    
+    console.log('✅ Seleção manual aplicada com sucesso!');
+}
+
 export async function analisarNoticias() {
     console.log('🧠 Bubuia News - Iniciando análise e curadoria...');
     console.log(`📂 Arquivo de entrada: ${filePaths.noticiasRecentesFile}`);
-    console.log(`📂 Arquivo de saída: ${filePaths.pautaDoDiaFile}`);
+    console.log(`📂 Arquivo de saída: ${filePaths.noticiasCategorizadasFile}`);
+    
+    // Verificar se existe seleção manual para aplicar
+    const existeSelecaoManual = await verificarSelecaoManual();
+    
+    if (existeSelecaoManual) {
+        console.log('📝 Seleção manual detectada - aplicando configuração...');
+        return await aplicarSelecaoManualExistente();
+    }
+    
+    // Modo automático - análise completa
+    console.log('🤖 Modo automático - executando análise completa...');
+    
     const inputFile = filePaths.noticiasRecentesFile;
-    const outputFile = filePaths.pautaDoDiaFile;
+    const outputFile = filePaths.noticiasCategorizadasFile;
     let todasAsNoticias: NoticiaCrua[];
 
     try {
