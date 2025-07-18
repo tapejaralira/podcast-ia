@@ -656,7 +656,8 @@ function calcularEstatisticasEpisodio(noticias: NoticiaCompleta[]) {
 }
 
 // Executar se chamado diretamente
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url.includes('analisarNoticiasCompleto.ts') || 
+    process.argv[1]?.includes('analisarNoticiasCompleto')) {
   const modo = process.argv.includes('--manual') ? 'manual' : 'auto';
   
   console.log(`🚀 Executando análise completa - modo: ${modo}`);
