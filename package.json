@@ -18,7 +18,11 @@
     "validate:schemas": "tsx scripts/validate-schemas.ts",
     "validate:prompts": "tsx scripts/validate-prompts.ts",
     "ai:metrics": "tsx scripts/generate-ai-metrics.ts",
-    "ai:optimize": "tsx scripts/run-daily-optimization.ts"
+    "ai:optimize": "tsx scripts/run-daily-optimization.ts",
+    "test": "tsx tests/run-all-tests.ts",
+    "test:prompts": "tsx tests/prompts.test.ts",
+    "test:metrics": "tsx tests/metrics.test.ts",
+    "test:trio": "npm run test"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

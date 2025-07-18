@@ -205,6 +205,49 @@ export class AIPerformanceCollector {
       `${m.timestamp.toISOString()},${m.operation},${m.model},${m.success},${m.duration},${m.quality || ''},${m.estimatedCost || ''}`
     ).join('\n');
   }
+
+  /**
+   * Retorna todas as métricas coletadas
+   */
+  async getMetrics(): Promise<AIUsageMetric[]> {
+    return [...this.metrics];
+  }
+
+  /**
+   * Calcula estatísticas agregadas
+   */
+  async getStats(): Promise<{
+    totalOperations: number;
+    successRate: number;
+    avgDuration: number;
+    totalCost: number;
+    operationsByType: Record<string, number>;
+  }> {
+    const total = this.metrics.length;
+    const successful = this.metrics.filter(m => m.success).length;
+    const totalDuration = this.metrics.reduce((sum, m) => sum + m.duration, 0);
+    const totalCost = this.metrics.reduce((sum, m) => sum + (m.estimatedCost || 0), 0);
+    
+    const operationsByType: Record<string, number> = {};
+    this.metrics.forEach(m => {
+      operationsByType[m.operation] = (operationsByType[m.operation] || 0) + 1;
+    });
+
+    return {
+      totalOperations: total,
+      successRate: total > 0 ? successful / total : 1,
+      avgDuration: total > 0 ? totalDuration / total : 0,
+      totalCost,
+      operationsByType
+    };
+  }
+
+  /**
+   * Limpa todas as métricas coletadas
+   */
+  async reset(): Promise<void> {
+    this.metrics = [];
+  }
 }
 
 // Instância global
