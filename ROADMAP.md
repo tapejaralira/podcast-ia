@@ -70,21 +70,46 @@
 
 ---
 
-## 🎯 **PRÓXIMAS PRIORIDADES (4 semanas)**
+## 🎯 **PRÓXIMAS PRIORIDADES (6 semanas)**
 
-### **Semanas 1-2: Validação em Produção**
+### **Fase 2.5: Otimização de Regras de Negócio** _(Semanas 1-3)_
 
-- [ ] Monitoramento ativo das métricas de IA
+> **Rationale:** Otimizar pipeline antes de monitorar para gerar métricas mais precisas
+
+#### **Semana 1: Análise e Classificação**
+
+- [ ] **[`analisarNoticias.ts`]** - Melhorar critérios de relevância regional específicos do Amazonas
+- [ ] **Prompts de classificação** - Refinar templates para 40% mais precisão
+- [ ] **Filtros de qualidade** - Descartar notícias irrelevantes automaticamente
+- [ ] **Detecção de duplicatas** - Evitar repetição de conteúdo similar
+
+#### **Semana 2: Roteiro e Narrativa**
+
+- [ ] **[`gerarRoteiro.ts`]** - Melhorar flow conversacional e naturalidade
+- [ ] **[`sugerirAbertura.ts`]** - Ganchos mais envolventes e variados
+- [ ] **Transições entre notícias** - Conectividade natural e contexto local
+- [ ] **Otimização para timing** - Episódios de 15-20 minutos consistentes
+
+#### **Semana 3: Produção e Qualidade Final**
+
+- [ ] **[`gerarAudio.ts`]** - Otimizar configurações TTS por tipo de conteúdo
+- [ ] **[`montarEpisodio.ts`]** - Melhorar mixagem, balanceamento e transições
+- [ ] **Controle de qualidade** - Validações automáticas de áudio e conteúdo
+- [ ] **Testes de produção** - Validar melhorias com episódios reais
+
+### **Semanas 4-5: Validação das Melhorias**
+
+- [ ] Comparação antes/depois das otimizações
 - [ ] Coleta de dados reais de performance e custos
 - [ ] Ajustes finos baseados em resultados
-- [ ] Documentação prática de operação
+- [ ] Documentação das melhorias implementadas
 
-### **Semanas 3-4: Dashboard e Alertas**
+### **Semana 6: Preparação para Monitoramento**
 
-- [ ] Dashboard básico de métricas em tempo real
-- [ ] Sistema de alertas para problemas
-- [ ] Relatórios automáticos semanais
-- [ ] Sugestões automáticas de melhorias
+- [ ] Baseline de métricas pós-otimização
+- [ ] Setup inicial do sistema de coleta de dados
+- [ ] Planejamento detalhado da Fase 3
+- [ ] Documentação de KPIs para monitoramento
 
 ### **Mês 2: Pipeline de Deploy**
 
