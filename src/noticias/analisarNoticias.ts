@@ -17,6 +17,10 @@ import { NoticiaCruaSchema, PautaDoDiaSchema } from '../schemas/core.schemas.js'
 import { validateWithSchema, validateArrayWithSchema } from '../utils/validation.js';
 import { classifyNewsPrompt } from '../ai/prompts/classify-news.prompt.js';
 import { renderTemplate } from '../ai/prompts/prompt-template.js';
+import { AIPerformanceCollector } from '../ai/metrics/ai-performance.js';
+
+// Initialize AI metrics collector
+const aiMetrics = new AIPerformanceCollector();
 
 // --- Configurações e Constantes ---
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -43,6 +47,8 @@ interface NoticiaAnalisada extends NoticiaCrua {
 
 async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classification> {
     console.log(`  -> Classificando com IA: "${article.titulo.substring(0, 40)}..."`);
+    const startTime = Date.now();
+    
     try {
         // Usar template estruturado de prompt
         const prompt = renderTemplate(classifyNewsPrompt, {
@@ -58,21 +64,72 @@ async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classifica
         });
 
         const parsedResponse = JSON.parse(response.choices[0].message.content || '{}') as OpenAIResponse;
-        
         const classificationId = parsedResponse.classification_id as keyof typeof classificationGuide;
 
         if (!classificationId || !classificationGuide[classificationId]) {
             console.warn(`  [AVISO] IA retornou ID inválido: ${classificationId}. Usando padrão.`);
-            const fallbackId = "🔴 3" as keyof typeof classificationGuide;
-            return { id: fallbackId, label: classificationGuide[fallbackId].label, isAdequate: true };
+            
+            // Track failed metric
+            await aiMetrics.trackAIUsage(
+                'classification',
+                config.ai.gemini.model,
+                false,
+                Date.now() - startTime,
+                undefined, // quality
+                prompt.length / 4, // inputTokens estimate
+                undefined, // outputTokens
+                'invalid_classification_id',
+                { article: article.titulo }
+            );
+            
+            return { 
+                id: '🚀 4', 
+                label: classificationGuide['🚀 4'].label,
+                isAdequate: false 
+            };
         }
-        return {
+
+        const classification: Classification = {
             id: classificationId,
             label: classificationGuide[classificationId].label,
-            isAdequate: parsedResponse.is_adequate !== false
+            isAdequate: parsedResponse.is_adequate || false
         };
+
+        // Track successful metric
+        await aiMetrics.trackAIUsage(
+            'classification',
+            config.ai.gemini.model,
+            true,
+            Date.now() - startTime,
+            classification.isAdequate ? 8 : 6, // quality
+            prompt.length / 4, // inputTokens estimate
+            (response.choices[0].message.content || '').length / 4, // outputTokens estimate
+            undefined, // errorType
+            { 
+                article: article.titulo,
+                classification: classificationId,
+                adequate: classification.isAdequate
+            }
+        );
+
+        return classification;
+        
     } catch (error: any) {
         console.error(`❌ Erro ao chamar a API de classificação: ${error.message}`);
+        
+        // Track failed metric
+        await aiMetrics.trackAIUsage(
+            'classification',
+            config.ai.gemini.model,
+            false,
+            Date.now() - startTime,
+            undefined, // quality
+            undefined, // inputTokens
+            undefined, // outputTokens
+            'api_error',
+            { article: article.titulo, error: error.message }
+        );
+        
         const fallbackId = "🔴 3" as keyof typeof classificationGuide;
         return { id: fallbackId, label: classificationGuide[fallbackId].label, isAdequate: true }; // Fallback seguro
     }

@@ -5,10 +5,14 @@ import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import 'dotenv/config';
 
-import { config } from '../config.js';
+import { config, filePaths } from '../config.js';
 import { PautaDoDia, SugestoesAbertura, Efemerie, SugestaoGancho, NoticiaClassificada } from '../types.js';
 import { generateHooksPrompt } from '../ai/prompts/generate-hooks.prompt.js';
 import { renderTemplate } from '../ai/prompts/prompt-template.js';
+import { AIPerformanceCollector } from '../ai/metrics/ai-performance.js';
+
+// Initialize AI metrics collector
+const aiMetrics = new AIPerformanceCollector();
 
 // --- Instâncias das APIs ---
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -32,12 +36,28 @@ const FALLBACK_CURIOSIDADE: Efemerie = {
  * @returns O conteúdo de texto da resposta da IA.
  */
 async function gerarConteudoIA(prompt: string): Promise<string> {
+  const startTime = Date.now();
+  
   try {
     if ('gemini' === 'gemini') {
       console.log(`  -> Gerando conteúdo com Gemini...`);
       const result = await geminiModel.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
+      
+      // Track successful metric
+      await aiMetrics.trackAIUsage(
+        'text-generation',
+        'gemini-2.0-flash',
+        true,
+        Date.now() - startTime,
+        8, // quality estimate
+        prompt.length / 4, // inputTokens estimate
+        text.length / 4, // outputTokens estimate
+        undefined, // errorType
+        { operation: 'generate-hooks' }
+      );
+      
       // Remove o markdown ```json e ``` do início e fim da string
       return text.replace(/```json\n?|\n?```/g, '').trim();
     } else {
@@ -47,10 +67,40 @@ async function gerarConteudoIA(prompt: string): Promise<string> {
         messages: [{ role: 'user', content: prompt }],
         response_format: { type: 'json_object' },
       });
-      return response.choices[0].message.content || '';
+      
+      const content = response.choices[0].message.content || '';
+      
+      // Track successful metric
+      await aiMetrics.trackAIUsage(
+        'text-generation',
+        config.ai.gemini.model,
+        true,
+        Date.now() - startTime,
+        8, // quality estimate
+        prompt.length / 4, // inputTokens estimate
+        content.length / 4, // outputTokens estimate
+        undefined, // errorType
+        { operation: 'generate-hooks' }
+      );
+      
+      return content;
     }
   } catch (error) {
     console.error(`❌ Erro ao gerar conteúdo com ${'gemini'}:`, error);
+    
+    // Track failed metric
+    await aiMetrics.trackAIUsage(
+      'text-generation',
+      'gemini-2.0-flash',
+      false,
+      Date.now() - startTime,
+      undefined, // quality
+      prompt.length / 4, // inputTokens estimate
+      undefined, // outputTokens
+      'api_error',
+      { operation: 'generate-hooks', error: (error as Error).message }
+    );
+    
     // Retorna um JSON de erro padronizado para não quebrar o parsing
     return JSON.stringify({ encontrado: false, erro: (error as Error).message });
   }
