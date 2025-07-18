@@ -43,6 +43,28 @@ interface NoticiaAnalisada extends NoticiaCrua {
     classification: Classification;
 }
 
+// Notícia com campos extras para compatibilidade com schema
+interface NoticiaEnriquecida {
+    isSuperNoticia: boolean;
+    tituloPrincipal: string;
+    classification: Classification;
+    relevanceScore: number;
+    fontes: Array<{
+        link: string;
+        resumo: string;
+        fonte: string;
+    }>;
+    // Campos adicionais para schema
+    id: string;
+    titulo: string;
+    resumo: string;
+    relevancia: number;
+    categoria: 'politica' | 'economia' | 'meio-ambiente' | 'cultura' | 'tecnologia' | 'social';
+    contextoAmazonico: string;
+    tempoEstimado: number;
+    prioridade: 'alta' | 'media' | 'baixa';
+}
+
 // --- Funções Principais ---
 
 async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classification> {
@@ -57,7 +79,7 @@ async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classifica
         });
 
         const response = await openai.chat.completions.create({
-            model: config.ai.gemini.model,
+            model: config.ai.openai.model,
             messages: [{ role: "user", content: prompt }],
             response_format: { type: "json_object" },
             temperature: classifyNewsPrompt.config.temperature || 0.1,
@@ -72,7 +94,7 @@ async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classifica
             // Track failed metric
             await aiMetrics.trackAIUsage(
                 'classification',
-                config.ai.gemini.model,
+                config.ai.openai.model,
                 false,
                 Date.now() - startTime,
                 undefined, // quality
@@ -98,7 +120,7 @@ async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classifica
         // Track successful metric
         await aiMetrics.trackAIUsage(
             'classification',
-            config.ai.gemini.model,
+            config.ai.openai.model,
             true,
             Date.now() - startTime,
             classification.isAdequate ? 8 : 6, // quality
@@ -120,7 +142,7 @@ async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classifica
         // Track failed metric
         await aiMetrics.trackAIUsage(
             'classification',
-            config.ai.gemini.model,
+            config.ai.openai.model,
             false,
             Date.now() - startTime,
             undefined, // quality
@@ -157,7 +179,7 @@ function calcularRelevanceScore(article: NoticiaCrua, classification: Classifica
     return score;
 }
 
-function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaClassificada[] {
+function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaEnriquecida[] {
     console.log('\n[LOG] Fase de agrupamento iniciada...');
     const grupos: { [key: string]: NoticiaAnalisada[] } = {};
     for (const noticia of noticias) {
@@ -166,7 +188,7 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaClassificada[] {
         grupos[categoria].push(noticia);
     }
 
-    const noticiasAgrupadas: NoticiaClassificada[] = [];
+    const noticiasAgrupadas: NoticiaEnriquecida[] = [];
     const processados = new Set<string>();
 
     for (const categoria in grupos) {
@@ -202,6 +224,15 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaClassificada[] {
                     resumo: n.resumo,
                     fonte: n.fonte
                 })),
+                // Campos adicionais para compatibilidade com schema
+                id: `noticia_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                titulo: noticiaPrincipal.titulo,
+                resumo: noticiaPrincipal.resumo,
+                relevancia: Math.min(10, Math.max(1, Math.round(noticiaPrincipal.relevanceScore / 10))),
+                categoria: mapCategoriaToSchema(noticiaPrincipal.classification.id),
+                contextoAmazonico: gerarContextoAmazonico(noticiaPrincipal),
+                tempoEstimado: calcularTempoEstimado(noticiaPrincipal, grupoSimilar.length),
+                prioridade: calcularPrioridade(noticiaPrincipal.relevanceScore)
             });
         }
     }
@@ -210,6 +241,118 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaClassificada[] {
         console.log('[LOG] Pelo menos uma "Super-Notícia" foi criada a partir de múltiplas fontes.');
     }
     return noticiasAgrupadas;
+}
+
+// Funções auxiliares para mapear dados para o schema
+function mapCategoriaToSchema(classificationId: string): 'politica' | 'economia' | 'meio-ambiente' | 'cultura' | 'tecnologia' | 'social' {
+    const id = classificationId.split(' ')[0];
+    switch (id) {
+        case '🟡': return 'politica';
+        case '🚀': return 'tecnologia';
+        case '🎬':
+        case '🎭': return 'cultura';
+        case '⚫️':
+        case '🔴': return 'social';   // Segurança e perrengues vão para social  
+        case '👽': return 'cultura';
+        default: return 'social';
+    }
+}
+
+function gerarContextoAmazonico(noticia: NoticiaAnalisada): string {
+    const titulo = noticia.titulo.toLowerCase();
+    const contextos = [];
+    
+    // Contextos específicos do Amazonas
+    if (titulo.includes('manaus')) contextos.push('Impacto direto na capital amazonense');
+    if (titulo.includes('amazonas')) contextos.push('Relevância estadual');
+    if (titulo.includes('parintins')) contextos.push('Tradição cultural amazônica');
+    if (titulo.includes('rio negro') || titulo.includes('rio amazonas')) contextos.push('Recursos hídricos regionais');
+    if (titulo.includes('floresta') || titulo.includes('queimada')) contextos.push('Meio ambiente amazônico');
+    if (titulo.includes('festival') || titulo.includes('cultura')) contextos.push('Identidade cultural regional');
+    if (titulo.includes('wilson lima') || titulo.includes('david almeida')) contextos.push('Gestão pública local');
+    
+    return contextos.length > 0 ? contextos.join(' | ') : 'Relevância regional geral';
+}
+
+function calcularTempoEstimado(noticia: NoticiaAnalisada, numFontes: number): number {
+    // Base: 30 segundos para notícia simples
+    let tempo = 30;
+    
+    // +10s para cada fonte adicional (super-notícia)
+    tempo += (numFontes - 1) * 10;
+    
+    // +15s para classificações de maior impacto
+    const id = noticia.classification.id.split(' ')[0];
+    if (['⚫️', '👽'].includes(id)) tempo += 15;
+    if (['🚀', '🎬'].includes(id)) tempo += 10;
+    
+    // +5s para alta relevância
+    if (noticia.relevanceScore > 25) tempo += 5;
+    
+    return tempo;
+}
+
+function calcularPrioridade(relevanceScore: number): 'alta' | 'media' | 'baixa' {
+    if (relevanceScore >= 25) return 'alta';
+    if (relevanceScore >= 15) return 'media';
+    return 'baixa';
+}
+
+function gerarTemaDestaque(manchete: NoticiaEnriquecida, pautaAgrupada: NoticiaEnriquecida[]): string {
+    const temas = [];
+    
+    // Analisa a manchete
+    if (manchete.categoria === 'politica') temas.push('Política');
+    if (manchete.categoria === 'cultura') temas.push('Cultura');
+    if (manchete.categoria === 'social') temas.push('Cidade');
+    if (manchete.categoria === 'economia' || manchete.categoria === 'tecnologia') temas.push('Economia');
+    
+    // Verifica se há super-notícias
+    const superNoticias = pautaAgrupada.filter(n => n.isSuperNoticia);
+    if (superNoticias.length > 0) temas.push('Destaque Regional');
+    
+    return temas.length > 0 ? temas.join(' e ') : 'Notícias do Dia';
+}
+
+function calcularDuracaoTotal(pauta: any): number {
+    let total = 0;
+    Object.values(pauta).forEach((categoria: any) => {
+        if (Array.isArray(categoria)) {
+            categoria.forEach((noticia: any) => {
+                total += noticia.tempoEstimado || 30;
+            });
+        }
+    });
+    return total;
+}
+
+function calcularDistribuicaoCategorias(pauta: any): Record<string, number> {
+    const distribuicao: Record<string, number> = {};
+    Object.entries(pauta).forEach(([categoria, noticias]: [string, any]) => {
+        if (Array.isArray(noticias)) {
+            distribuicao[categoria] = noticias.length;
+        }
+    });
+    return distribuicao;
+}
+
+function calcularRelevanciaMedia(noticias: NoticiaEnriquecida[]): number {
+    if (noticias.length === 0) return 0;
+    const soma = noticias.reduce((acc, noticia) => acc + noticia.relevancia, 0);
+    return Number((soma / noticias.length).toFixed(1));
+}
+
+function mapearCategoriaParaPauta(categoria: string): 'politica' | 'economia' | 'cidades' | 'cultura' | 'esportes' {
+    // Mapeia as categorias do schema para as categorias da pauta
+    switch (categoria) {
+        case 'politica': return 'politica';
+        case 'economia':
+        case 'tecnologia': return 'economia';
+        case 'cultura': return 'cultura';
+        case 'social':
+        case 'meio-ambiente': return 'cidades';
+        default: return 'cidades';
+    }
 }
 
 
@@ -241,13 +384,18 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaClassificada[] {
  */
 export async function analisarNoticias() {
     console.log('🧠 Bubuia News - Iniciando análise e curadoria...');
+    console.log(`📂 Arquivo de entrada: ${filePaths.noticiasRecentesFile}`);
+    console.log(`📂 Arquivo de saída: ${filePaths.pautaDoDiaFile}`);
     const inputFile = filePaths.noticiasRecentesFile;
     const outputFile = filePaths.pautaDoDiaFile;
     let todasAsNoticias: NoticiaCrua[];
 
     try {
+        console.log('📖 Lendo arquivo de notícias...');
         const fileContent = await fs.readFile(inputFile, 'utf-8');
+        console.log(`📊 Arquivo lido com ${fileContent.length} caracteres`);
         const rawNoticias = JSON.parse(fileContent);
+        console.log(`📋 JSON parsado com ${rawNoticias.length} notícias`);
         
         // Validação das notícias de entrada
         const validationResult = validateArrayWithSchema(
@@ -288,41 +436,54 @@ export async function analisarNoticias() {
         throw new Error('Nenhuma notícia para a pauta.');
     }
 
-    // --- Montagem da Pauta Final (LÓGICA CORRIGIDA) ---
+    // --- Montagem da Pauta Final (ESTRUTURA OTIMIZADA) ---
 
     // A notícia mais relevante vira a manchete
     const manchete = pautaAgrupada.shift()!;
 
-    // Inicializa a pauta final com a estrutura correta
-    const pautaFinal: PautaDoDia = {
+    // Inicializa a pauta final com estrutura compatível com schema
+    const pautaFinal = {
         data: new Date().toISOString(),
         manchete: manchete.tituloPrincipal,
         efemerides: [], // Efemérides serão adicionadas em outra etapa (se necessário)
         pauta: {
-            politica: [],
-            economia: [],
-            cidades: [],
-            cultura: [],
-            esportes: [],
+            politica: [] as NoticiaEnriquecida[],
+            economia: [] as NoticiaEnriquecida[],
+            cidades: [] as NoticiaEnriquecida[],
+            cultura: [] as NoticiaEnriquecida[],
+            esportes: [] as NoticiaEnriquecida[],
         },
+        temaDestaque: gerarTemaDestaque(manchete, pautaAgrupada),
+        duracaoTotal: 0, // Será calculado depois
+        estatisticas: {
+            totalNoticias: pautaAgrupada.length + 1,
+            noticiasPorCategoria: {} as Record<string, number>,
+            relevanciaMedia: 0
+        }
     };
 
     // Adiciona a manchete à sua categoria correspondente
-    const categoriaManchete = classificationGuide[manchete.classification.id as keyof typeof classificationGuide].categoria as keyof PautaDoDia['pauta'];
+    const categoriaManchete = mapearCategoriaParaPauta(manchete.categoria);
     if (pautaFinal.pauta[categoriaManchete]) {
         pautaFinal.pauta[categoriaManchete].push(manchete);
     }
 
     // Distribui as notícias restantes nas suas respectivas categorias
     for (const noticia of pautaAgrupada) {
-        const categoria = classificationGuide[noticia.classification.id as keyof typeof classificationGuide].categoria as keyof PautaDoDia['pauta'];
+        const categoria = mapearCategoriaParaPauta(noticia.categoria);
         if (pautaFinal.pauta[categoria] && pautaFinal.pauta[categoria].length < 4) { // Limita notícias por categoria
             pautaFinal.pauta[categoria].push(noticia);
         }
     }
 
+    // Calcula estatísticas finais
+    pautaFinal.duracaoTotal = calcularDuracaoTotal(pautaFinal.pauta);
+    pautaFinal.estatisticas.noticiasPorCategoria = calcularDistribuicaoCategorias(pautaFinal.pauta);
+    pautaFinal.estatisticas.relevanciaMedia = calcularRelevanciaMedia([manchete, ...pautaAgrupada]);
+
     // Validação da pauta final com Zod
     try {
+        console.log('💾 Validando e salvando pauta final...');
         const pautaValidada = validateWithSchema(pautaFinal, PautaDoDiaSchema, 'analisarNoticias.output');
         await fs.writeFile(outputFile, JSON.stringify(pautaValidada, null, 2));
         console.log(`\n✅ Análise finalizada! Pauta do dia com ${pautaAgrupada.length + 1} notícias categorizadas e validada foi salva em ${outputFile}`);
@@ -330,4 +491,15 @@ export async function analisarNoticias() {
         console.error('🔥 Erro de validação da pauta final:', error);
         throw new Error('Erro na geração da pauta do dia. Verifique os logs para mais detalhes.');
     }
+}
+
+// Chamada direta se executado como script principal
+if (import.meta.url === `file://${process.argv[1]}`) {
+    console.log('🚀 Executando analisarNoticias como script principal...');
+    analisarNoticias()
+        .then(() => console.log('✅ Script concluído com sucesso'))
+        .catch(error => {
+            console.error('❌ Erro no script:', error);
+            process.exit(1);
+        });
 }
