@@ -5,11 +5,16 @@
 
 import { runPromptTests } from './prompts.test.js';
 import { runMetricsTests } from './metrics.test.js';
+import { runSchemaTests } from './schemas.test.js';
 
 async function runAllTests() {
   console.log('🚀 Iniciando suite de testes do Trio de Ouro...\n');
   
   try {
+    // Testes de Schemas
+    runSchemaTests();
+    console.log('');
+    
     // Testes de Prompts
     runPromptTests();
     console.log('');

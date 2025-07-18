@@ -26,7 +26,8 @@ export const PautaDoDiaSchema = z.object({
   manchete: z.string(),
   efemerides: z.array(z.object({
     titulo: z.string(),
-    texto: z.string()
+    texto: z.string(),
+    fonte: z.string()
   })),
   pauta: z.object({
     politica: z.array(z.object({

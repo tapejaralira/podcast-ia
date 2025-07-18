@@ -93,7 +93,7 @@ export async function gerarRoteiro() {
             .replace('{{blocoCidades}}', blocoCidades)
             .replace('{{blocoCultura}}', blocoCultura)
             .replace('{{blocoEsportes}}', blocoEsportes)
-            .replace('{{efemerides}}', efemerides.map((e: Efemerie) => `- ${e.titulo}: ${e.texto}`).join('\n'));
+            .replace('{{efemerides}}', efemerides.map((e) => `- ${e.titulo}: ${e.texto}`).join('\n'));
 
         // Criar estrutura de roteiro para validação
         const roteiroEstruturado = {

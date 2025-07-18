@@ -20,6 +20,7 @@
     "ai:metrics": "tsx scripts/generate-ai-metrics.ts",
     "ai:optimize": "tsx scripts/run-daily-optimization.ts",
     "test": "tsx tests/run-all-tests.ts",
+    "test:schemas": "tsx tests/schemas.test.ts",
     "test:prompts": "tsx tests/prompts.test.ts",
     "test:metrics": "tsx tests/metrics.test.ts",
     "test:trio": "npm run test"
