@@ -18,77 +18,147 @@ export const NoticiaCruaSchema = z.object({
 });
 
 /**
- * Schema para pauta do dia processada e organizada
- * @ai-validation Estrutura final da análise de notícias
+ * Schema base para notícia completa com análise detalhada
+ * @ai-validation Estrutura enriquecida para curadoria e automação
  */
-export const PautaDoDiaSchema = z.object({
-  data: z.string().datetime(),
-  manchete: z.string(),
-  efemerides: z.array(z.object({
-    titulo: z.string(),
-    texto: z.string(),
-    fonte: z.string()
-  })),
-  pauta: z.object({
-    politica: z.array(z.object({
-      id: z.string(),
-      titulo: z.string(),
-      resumo: z.string(),
-      relevancia: z.number().min(0).max(10),
-      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
-      contextoAmazonico: z.string(),
-      tempoEstimado: z.number().positive(),
-      prioridade: z.enum(['alta', 'media', 'baixa'])
-    })),
-    economia: z.array(z.object({
-      id: z.string(),
-      titulo: z.string(),
-      resumo: z.string(),
-      relevancia: z.number().min(0).max(10),
-      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
-      contextoAmazonico: z.string(),
-      tempoEstimado: z.number().positive(),
-      prioridade: z.enum(['alta', 'media', 'baixa'])
-    })),
-    cidades: z.array(z.object({
-      id: z.string(),
-      titulo: z.string(),
-      resumo: z.string(),
-      relevancia: z.number().min(0).max(10),
-      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
-      contextoAmazonico: z.string(),
-      tempoEstimado: z.number().positive(),
-      prioridade: z.enum(['alta', 'media', 'baixa'])
-    })),
-    cultura: z.array(z.object({
-      id: z.string(),
-      titulo: z.string(),
-      resumo: z.string(),
-      relevancia: z.number().min(0).max(10),
-      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
-      contextoAmazonico: z.string(),
-      tempoEstimado: z.number().positive(),
-      prioridade: z.enum(['alta', 'media', 'baixa'])
-    })),
-    esportes: z.array(z.object({
-      id: z.string(),
-      titulo: z.string(),
-      resumo: z.string(),
-      relevancia: z.number().min(0).max(10),
-      categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social']),
-      contextoAmazonico: z.string(),
-      tempoEstimado: z.number().positive(),
-      prioridade: z.enum(['alta', 'media', 'baixa'])
-    }))
+export const NoticiaCompletaSchema = z.object({
+  // Dados básicos
+  id: z.string(),
+  titulo: z.string(),
+  resumo: z.string(),
+  link: z.string().url(),
+  fonte: z.string(),
+  dataPublicacao: z.string().datetime(),
+  
+  // Análise IA
+  relevancia: z.number().min(0).max(10),
+  categoria: z.enum(['politica', 'economia', 'meio-ambiente', 'cultura', 'tecnologia', 'social', 'esportes', 'geral']),
+  contextoAmazonico: z.string(),
+  tempoEstimado: z.number().positive(),
+  prioridade: z.enum(['alta', 'media', 'baixa']),
+  
+  // Métricas para decisão
+  scoreTotal: z.number(),
+  scoreDetalhado: z.object({
+    relevanciaRegional: z.number(),
+    impactoLocal: z.number(),
+    urgencia: z.number(),
+    unicidade: z.number(),
+    engajamento: z.number()
   }),
-  temaDestaque: z.string(),
-  duracaoTotal: z.number().positive(),
-  estatisticas: z.object({
-    totalNoticias: z.number().nonnegative(),
-    noticiasPorCategoria: z.record(z.number()),
-    relevanciaMedia: z.number().min(0).max(10)
+  tagsDetectadas: z.array(z.string()),
+  razaoRelevancia: z.string(),
+  
+  // Status de seleção
+  statusSelecao: z.object({
+    selecionadaAutomaticamente: z.boolean(),
+    motivoSelecao: z.enum(['manchete', 'relevancia', 'diversidade', 'manual']).nullable(),
+    posicaoRanking: z.number(),
+    probabilidadeSelecao: z.number().min(0).max(1)
+  }),
+  
+  // Metadados editoriais
+  editorial: z.object({
+    categoriaSugerida: z.string(),
+    anguloPauta: z.string(),
+    potencialPolemica: z.enum(['baixo', 'medio', 'alto']),
+    adequacaoPublico: z.number().min(0).max(1)
   })
 });
+
+/**
+ * Schema para notícias categorizadas completas (arquivo principal)
+ * @ai-validation Estrutura para visualização e curadoria
+ */
+export const NoticiasCategorizadasCompletasSchema = z.object({
+  data: z.string().datetime(),
+  metadados: z.object({
+    totalAnalisadas: z.number().nonnegative(),
+    totalRelevantes: z.number().nonnegative(),
+    fontesProcessadas: z.array(z.string()),
+    tempoProcessamento: z.string(),
+    versaoAnalise: z.string()
+  }),
+  estatisticas: z.object({
+    distribucaoPorCategoria: z.record(z.number()),
+    distribucaoPorRelevancia: z.record(z.number()),
+    distribucaoPorPrioridade: z.record(z.number()),
+    scoresMedios: z.record(z.number())
+  }),
+  sugestaoAutomatica: z.object({
+    manchete: NoticiaCompletaSchema,
+    noticiasRecomendadas: z.array(z.string()),
+    justificativa: z.string(),
+    confianca: z.number().min(0).max(1)
+  }),
+  categorias: z.object({
+    politica: z.array(NoticiaCompletaSchema),
+    economia: z.array(NoticiaCompletaSchema),
+    cidades: z.array(NoticiaCompletaSchema),
+    cultura: z.array(NoticiaCompletaSchema),
+    esportes: z.array(NoticiaCompletaSchema),
+    geral: z.array(NoticiaCompletaSchema)
+  }),
+  rankingGeral: z.array(NoticiaCompletaSchema),
+  destaquesDoDia: z.object({
+    maisRelevante: NoticiaCompletaSchema,
+    maisAmazonico: NoticiaCompletaSchema,
+    maisBizarro: NoticiaCompletaSchema,
+    maisUrgente: NoticiaCompletaSchema
+  })
+});
+
+/**
+ * Schema para notícias selecionadas (episódio final)
+ * @ai-validation Estrutura para produção do episódio
+ */
+export const NoticiasSelecionadasSchema = z.object({
+  data: z.string().datetime(),
+  metodo: z.enum(['automatico', 'manual', 'hibrido']),
+  episodio: z.object({
+    numero: z.number().positive().optional(),
+    dataEpisodio: z.string().datetime(),
+    tema: z.string(),
+    duracaoEstimada: z.number().positive()
+  }),
+  manchete: NoticiaCompletaSchema,
+  blocos: z.object({
+    abertura: z.array(NoticiaCompletaSchema),
+    principal: z.array(NoticiaCompletaSchema),
+    fechamento: z.array(NoticiaCompletaSchema)
+  }),
+  estatisticas: z.object({
+    totalNoticias: z.number().nonnegative(),
+    duracaoTotal: z.number().positive(),
+    distribuicaoTempo: z.record(z.number()),
+    balanceamentoCategoria: z.record(z.number())
+  }),
+  justificativa: z.object({
+    escolhaManchete: z.string(),
+    criteriosSelecao: z.array(z.string()),
+    observacoes: z.string().optional()
+  })
+});
+
+/**
+ * Schema para seleção manual
+ * @ai-validation Configuração de curadoria manual
+ */
+export const SelecaoManualSchema = z.object({
+  data: z.string().datetime(),
+  manchete: z.string(), // ID da notícia
+  noticiasEscolhidas: z.array(z.object({
+    categoria: z.string(),
+    ids: z.array(z.string())
+  })),
+  observacoes: z.string().optional()
+});
+
+/**
+ * Schema legado - manter compatibilidade
+ * @deprecated Use NoticiasCategorizadasCompletasSchema
+ */
+export const PautaDoDiaSchema = NoticiasCategorizadasCompletasSchema;
 
 /**
  * Schema para roteiro estruturado do podcast
@@ -170,7 +240,13 @@ export const AudioGeradoSchema = z.object({
 
 // Type exports para usar em TypeScript
 export type NoticiaCrua = z.infer<typeof NoticiaCruaSchema>;
-export type PautaDoDia = z.infer<typeof PautaDoDiaSchema>;
+export type NoticiaCompleta = z.infer<typeof NoticiaCompletaSchema>;
+export type NoticiasCategorizadasCompletas = z.infer<typeof NoticiasCategorizadasCompletasSchema>;
+export type NoticiasSelecionadas = z.infer<typeof NoticiasSelecionadasSchema>;
+export type SelecaoManual = z.infer<typeof SelecaoManualSchema>;
 export type RoteiroPodcast = z.infer<typeof RoteiroPodcastSchema>;
 export type TTSConfig = z.infer<typeof TTSConfigSchema>;
 export type AudioGerado = z.infer<typeof AudioGeradoSchema>;
+
+// Backwards compatibility
+export type PautaDoDia = NoticiasCategorizadasCompletas;

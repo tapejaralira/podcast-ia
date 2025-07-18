@@ -1,8 +1,440 @@
 # 🛠️ AI Templates - Bubuia News
 
-## 📋 Templates Prontos para Copy-Paste
+## � **ATENÇÃO: LEIA ISTO PRIMEIRO**
 
-### 🔧 Template de Função Completa
+### **❌ ERROS CRÍTICOS QUE SEMPRE ACONTECEM:**
+
+1. **Inquirer.js**: NUNCA use `inquirer.confirm()` → Use `inquirer.prompt([{type: 'confirm'}])`
+2. **Imports**: SEMPRE use `.js` → `import { x } from './module.js'`
+3. **Schemas**: SEMPRE valide → `validateWithSchema(data, Schema, 'context')`
+4. **CLI**: SEMPRE destructure → `const { resposta } = await inquirer.prompt(...)`
+5. **Scripts Executáveis**: SEMPRE adicione logs iniciais → `console.log('🚀 Script iniciado...')`
+6. **Detecção de Módulo**: NUNCA use `import.meta.url === file://` → Use `.includes('script-name')`
+
+---
+
+### **🚨 NOVO: Template Script Executável (EVITA EXECUÇÃO SILENCIOSA)**
+
+```typescript
+// src/scripts/[nome]-script.ts
+
+import { validateWithSchema } from '../utils/validation.js';
+import { logInfo, logError } from '../utils/logger.js';
+import { MeuSchema } from '../schemas/core.schemas.js';
+
+/**
+ * @ai-purpose [SUBSTITUA: Propósito específico do script]
+ * @ai-execution Via npm run ou tsx diretamente
+ * @ai-silent-failure-prevention Logs iniciais obrigatórios, detecção robusta
+ * @ai-error-handling Try/catch com contexto específico e stack trace
+ * @ai-debugging Console logs em cada etapa crítica
+ * @ai-validation Entrada e saída validadas, formato antigo detectado
+ */
+
+async function executarScript(): Promise<void> {
+  // CRÍTICO: Log inicial para detectar se script executa
+  console.log('🚀 Iniciando [NOME DO SCRIPT]...');
+
+  try {
+    // CRÍTICO: Log de cada etapa principal
+    console.log('📂 Carregando dados...');
+    const dados = await carregarDados();
+
+    console.log('🔍 Validando dados...');
+    const dadosValidados = validateWithSchema(
+      dados,
+      MeuSchema,
+      'executarScript.input'
+    );
+
+    console.log('⚙️ Processando...');
+    const resultado = await processarDados(dadosValidados);
+
+    console.log('💾 Salvando resultado...');
+    await salvarResultado(resultado);
+
+    console.log('\n✅ Script concluído com sucesso!');
+    console.log('📁 Resultado salvo em: [CAMINHO]');
+  } catch (error) {
+    // CRÍTICO: Error handling com contexto específico
+    if (error instanceof Error) {
+      // Detectar problemas específicos conhecidos
+      if (
+        error.message.includes('metadados: Required') ||
+        error.message.includes('categorias: Required')
+      ) {
+        console.log('\n⚠️ Dados estão no formato antigo.');
+        console.log('💡 Execute: npm run analisar:completo');
+      } else if (error.message.includes('ENOENT')) {
+        console.log('\n⚠️ Arquivo não encontrado.');
+        console.log('💡 Execute primeiro: npm run coletar');
+      } else {
+        console.error('\n❌ Erro durante execução:', error.message);
+        console.error('Stack:', error.stack);
+      }
+    } else {
+      console.error('\n❌ Erro desconhecido:', error);
+    }
+    process.exit(1);
+  }
+}
+
+// CRÍTICO: Detecção robusta de execução direta
+if (
+  import.meta.url.includes('[nome-script].ts') ||
+  process.argv[1]?.includes('[nome-script]')
+) {
+  executarScript()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('💥 Falha crítica:', error);
+      process.exit(1);
+    });
+}
+```
+
+---
+
+## �📋 Templates Prontos para Copy-Paste
+
+### 🎯 Template CLI Interface (INQUIRER CORRETO)
+
+```typescript
+// src/scripts/[nome]-cli.ts
+
+import inquirer from 'inquirer';
+import { validateWithSchema } from '../utils/validation.js';
+import { logInfo, logError } from '../utils/logger.js';
+
+/**
+ * @ai-purpose Template CLI com inquirer.js CORRETO - evita erros de API
+ * @ai-input-format Interação via terminal, dados validados
+ * @ai-output-format Resultados estruturados, logs detalhados
+ * @ai-dependencies inquirer (VERSÃO CORRETA), schemas Zod
+ * @ai-error-handling CRÍTICO: inquirer.prompt([{...}]) NÃO inquirer.confirm()!
+ * @ai-performance Interface responsiva, validação rápida
+ * @ai-validation Cada input validado antes de processamento
+ * @ai-common-errors inquirer.confirm/select/input (métodos diretos NÃO EXISTEM!)
+ * @ai-debugging Logs em cada etapa, dados sanitizados
+ * @ai-example npm run meu-cli → interface interativa
+ */
+export async function interfaceCLI(): Promise<void> {
+  logInfo('Iniciando interface CLI');
+
+  try {
+    // ✅ CORRETO: inquirer.prompt([{...}])
+    const { continuar } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'continuar',
+        message: '🚀 Deseja continuar?',
+        default: true,
+      },
+    ]);
+
+    if (!continuar) {
+      console.log('❌ Operação cancelada');
+      return;
+    }
+
+    // ✅ CORRETO: type 'list' para seleção única
+    const { opcao } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'opcao',
+        message: '📋 Escolha uma opção:',
+        choices: [
+          { name: '🔍 Analisar', value: 'analisar' },
+          { name: '📝 Visualizar', value: 'visualizar' },
+          { name: '✏️ Editar', value: 'editar' },
+        ],
+      },
+    ]);
+
+    // ✅ CORRETO: type 'input' para texto
+    const { observacoes } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'observacoes',
+        message: '📝 Observações (opcional):',
+        default: '',
+      },
+    ]);
+
+    // ✅ CORRETO: type 'checkbox' para múltipla seleção
+    const { itens } = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'itens',
+        message: '☑️ Selecione itens:',
+        choices: [
+          { name: 'Item 1', value: 'item1', checked: true },
+          { name: 'Item 2', value: 'item2' },
+          { name: 'Item 3', value: 'item3' },
+        ],
+        validate: (answer) => {
+          if (answer.length < 1) {
+            return 'Selecione pelo menos um item';
+          }
+          return true;
+        },
+      },
+    ]);
+
+    // ✅ CORRETO: type 'number' para números
+    const { limite } = await inquirer.prompt([
+      {
+        type: 'number',
+        name: 'limite',
+        message: '🔢 Limite (1-100):',
+        default: 10,
+        validate: (value) => {
+          if (value < 1 || value > 100) {
+            return 'Valor deve estar entre 1 e 100';
+          }
+          return true;
+        },
+      },
+    ]);
+
+    const config = {
+      opcao,
+      observacoes: observacoes || '',
+      itens,
+      limite,
+    };
+
+    // Validar com schema
+    const validConfig = validateWithSchema(
+      config,
+      ConfigCLISchema,
+      'interfaceCLI.config'
+    );
+
+    logInfo('Configuração CLI validada', validConfig);
+
+    // Processar com base na configuração
+    await processarComConfig(validConfig);
+  } catch (error) {
+    logError('Erro na interface CLI', error);
+    console.error('❌ Erro:', error.message);
+    process.exit(1);
+  }
+}
+
+async function processarComConfig(config: any) {
+  // Implementação específica baseada na configuração
+  logInfo('Processando com configuração', config);
+}
+
+// ❌ NUNCA FAÇA ISTO:
+// const resposta = await inquirer.confirm({ message: '...' });
+// const escolha = await inquirer.select({ message: '...' });
+// const valores = await inquirer.checkbox({ message: '...' });
+
+// ✅ SEMPRE FAÇA ISTO:
+// const { resposta } = await inquirer.prompt([{ type: 'confirm', name: 'resposta', message: '...' }]);
+// const { escolha } = await inquirer.prompt([{ type: 'list', name: 'escolha', message: '...' }]);
+// const { valores } = await inquirer.prompt([{ type: 'checkbox', name: 'valores', message: '...' }]);
+```
+
+### � Template de Compatibilidade (CONVERSÃO DE FORMATOS)
+
+```typescript
+// src/utils/format-compatibility.ts
+
+import { z } from 'zod';
+import { validateWithSchema } from './validation.js';
+import { logInfo, logWarning } from './logger.js';
+
+/**
+ * @ai-purpose Sistema de compatibilidade entre formatos antigos e novos
+ * @ai-input-format PautaDoDia (antigo) ou NoticiasCategorizadasCompletas (novo)
+ * @ai-output-format Sempre NoticiasCategorizadasCompletas (formato unificado)
+ * @ai-dependencies Schemas Zod, utilitários de validação
+ * @ai-error-handling Detecta formato automaticamente, converte com segurança
+ * @ai-performance Conversão rápida, cache quando possível
+ * @ai-validation Valida entrada E saída para garantir integridade
+ * @ai-common-errors Assumir formato sem verificar, quebrar compatibilidade
+ * @ai-debugging Logs indicam qual conversão foi aplicada
+ * @ai-business-impact Mantém pipeline funcionando durante migração
+ * @ai-example converterFormatos(pautaAntiga) → formatoNovo
+ */
+
+// Type guards para detectar formato
+export function isFormatoAntigo(data: any): data is PautaDoDia {
+  return (
+    data &&
+    typeof data === 'object' &&
+    'categoria1' in data &&
+    'categoria2' in data &&
+    'manchete' in data &&
+    !('categorias' in data)
+  ); // Não tem o novo formato
+}
+
+export function isFormatoNovo(
+  data: any
+): data is NoticiasCategorizadasCompletas {
+  return (
+    data &&
+    typeof data === 'object' &&
+    'categorias' in data &&
+    'ranking' in data &&
+    'estatisticas' in data
+  );
+}
+
+/**
+ * Converte qualquer formato para o formato unificado atual
+ */
+export function converterFormatos(
+  input: PautaDoDia | NoticiasCategorizadasCompletas | any
+): NoticiasCategorizadasCompletas {
+  // Se já é o formato novo, apenas valida
+  if (isFormatoNovo(input)) {
+    logInfo('Formato já é novo, validando apenas');
+    return validateWithSchema(
+      input,
+      NoticiasCategorizadasCompletasSchema,
+      'converterFormatos.novo'
+    );
+  }
+
+  // Se é formato antigo, converte
+  if (isFormatoAntigo(input)) {
+    logWarning('Detectado formato antigo, convertendo...');
+    return converterPautaParaCompleta(input);
+  }
+
+  // Formato desconhecido
+  throw new Error('Formato de dados não reconhecido');
+}
+
+/**
+ * Conversão específica de PautaDoDia para NoticiasCategorizadasCompletas
+ */
+function converterPautaParaCompleta(
+  pauta: PautaDoDia
+): NoticiasCategorizadasCompletas {
+  const todasNoticias = [
+    ...pauta.categoria1,
+    ...pauta.categoria2,
+    ...pauta.categoria3,
+    ...(pauta.tecnologia || []),
+  ];
+
+  // Converter cada notícia para o formato completo
+  const categoria1 = pauta.categoria1.map((noticia) =>
+    converterNoticiaParaCompleta(noticia, 'categoria1')
+  );
+  const categoria2 = pauta.categoria2.map((noticia) =>
+    converterNoticiaParaCompleta(noticia, 'categoria2')
+  );
+  const categoria3 = pauta.categoria3.map((noticia) =>
+    converterNoticiaParaCompleta(noticia, 'categoria3')
+  );
+  const tecnologia = (pauta.tecnologia || []).map((noticia) =>
+    converterNoticiaParaCompleta(noticia, 'tecnologia')
+  );
+
+  // Gerar ranking baseado no score
+  const ranking = todasNoticias
+    .map((noticia) => converterNoticiaParaCompleta(noticia, 'geral'))
+    .sort((a, b) => (b.scoreTotal || 0) - (a.scoreTotal || 0));
+
+  // Calcular estatísticas
+  const estatisticas = {
+    totalNoticias: todasNoticias.length,
+    distribucaoCategorias: {
+      categoria1: categoria1.length,
+      categoria2: categoria2.length,
+      categoria3: categoria3.length,
+      tecnologia: tecnologia.length,
+    },
+    scoresMedios: {
+      categoria1: calcularScoreMedio(categoria1),
+      categoria2: calcularScoreMedio(categoria2),
+      categoria3: calcularScoreMedio(categoria3),
+      tecnologia: calcularScoreMedio(tecnologia),
+    },
+    tempoPrevitoEpisodio: todasNoticias.reduce(
+      (total, noticia) => total + (noticia.tempoEstimado || 30),
+      0
+    ),
+  };
+
+  const resultado: NoticiasCategorizadasCompletas = {
+    categorias: {
+      categoria1,
+      categoria2,
+      categoria3,
+      tecnologia,
+    },
+    ranking,
+    estatisticas,
+    manchete: pauta.manchete || ranking[0] || null,
+    dataGeracao: new Date().toISOString(),
+    versaoSchema: '2.0',
+  };
+
+  // Validar o resultado da conversão
+  return validateWithSchema(
+    resultado,
+    NoticiasCategorizadasCompletasSchema,
+    'converterPautaParaCompleta.output'
+  );
+}
+
+function converterNoticiaParaCompleta(
+  noticia: any,
+  categoria: string
+): NoticiaCompleta {
+  return {
+    id: noticia.id || `noticia_${Date.now()}_${Math.random()}`,
+    titulo: noticia.titulo,
+    resumo: noticia.resumo,
+    conteudo: noticia.conteudo || noticia.texto || '',
+    fonte: noticia.fonte,
+    dataPublicacao: noticia.dataPublicacao || new Date().toISOString(),
+    categoria,
+    tags: noticia.tags || [],
+    scoreTotal: noticia.scoreTotal || noticia.relevancia || 5,
+    scoreDetalhado: noticia.scoreDetalhado || calcularScoreDetalhado(noticia),
+    prioridade: noticia.prioridade || 'media',
+    tempoEstimado: noticia.tempoEstimado || 30,
+    razaoRelevancia:
+      noticia.razaoRelevancia ||
+      noticia.justificativa ||
+      'Convertido do formato antigo',
+    contextoAmazonico: noticia.contextoAmazonico || 'medio',
+    statusSelecao: {
+      selecionadaAutomaticamente: true,
+      selecionadaManualmente: false,
+      motivoSelecao: 'Conversão automática do formato antigo',
+    },
+  };
+}
+
+function calcularScoreMedio(noticias: NoticiaCompleta[]): number {
+  if (noticias.length === 0) return 0;
+  const soma = noticias.reduce((acc, noticia) => acc + noticia.scoreTotal, 0);
+  return Number((soma / noticias.length).toFixed(2));
+}
+
+function calcularScoreDetalhado(noticia: any): any {
+  // Implementação básica para conversão
+  return {
+    relevancia: noticia.scoreTotal || 5,
+    impacto: 5,
+    urgencia: 5,
+    interesse: 5,
+    total: noticia.scoreTotal || 5,
+  };
+}
+```
 
 ```typescript
 import { validateWithSchema } from '../utils/validation.js';
@@ -74,6 +506,54 @@ function sanitizeForLog(data: any): any {
   // Remove dados sensíveis para logs
   const { sensivelData, ...safe } = data;
   return safe;
+}
+```
+
+### 📦 Template de Imports CORRETOS (EVITA ERROS DE COMPILAÇÃO)
+
+```typescript
+// src/[categoria]/[modulo].ts
+
+// ✅ SEMPRE use .js no final (OBRIGATÓRIO!)
+import { z } from 'zod';
+import inquirer from 'inquirer';
+import { validateWithSchema } from '../utils/validation.js';
+import { logInfo, logError } from '../utils/logger.js';
+import { config } from '../config.js';
+
+// ✅ Imports de schemas
+import {
+  NoticiaCruaSchema,
+  PautaDoDiaSchema,
+  NoticiasCategorizadasCompletasSchema,
+} from '../schemas/core.schemas.js';
+
+// ✅ Imports de tipos
+import type {
+  NoticiaCrua,
+  PautaDoDia,
+  NoticiasCategorizadasCompletas,
+} from '../types.js';
+
+// ✅ Imports condicionais (se necessário)
+import { promises as fs } from 'fs';
+import path from 'path';
+
+// ❌ NUNCA FAÇA ISTO:
+// import { config } from '../config';          // Sem .js
+// import { validate } from '../utils/validation';  // Sem .js
+// import type { NoticiaCrua } from '../types';     // Sem .js
+
+/**
+ * @ai-purpose [SUBSTITUA: Propósito específico]
+ * @ai-imports-critical SEMPRE use .js nos imports relativos!
+ * @ai-dependencies inquirer, zod, fs/promises, path
+ * @ai-validation Todos os dados validados com schemas Zod
+ * @ai-error-handling Try/catch com contexto específico
+ * @ai-common-errors Esquecer .js nos imports, usar inquirer incorretamente
+ */
+export async function exemploComImportsCorretos(): Promise<void> {
+  // Implementação aqui...
 }
 ```
 
@@ -422,7 +902,337 @@ export async function usarMeuPrompt(
 }
 ```
 
-### 🧪 Template de Teste
+### 🧪 Template de Teste ROBUSTO (BASEADO EM ERROS REAIS)
+
+```typescript
+// src/[categoria]/__tests__/[modulo].test.ts
+
+import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { minhaFuncao } from '../minhaFuncao.js';
+import { NoticiasCategorizadasCompletasSchema } from '../schemas/core.schemas.js';
+
+describe('minhaFuncao', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Cleanup após cada teste
+  });
+
+  describe('validação de entrada (CRÍTICO)', () => {
+    it('deve rejeitar dados inválidos', async () => {
+      const inputInvalido = { dados: null }; // Propositalmente inválido
+
+      await expect(minhaFuncao(inputInvalido)).rejects.toThrow(
+        'Validação falhou'
+      );
+    });
+
+    it('deve aceitar formato antigo E novo', async () => {
+      const formatoAntigo = {
+        categoria1: [],
+        categoria2: [],
+        categoria3: [],
+        manchete: null,
+      };
+
+      const formatoNovo = {
+        categorias: {
+          categoria1: [],
+          categoria2: [],
+          categoria3: [],
+          tecnologia: [],
+        },
+        ranking: [],
+        estatisticas: {},
+      };
+
+      // Ambos devem funcionar sem erro
+      await expect(minhaFuncao(formatoAntigo)).resolves.toBeDefined();
+      await expect(minhaFuncao(formatoNovo)).resolves.toBeDefined();
+    });
+  });
+
+  describe('casos de erro reais encontrados', () => {
+    it('deve lidar com inquirer API incorreta', async () => {
+      // Simular erro comum do inquirer
+      const mockInquirer = {
+        confirm: jest
+          .fn()
+          .mockRejectedValue(new Error('confirm is not a function')),
+      };
+
+      // Verificar que função usa API correta
+      // (Este teste vai falhar se usar inquirer.confirm ao invés de inquirer.prompt)
+    });
+
+    it('deve validar saída com schema correto', async () => {
+      const input = { dados: ['teste'] };
+      const result = await minhaFuncao(input);
+
+      // Validar que saída está no formato esperado
+      expect(() => {
+        NoticiasCategorizadasCompletasSchema.parse(result);
+      }).not.toThrow();
+    });
+
+    it('deve converter formatos automaticamente', async () => {
+      const formatoAntigo = {
+        categoria1: [{ titulo: 'Teste', resumo: 'Resumo' }],
+        categoria2: [],
+        categoria3: [],
+        manchete: null,
+      };
+
+      const result = await minhaFuncao(formatoAntigo);
+
+      // Verificar que resultado é no formato novo
+      expect(result).toHaveProperty('categorias');
+      expect(result).toHaveProperty('ranking');
+      expect(result).toHaveProperty('estatisticas');
+    });
+  });
+
+  describe('performance e limites', () => {
+    it('deve processar grande volume sem travar', async () => {
+      const dadosGrandes = {
+        dados: Array(1000).fill('item de teste'),
+      };
+
+      const startTime = Date.now();
+      await minhaFuncao(dadosGrandes);
+      const duration = Date.now() - startTime;
+
+      // Não deve demorar mais que 30 segundos
+      expect(duration).toBeLessThan(30000);
+    });
+
+    it('deve ter rate limiting para APIs', async () => {
+      // Teste de múltiplas chamadas rápidas
+      const promises = Array(10)
+        .fill(null)
+        .map(() => minhaFuncao({ dados: ['teste'] }));
+
+      // Não deve falhar por rate limiting
+      await expect(Promise.all(promises)).resolves.toBeDefined();
+    });
+  });
+
+  describe('compatibilidade backwards', () => {
+    it('deve manter compatibilidade com versões anteriores', async () => {
+      const dadosVersaoAntiga = {
+        // Formato usado antes da refatoração
+        categoria1: [{ titulo: 'Antigo', texto: 'Conteúdo antigo' }],
+        categoria2: [],
+        categoria3: [],
+      };
+
+      const result = await minhaFuncao(dadosVersaoAntiga);
+
+      // Deve funcionar e retornar formato novo
+      expect(result.categorias.categoria1).toHaveLength(1);
+      expect(result.categorias.categoria1[0]).toHaveProperty('conteudo'); // Novo formato
+    });
+  });
+});
+```
+
+### 🔍 Template de Validação RIGOROSA
+
+```typescript
+// src/utils/validation-enhanced.ts
+
+import { z } from 'zod';
+import { logError, logWarning } from './logger.js';
+
+/**
+ * @ai-purpose Validação aprimorada com recovery automático de erros
+ * @ai-input-format Qualquer dados + schema Zod + contexto
+ * @ai-output-format Dados validados ou erro estruturado
+ * @ai-error-handling Recovery automático, logs detalhados, sugestões de correção
+ * @ai-common-errors Dados malformados, schemas incompatíveis, tipos incorretos
+ * @ai-debugging Logs indicam exatamente qual validação falhou e porquê
+ * @ai-business-impact Evita crashes, mantém pipeline funcionando
+ */
+
+export interface ValidationResult<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  warnings: string[];
+  recovered: boolean;
+}
+
+export function validateWithRecovery<T>(
+  data: unknown,
+  schema: z.ZodSchema<T>,
+  context: string,
+  recoveryOptions?: {
+    allowPartial?: boolean;
+    useDefaults?: boolean;
+    skipInvalidItems?: boolean;
+  }
+): ValidationResult<T> {
+  const warnings: string[] = [];
+
+  try {
+    // Tentativa normal de validação
+    const result = schema.parse(data);
+    return {
+      success: true,
+      data: result,
+      warnings,
+      recovered: false,
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      logWarning(`Validação inicial falhou para ${context}`, {
+        errors: error.errors,
+        data: sanitizeForLog(data),
+      });
+
+      // Tentar recovery automático
+      if (recoveryOptions?.useDefaults) {
+        try {
+          const recovered = attemptDefaultRecovery(data, schema);
+          warnings.push('Valores padrão aplicados automaticamente');
+
+          return {
+            success: true,
+            data: recovered,
+            warnings,
+            recovered: true,
+          };
+        } catch (recoveryError) {
+          // Recovery falhou
+        }
+      }
+
+      if (recoveryOptions?.allowPartial) {
+        try {
+          const recovered = attemptPartialRecovery(data, schema);
+          warnings.push('Dados parciais recuperados');
+
+          return {
+            success: true,
+            data: recovered,
+            warnings,
+            recovered: true,
+          };
+        } catch (recoveryError) {
+          // Recovery falhou
+        }
+      }
+
+      // Se chegou aqui, não foi possível recuperar
+      logError(`Validação e recovery falharam para ${context}`, error, {
+        originalData: sanitizeForLog(data),
+        attemptedRecovery: !!recoveryOptions,
+      });
+
+      return {
+        success: false,
+        error: `Validação falhou: ${error.errors.map((e) => e.message).join(', ')}`,
+        warnings,
+        recovered: false,
+      };
+    }
+
+    // Erro não relacionado ao Zod
+    logError(`Erro inesperado na validação de ${context}`, error);
+    return {
+      success: false,
+      error: 'Erro interno de validação',
+      warnings,
+      recovered: false,
+    };
+  }
+}
+
+function attemptDefaultRecovery<T>(data: any, schema: z.ZodSchema<T>): T {
+  // Tentar aplicar valores padrão do schema
+  if (schema instanceof z.ZodObject) {
+    const shape = schema.shape;
+    const recovered: any = { ...data };
+
+    for (const [key, fieldSchema] of Object.entries(shape)) {
+      if (!(key in recovered) || recovered[key] == null) {
+        // Tentar obter valor padrão
+        try {
+          const defaultValue = getDefaultValue(fieldSchema as z.ZodTypeAny);
+          if (defaultValue !== undefined) {
+            recovered[key] = defaultValue;
+          }
+        } catch {
+          // Ignorar se não conseguir obter padrão
+        }
+      }
+    }
+
+    return schema.parse(recovered);
+  }
+
+  throw new Error('Recovery não suportado para este tipo de schema');
+}
+
+function attemptPartialRecovery<T>(data: any, schema: z.ZodSchema<T>): T {
+  // Tentar remover campos inválidos e manter válidos
+  if (schema instanceof z.ZodObject) {
+    const shape = schema.shape;
+    const recovered: any = {};
+
+    for (const [key, fieldSchema] of Object.entries(shape)) {
+      if (key in data) {
+        try {
+          (fieldSchema as z.ZodTypeAny).parse(data[key]);
+          recovered[key] = data[key];
+        } catch {
+          // Campo inválido, pular
+        }
+      }
+    }
+
+    return schema.parse(recovered);
+  }
+
+  throw new Error('Recovery parcial não suportado');
+}
+
+function getDefaultValue(schema: z.ZodTypeAny): any {
+  if (schema instanceof z.ZodDefault) {
+    return schema._def.defaultValue();
+  }
+  if (schema instanceof z.ZodOptional) {
+    return undefined;
+  }
+  if (schema instanceof z.ZodString) {
+    return '';
+  }
+  if (schema instanceof z.ZodNumber) {
+    return 0;
+  }
+  if (schema instanceof z.ZodBoolean) {
+    return false;
+  }
+  if (schema instanceof z.ZodArray) {
+    return [];
+  }
+  if (schema instanceof z.ZodObject) {
+    return {};
+  }
+
+  return undefined;
+}
+
+function sanitizeForLog(data: any): any {
+  if (typeof data === 'object' && data !== null) {
+    const { senha, token, apiKey, ...safe } = data;
+    return safe;
+  }
+  return data;
+}
+```
 
 ```typescript
 // src/[categoria]/__tests__/[modulo].test.ts
@@ -635,4 +1445,52 @@ npm test -- [modulo].test.ts
 - **Teste casos extremos** além dos básicos
 - **Monitore performance** em produção
 
-**🎉 Com estes templates, qualquer IA pode criar código de alta qualidade que se integra perfeitamente ao projeto Bubuia News!**
+## 🚨 CHECKLIST FINAL - EVITE TODOS OS ERROS COMUNS
+
+### **Antes de Commitar Qualquer Código:**
+
+- [ ] **Inquirer.js**: Usei `inquirer.prompt([{...}])` e não métodos diretos?
+- [ ] **Imports**: Todos os imports relativos terminam com `.js`?
+- [ ] **Destructuring**: CLI usa `const { resposta } = await inquirer.prompt(...)`?
+- [ ] **Schemas**: Entrada e saída validadas com `validateWithSchema()`?
+- [ ] **Compatibilidade**: Implementei conversão entre formatos antigo/novo?
+- [ ] **Error Handling**: Try/catch com logs estruturados e contexto?
+- [ ] **TypeScript**: Sem tipos `any`, tudo explícito?
+- [ ] **Performance**: Monitoramento de tempo adicionado?
+- [ ] **AI Tags**: Pelo menos 10 tags por função importante?
+- [ ] **Testes**: Casos de sucesso, erro, extremos e compatibilidade?
+- [ ] **🚨 NOVO: Logs Iniciais**: Scripts executáveis têm `console.log('🚀 Script iniciado...')`?
+- [ ] **🚨 NOVO: Detecção Robusta**: Uso `.includes('script-name')` não `import.meta.url === file://`?
+
+### **Durante Desenvolvimento:**
+
+- [ ] **Build**: `npm run build` compila sem erros?
+- [ ] **Lint**: `get_errors` retorna zero problemas?
+- [ ] **Validação**: Testei com dados reais do formato antigo?
+- [ ] **CLI**: Interface funciona sem travar?
+- [ ] **Logs**: Contexto suficiente para debugging?
+- [ ] **🚨 NOVO: Execução**: Script produz output imediato quando executado?
+- [ ] **🚨 NOVO: PowerShell**: Comandos funcionam no PowerShell do Windows?
+
+### **Testes Específicos dos Problemas Encontrados:**
+
+- [ ] **Inquirer**: Testei que não uso `.confirm()`, `.select()`, etc?
+- [ ] **Imports**: Nenhum import relativo sem `.js`?
+- [ ] **Schema Conversion**: Formato antigo converte para novo automaticamente?
+- [ ] **CLI Destructuring**: Todas as respostas do inquirer são destructured?
+- [ ] **TypeScript Strict**: Compilação passa sem warnings?
+- [ ] **🚨 NOVO: Script Silencioso**: Executei `npm run [script]` e confirmo que produz output?
+- [ ] **🚨 NOVO: Validação Schema**: Erro de schema produz mensagem específica sobre formato?
+- [ ] **🚨 NOVO: Detecção Módulo**: Script detecta corretamente execução via tsx/npm?
+
+### **Validação Final:**
+
+- [ ] **Integration Test**: Pipeline completo funciona end-to-end?
+- [ ] **Backwards Compatibility**: Código antigo ainda roda?
+- [ ] **Error Recovery**: Falhas são tratadas graciosamente?
+- [ ] **Performance**: Tempo de execução aceitável (<30s)?
+- [ ] **Documentation**: AI tags documentam todos os aspectos?
+- [ ] **🚨 NOVO: Execução Verificada**: Confirmei manualmente que script executa e produz output esperado?
+- [ ] **🚨 NOVO: Error Messages**: Mensagens de erro são específicas e orientam próximos passos?
+
+**🎉 Se todos os checkboxes estão marcados, seu código está pronto para produção sem os erros comuns que encontramos!**

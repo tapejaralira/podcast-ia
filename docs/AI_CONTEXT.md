@@ -1,5 +1,107 @@
 # 🤖 AI Context - Bubuia News | Guia Completo para IA
 
+## 🚨 **ARMADILHAS CRÍTICAS RECENTES (LEIA PRIMEIRO!)**
+
+### **🔥 PROBLEMA #1: Execução de Scripts Silenciosa**
+
+**Sintoma**: Script executa mas não produz saída, parece funcionar mas falha silenciosamente
+
+```bash
+# ❌ PODE FALHAR SILENCIOSAMENTE
+npm run selecionar
+# Retorna sem output, sem logs, sem erros visíveis
+```
+
+**Causa Real**: Detecção incorreta de módulo principal em ES Modules
+
+```typescript
+// ❌ CÓDIGO QUE FALHA EM ES MODULES
+if (import.meta.url === `file://${process.argv[1]}`) {
+  // Nunca executa quando chamado via tsx/npm
+}
+```
+
+**Solução Definitiva**:
+
+```typescript
+// ✅ DETECÇÃO ROBUSTA DE EXECUÇÃO DIRETA
+if (
+  import.meta.url.includes('nome-do-script.ts') ||
+  process.argv[1]?.includes('nome-do-script')
+) {
+  console.log('🚀 Script iniciado...'); // SEMPRE adicionar log inicial
+
+  (async () => {
+    try {
+      // código principal
+    } catch (error) {
+      console.error('❌ Erro:', error.message);
+      console.error('Stack:', error.stack); // Para debug
+      process.exit(1);
+    }
+  })();
+}
+```
+
+### **🔥 PROBLEMA #2: Validação Schema Falhando Silenciosamente**
+
+**Sintoma**: Script para sem aviso quando dados não atendem schema
+
+```typescript
+// ❌ FALHA SILENCIOSA EM VALIDAÇÃO
+try {
+  const dados = await carregarDados();
+  // Se schema falha, nunca chega aqui mas não há log
+} catch (error) {
+  // Error handling genérico perde contexto
+}
+```
+
+**Solução com Detecção de Formato**:
+
+```typescript
+// ✅ VALIDAÇÃO COM FEEDBACK CLARO
+try {
+  const dados = await carregarDados();
+} catch (error) {
+  if (
+    error.message.includes('metadados: Required') ||
+    error.message.includes('categorias: Required')
+  ) {
+    console.log('\n⚠️ Dados estão no formato antigo (PautaDoDia).');
+    console.log('📋 Para usar com dados atuais, execute:');
+    console.log('   node selecionar-adaptado.mjs');
+    console.log(
+      '\n💡 Para usar este script, é necessário dados no novo formato.'
+    );
+    console.log('   Execute: npm run analisar:completo');
+  } else {
+    console.error('❌ Erro inesperado:', error.message);
+  }
+  process.exit(1);
+}
+```
+
+### **🔥 PROBLEMA #3: PowerShell vs Bash Incompatibilidades**
+
+**Sintoma**: Comandos que funcionam no bash falham no PowerShell
+
+```bash
+# ❌ FALHA NO POWERSHELL
+dir test-* /b
+ls test-*
+```
+
+**Solução PowerShell-First**:
+
+```powershell
+# ✅ SEMPRE FUNCIONA NO WINDOWS
+Get-ChildItem -Name "test-*"
+Remove-Item file1, file2, file3 -Verbose
+```
+
+---
+
 ## 🎯 TL;DR para IA
 
 - **Projeto**: Pipeline automatizado de podcast de notícias locais do Amazonas
@@ -157,7 +259,7 @@ try {
 }
 ```
 
-### **4. Error Handling Robusto**
+### **5. Error Handling Robusto**
 
 ```typescript
 // ✅ Padrão de error handling
@@ -180,7 +282,25 @@ try {
 }
 ```
 
-### **5. Configuração Centralizada**
+### **6. Compatibilidade Backwards - Schema Evolution**
+
+```typescript
+// ✅ SEMPRE implementar conversão entre formatos
+export function isFormatoAntigo(data: any): data is PautaDoDia {
+  return data && 'categoria1' in data && 'manchete' in data;
+}
+
+export function converterFormatos(
+  input: PautaDoDia | NoticiasCategorizadasCompletas
+): NoticiasCategorizadasCompletas {
+  if (isFormatoAntigo(input)) {
+    return converterPautaParaCompleta(input);
+  }
+  return input;
+}
+```
+
+### **7. Configuração Centralizada**
 
 ```typescript
 // ✅ Use src/config.ts
@@ -476,9 +596,83 @@ describe('minhaFuncao', () => {
 
 ## 🚨 TROUBLESHOOTING
 
-### **Problemas Comuns**
+### **Problemas Comuns Reais (Com Base na Experiência)**
 
-#### **Erro de Compilação TypeScript**
+#### **1. Inquirer.js - API INCORRETA** ⚠️ **CRÍTICO**
+
+```typescript
+// ❌ ERRO COMUM: Usar métodos diretos (não funcionam!)
+const resposta = await inquirer.confirm({ message: '...' });
+const escolha = await inquirer.select({ message: '...' });
+const valores = await inquirer.checkbox({ message: '...' });
+
+// ✅ CORRETO: Sempre usar inquirer.prompt([{...}])
+const { resposta } = await inquirer.prompt([
+  {
+    type: 'confirm',
+    name: 'resposta',
+    message: 'Confirma?',
+    default: true,
+  },
+]);
+
+const { escolha } = await inquirer.prompt([
+  {
+    type: 'list', // NOT 'select'!
+    name: 'escolha',
+    message: 'Escolha:',
+    choices: opcoes,
+  },
+]);
+
+const { valores } = await inquirer.prompt([
+  {
+    type: 'checkbox',
+    name: 'valores',
+    message: 'Selecione:',
+    choices: opcoes,
+  },
+]);
+```
+
+#### **2. Imports de Módulos ES - Extensões .js Obrigatórias**
+
+```typescript
+// ❌ ERRO: Sem extensão
+import { config } from '../config';
+import { validateSchema } from '../utils/validation';
+
+// ✅ CORRETO: Com .js (mesmo sendo .ts)
+import { config } from '../config.js';
+import { validateSchema } from '../utils/validation.js';
+```
+
+#### **3. Compatibilidade de Schemas - Conversão de Formatos**
+
+```typescript
+// ❌ ERRO: Assumir que formato antigo sempre funciona
+const roteiro = await gerarRoteiro(pautaAntiga);
+
+// ✅ CORRETO: Implementar conversão
+function converterPautaParaCompleta(
+  pauta: PautaDoDia
+): NoticiasCategorizadasCompletas {
+  return {
+    categorias: {
+      categoria1: pauta.categoria1.map((noticia) => ({
+        ...noticia,
+        scoreDetalhado: calcularScoreDetalhado(noticia),
+        statusSelecao: { selecionadaAutomaticamente: true },
+      })),
+      // ... outras categorias
+    },
+    ranking: [],
+    estatisticas: calcularEstatisticas(pauta),
+  };
+}
+```
+
+#### **4. Erro de Compilação TypeScript**
 
 ```bash
 # Problema: Erros de type
@@ -488,7 +682,7 @@ npm run build     # Compilar
 # Solução: Verificar imports e tipos
 ```
 
-#### **Falha de Validação Zod**
+#### **5. Falha de Validação Zod**
 
 ```typescript
 // Erro comum: dados não validados
@@ -496,7 +690,7 @@ npm run build     # Compilar
 // ✅ const dados = validateWithSchema(rawInput, Schema, 'context');
 ```
 
-#### **API Timeout**
+#### **6. API Timeout**
 
 ```typescript
 // Implementar retry e timeout
@@ -506,7 +700,7 @@ const response = await fetch(url, {
 });
 ```
 
-#### **Arquivos de Áudio Grandes**
+#### **7. Arquivos de Áudio Grandes**
 
 ```bash
 # Verificar se não estão sendo commitados
@@ -544,7 +738,96 @@ logInfo('Performance metric', {
 
 ---
 
-## 🎯 COMANDOS ESSENCIAIS
+## 🎯 ARMADILHAS COMUNS E COMO EVITAR
+
+### **🚫 TOP 10 ERROS QUE SEMPRE ACONTECEM**
+
+#### **1. Inquirer.js API Incorreta**
+
+- **Erro**: `inquirer.confirm()`, `inquirer.select()`
+- **Correção**: Sempre `inquirer.prompt([{type: 'confirm', name: '...'}])`
+
+#### **2. Imports Sem Extensão .js**
+
+- **Erro**: `import { x } from './module'`
+- **Correção**: `import { x } from './module.js'` (SEMPRE!)
+
+#### **3. Schemas Não Validados**
+
+- **Erro**: Usar dados direto sem validação
+- **Correção**: `validateWithSchema()` em toda entrada/saída
+
+#### **4. Compatibilidade Quebrada**
+
+- **Erro**: Mudar schemas sem conversão
+- **Correção**: Implementar `isFormatoAntigo()` e `converterFormatos()`
+
+#### **5. CLI Interface Sem Destructuring**
+
+- **Erro**: `const resposta = await inquirer.prompt()`
+- **Correção**: `const { resposta } = await inquirer.prompt()`
+
+#### **6. Tipos Any Implícitos**
+
+- **Erro**: Deixar TypeScript inferir `any`
+- **Correção**: Tipos explícitos sempre
+
+#### **7. Error Handling Genérico**
+
+- **Erro**: `try/catch` básico sem contexto
+- **Correção**: Logs estruturados com contexto específico
+
+#### **8. Performance Sem Monitoramento**
+
+- **Erro**: Não medir tempo de execução
+- **Correção**: `const startTime = Date.now()` + logs
+
+#### **9. AI Tags Incompletas**
+
+- **Erro**: Documentação superficial
+- **Correção**: 15+ tags obrigatórias por função
+
+#### **10. Git Ignorando Arquivos Grandes**
+
+- **Erro**: Commitar .mp3, .wav por acidente
+- **Correção**: Verificar `.gitignore` sempre
+
+---
+
+## 🛡️ CHECKLIST PRE-IMPLEMENTAÇÃO
+
+### **Antes de Escrever Qualquer Código:**
+
+- [ ] **Inquirer**: Vai usar `inquirer.prompt([{...}])` e não métodos diretos?
+- [ ] **Imports**: Todos com `.js` no final?
+- [ ] **Schemas**: Entrada e saída validadas com Zod?
+- [ ] **Compatibilidade**: Conversão entre formatos implementada?
+- [ ] **Error Handling**: Try/catch com logs estruturados?
+- [ ] **AI Tags**: Pelo menos 10 tags por função?
+- [ ] **TypeScript**: Tipos explícitos, sem `any`?
+- [ ] **Performance**: Monitoramento de tempo?
+- [ ] **Testes**: Casos de sucesso, erro e extremos?
+- [ ] **Git**: `.gitignore` verificado para arquivos grandes?
+
+### **Durante o Desenvolvimento:**
+
+- [ ] **Build**: `npm run build` compila sem erros?
+- [ ] **Lint**: `get_errors` retorna zero problemas?
+- [ ] **Validação**: Entrada e saída testadas com dados reais?
+- [ ] **Logs**: Contexto suficiente para debugging?
+- [ ] **Compatibilidade**: Formato antigo ainda funciona?
+
+### **Após Implementação:**
+
+- [ ] **Testes**: `npm test` passa todos os casos?
+- [ ] **Demo**: Script de demonstração funciona?
+- [ ] **Documentação**: README atualizado?
+- [ ] **Performance**: Tempo de execução aceitável?
+- [ ] **Integration**: Pipeline completo funciona?
+
+---
+
+## 📋 COMANDOS ESSENCIAIS
 
 ### **Desenvolvimento**
 
