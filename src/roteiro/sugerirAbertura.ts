@@ -7,6 +7,8 @@ import 'dotenv/config';
 
 import { config } from '../config.js';
 import { PautaDoDia, SugestoesAbertura, Efemerie, SugestaoGancho, NoticiaClassificada } from '../types.js';
+import { generateHooksPrompt } from '../ai/prompts/generate-hooks.prompt.js';
+import { renderTemplate } from '../ai/prompts/prompt-template.js';
 
 // --- Instâncias das APIs ---
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -119,24 +121,17 @@ export async function sugerirAbertura(): Promise<void> {
     const mes = hoje.toLocaleString('pt-BR', { month: 'long' });
     const efemeride = await buscarFatoHistoricoComFallback([`${dia} de ${mes}`]);
 
-    // 2. Gerar Sugestões de Gancho com base na pauta
-    const promptGanchos = `
-      Você é um roteirista de podcast criativo. Crie 3 ganchos (aberturas) para o podcast Bubuia News com base na pauta do dia.
-      O gancho principal deve ser o mais forte e direto.
-
-      REGRAS:
-      - Cada gancho deve ter no máximo 2 frases.
-      - Para cada gancho, sugira uma trilha sonora da lista: [trilha_informativa_neutra, trilha_tecnologica_upbeat, trilha_divertida_pop, trilha_misteriosa_humor, trilha_tensao_leve, trilha_reflexiva, trilha_cultural_regional].
-      - A resposta DEVE ser um objeto JSON com a estrutura: { sugestaoPrincipal: { gancho: string, trilhaSonora: string }, alternativas: [{ gancho: string, trilhaSonora: string }] }
-
-      PAUTA DO DIA:
+    // 2. Gerar Sugestões de Gancho com base na pauta usando template estruturado
+    const pautaContent = `
       - Manchete: ${pautaDoDia.manchete}
       - Política: ${pautaDoDia.pauta.politica.map(n => n.tituloPrincipal).join(', ') || 'N/A'}
       - Cidades: ${pautaDoDia.pauta.cidades.map(n => n.tituloPrincipal).join(', ') || 'N/A'}
       - Cultura: ${pautaDoDia.pauta.cultura.map(n => n.tituloPrincipal).join(', ') || 'N/A'}
-
-      Responda APENAS com o objeto JSON.
     `;
+
+    const promptGanchos = renderTemplate(generateHooksPrompt, {
+        pautaContent: pautaContent
+    });
 
     const ganchosJson = await gerarConteudoIA(promptGanchos);
     const sugestoes = JSON.parse(ganchosJson);
@@ -144,7 +139,7 @@ export async function sugerirAbertura(): Promise<void> {
     // 3. Atualizar o arquivo da pauta com a efeméride encontrada
     pautaDoDia.efemerides = [efemeride];
     await fs.writeFile(PAUTA_FILE, JSON.stringify(pautaDoDia, null, 2));
-    console.log(`[LOG] Arquivo de pauta (${path.basename(PAUTA_FILE)}) atualizado com a efeméride do dia.`);
+    console.log(`[LOG] Arquivo de pauta (${path.basename(PAUTA_FILE)}) atualizado com a efemeride do dia.`);
 
     // 4. Salvar as sugestões de abertura
     await fs.writeFile(SUGESTOES_FILE, JSON.stringify(sugestoes, null, 2));

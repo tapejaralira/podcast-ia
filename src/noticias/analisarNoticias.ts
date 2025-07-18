@@ -15,6 +15,8 @@ import {
 } from '../types.js';
 import { NoticiaCruaSchema, PautaDoDiaSchema } from '../schemas/core.schemas.js';
 import { validateWithSchema, validateArrayWithSchema } from '../utils/validation.js';
+import { classifyNewsPrompt } from '../ai/prompts/classify-news.prompt.js';
+import { renderTemplate } from '../ai/prompts/prompt-template.js';
 
 // --- Configurações e Constantes ---
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -42,34 +44,17 @@ interface NoticiaAnalisada extends NoticiaCrua {
 async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classification> {
     console.log(`  -> Classificando com IA: "${article.titulo.substring(0, 40)}..."`);
     try {
-        const prompt = `
-      Você é o editor-chefe do podcast "Bubuia News" de Manaus. Sua tarefa é analisar e classificar uma notícia com um rigoroso controle de qualidade.
-
-      ### Guia de Curadoria Editorial (REGRAS DE EXCLUSÃO)
-      - **REGRA 1: SEM CONTEÚDO VISUAL.** Se o título ou resumo contiver expressões como "veja fotos", "assista ao vídeo", "galeria de imagens", ou a palavra "VÍDEO", o conteúdo é INADEQUADO.
-      - **REGRA 2: SEM AUTOPROMOÇÃO.** Se o conteúdo for sobre o próprio telejornal (ex: "Jornal do Amazonas de hoje"), é INADEQUADO.
-      - **REGRA 3: SEM CONTEÚDO SENSÍVEL/POLÊMICO.** Evite tópicos que não se alinhem com o tom leve e familiar do programa. Se a notícia for inadequada para um ambiente familiar, é INADEQUADA.
-
-      ### TAREFA
-      Analise o artigo abaixo e retorne um objeto JSON com DUAS chaves:
-      1.  \`classification_id\`: A string do ID da categoria do guia que melhor se encaixa (ex: "🚀 4").
-      2.  \`is_adequate\`: Um booleano (true se for adequado, false caso contrário).
-
-      #### Guia de Classificação de Conteúdo
-      ${CLASSIFICATION_GUIDE_TEXT}
-
-      #### Artigo para Análise
-      - Título: ${article.titulo}
-      - Resumo: ${article.resumo}
-
-      Responda APENAS com o objeto JSON.
-    `;
+        // Usar template estruturado de prompt
+        const prompt = renderTemplate(classifyNewsPrompt, {
+            newsData: `- Título: ${article.titulo}\n- Resumo: ${article.resumo}`,
+            classificationGuide: CLASSIFICATION_GUIDE_TEXT
+        });
 
         const response = await openai.chat.completions.create({
             model: config.ai.gemini.model,
             messages: [{ role: "user", content: prompt }],
             response_format: { type: "json_object" },
-            temperature: 0.1,
+            temperature: classifyNewsPrompt.config.temperature || 0.1,
         });
 
         const parsedResponse = JSON.parse(response.choices[0].message.content || '{}') as OpenAIResponse;
