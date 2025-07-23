@@ -300,6 +300,28 @@ export interface SugestoesAbertura {
   alternativas: SugestaoGancho[];
 }
 
+export interface NoticiaEnriquecida {
+    id: string;
+    titulo: string;
+    resumo: string;
+    link: string;
+    fonte: string;
+    categoria: string;
+    relevanceScore: number;
+    classification: Classification;
+    isSuperNoticia: boolean;
+    tituloPrincipal: string;
+    fontes: Array<{
+        link: string;
+        resumo: string;
+        fonte: string;
+    }>;
+    relevancia: number;
+    contextoAmazonico: string;
+    tempoEstimado: number;
+    prioridade: 'alta' | 'media' | 'baixa';
+}
+
 /**
  * Estrutura final do arquivo de pauta do dia, pronto para a geração do roteiro.
  * Esta é a estrutura que o analisarNoticias.ts gera e que os outros módulos consomem.
@@ -321,25 +343,31 @@ export interface SugestoesAbertura {
  * ```
  */
 export interface PautaDoDia {
-  /** Data de geração da pauta no formato ISO 8601 */
-  data: string;
-  /** Título da notícia principal do dia */
-  manchete: string;
-  /** Array de efemérides históricas para a data */
-  efemerides: Efemerie[];
-  /** Notícias organizadas por categoria */
-  pauta: {
-    /** Notícias de política local */
-    politica: NoticiaClassificada[];
-    /** Notícias de economia */
-    economia: NoticiaClassificada[];
-    /** Notícias sobre a cidade e serviços públicos */
-    cidades: NoticiaClassificada[];
-    /** Notícias culturais e de entretenimento */
-    cultura: NoticiaClassificada[];
-    /** Notícias esportivas */
-    esportes: NoticiaClassificada[];
-  };
+    data: string;
+    manchete: string;
+    categorias: {
+        politica: NoticiaEnriquecida[];
+        economia: NoticiaEnriquecida[];
+        cidades: NoticiaEnriquecida[];
+        cultura: NoticiaEnriquecida[];
+        esportes: NoticiaEnriquecida[];
+        geral: NoticiaEnriquecida[];
+    };
+    rankingGeral: NoticiaEnriquecida[];
+    metadados: {
+        totalAnalisadas: number;
+        totalRelevantes: number;
+        fontesProcessadas: string[];
+        tempoProcessamento: string;
+        versaoAnalise: string;
+    };
+}
+
+export interface SelecaoManual {
+    data: string;
+    manchete: string;
+    noticiasEscolhidas: string[];
+    observacoes?: string;
 }
 
 /**

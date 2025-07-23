@@ -33,7 +33,6 @@ export default function Home() {
   // Estados da interface
   const [noticiaDetalhes, setNoticiaDetalhes] = useState<NoticiaCompleta | null>(null);
   const [filtros, setFiltros] = useState<FiltrosInterface>({
-    categoria: 'todas',
     relevanciaMinima: 0,
     ordenacao: 'score',
     busca: '',
@@ -87,11 +86,14 @@ export default function Home() {
   const noticiasFiltradas = useMemo(() => {
     if (!dados) return [];
     
-    let noticias = dados.rankingGeral;
+    let noticias;
     
-    // Filtrar por categoria
-    if (filtros.categoria !== 'todas' && abaSelecionada !== 'todas') {
+    // Filtrar por categoria (CORRIGIDO E ROBUSTO)
+    if (abaSelecionada !== 'todas') {
       noticias = dados.categorias[abaSelecionada as keyof typeof dados.categorias] || [];
+    } else {
+      // Combina notícias de todas as categorias para garantir que a lista "Todas" esteja completa
+      noticias = Object.values(dados.categorias).flat();
     }
     
     // Filtrar por relevância mínima

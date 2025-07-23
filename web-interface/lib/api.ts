@@ -11,7 +11,7 @@
  * @ai-business-impact Data consistency, user experience
  */
 
-import { NoticiasCategorizadasCompletas, SelecaoManual, NoticiaCompleta } from './types';
+import { NoticiasCategorizadas, SelecaoManual } from './types';
 
 // Configuração base
 const API_BASE = process.env.NODE_ENV === 'development' ? '/api' : '/api';
@@ -20,7 +20,7 @@ const API_BASE = process.env.NODE_ENV === 'development' ? '/api' : '/api';
  * Carrega as notícias categorizadas do arquivo backend
  * @ai-context Lê dados do arquivo JSON gerado pelo pipeline principal
  */
-export async function carregarNoticias(): Promise<NoticiasCategorizadasCompletas | null> {
+export async function carregarNoticias(): Promise<NoticiasCategorizadas | null> {
   try {
     const response = await fetch(`${API_BASE}/noticias`);
     if (!response.ok) {
@@ -28,7 +28,7 @@ export async function carregarNoticias(): Promise<NoticiasCategorizadasCompletas
     }
     
     const data = await response.json();
-    return data as NoticiasCategorizadasCompletas;
+    return data as NoticiasCategorizadas;
   } catch (error) {
     console.error('Erro ao carregar notícias:', error);
     return null;
@@ -49,11 +49,7 @@ export async function salvarSelecaoManual(selecao: SelecaoManual): Promise<boole
       body: JSON.stringify(selecao),
     });
     
-    if (!response.ok) {
-      throw new Error(`Erro HTTP: ${response.status}`);
-    }
-    
-    return true;
+    return response.ok;
   } catch (error) {
     console.error('Erro ao salvar seleção:', error);
     return false;
@@ -81,7 +77,7 @@ export async function carregarSelecaoExistente(): Promise<SelecaoManual | null> 
 /**
  * Conversão de formato antigo para novo (compatibilidade)
  */
-export function converterFormatoAntigo(dados: unknown): NoticiasCategorizadasCompletas | null {
+export function converterFormatoAntigo(dados: unknown): NoticiasCategorizadas | null {
   try {
     // Verifica se é um objeto
     if (!dados || typeof dados !== 'object') {
@@ -92,7 +88,7 @@ export function converterFormatoAntigo(dados: unknown): NoticiasCategorizadasCom
     
     // Se já está no formato novo, tenta retornar (com validação básica)
     if (obj.metadados && obj.categorias && obj.data) {
-      return obj as unknown as NoticiasCategorizadasCompletas;
+      return obj as unknown as NoticiasCategorizadas;
     }
     
     // Se está no formato antigo, converte
@@ -100,7 +96,7 @@ export function converterFormatoAntigo(dados: unknown): NoticiasCategorizadasCom
       const agora = new Date().toISOString().split('T')[0];
       
       // Cria estrutura mínima do formato novo
-      const resultado: NoticiasCategorizadasCompletas = {
+      const resultado: NoticiasCategorizadas = {
         data: (obj.data as string) || agora,
         metadados: {
           totalAnalisadas: 0,
@@ -116,7 +112,7 @@ export function converterFormatoAntigo(dados: unknown): NoticiasCategorizadasCom
           scoresMedios: {},
         },
         sugestaoAutomatica: {
-          manchete: {} as NoticiaCompleta,
+          manchete: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
           noticiasRecomendadas: [],
           justificativa: 'Conversão de formato antigo',
           confianca: 0.5,
@@ -131,10 +127,10 @@ export function converterFormatoAntigo(dados: unknown): NoticiasCategorizadasCom
         },
         rankingGeral: [],
         destaquesDoDia: {
-          maisRelevante: {} as NoticiaCompleta,
-          maisAmazonico: {} as NoticiaCompleta,
-          maisBizarro: {} as NoticiaCompleta,
-          maisUrgente: {} as NoticiaCompleta,
+          maisRelevante: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
+          maisAmazonico: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
+          maisBizarro: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
+          maisUrgente: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
         },
       };
       

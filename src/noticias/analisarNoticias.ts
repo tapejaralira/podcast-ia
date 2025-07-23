@@ -65,6 +65,17 @@ interface NoticiaEnriquecida {
     prioridade: 'alta' | 'media' | 'baixa';
 }
 
+// Notícia simplificada para agrupamento
+interface NoticiaSimplificada {
+    id: string;
+    titulo: string;
+    resumo: string;
+    fonte: string;
+    categoria: 'politica' | 'economia' | 'cidades' | 'cultura' | 'esportes' | 'geral';
+    relevanceScore: number;
+    classification: Classification;
+}
+
 // --- Funções Principais ---
 
 async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classification> {
@@ -179,7 +190,7 @@ function calcularRelevanceScore(article: NoticiaCrua, classification: Classifica
     return score;
 }
 
-function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaEnriquecida[] {
+function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaSimplificada[] {
     console.log('\n[LOG] Fase de agrupamento iniciada...');
     const grupos: { [key: string]: NoticiaAnalisada[] } = {};
     for (const noticia of noticias) {
@@ -188,7 +199,7 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaEnriquecida[] {
         grupos[categoria].push(noticia);
     }
 
-    const noticiasAgrupadas: NoticiaEnriquecida[] = [];
+    const noticiasAgrupadas: NoticiaSimplificada[] = [];
     const processados = new Set<string>();
 
     for (const categoria in grupos) {
@@ -215,31 +226,17 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaEnriquecida[] {
             processados.add(noticiaPrincipal.link);
 
             noticiasAgrupadas.push({
-                isSuperNoticia: grupoSimilar.length > 1,
-                tituloPrincipal: noticiaPrincipal.titulo,
-                classification: noticiaPrincipal.classification,
-                relevanceScore: noticiaPrincipal.relevanceScore,
-                fontes: grupoSimilar.map(n => ({
-                    link: n.link,
-                    resumo: n.resumo,
-                    fonte: n.fonte
-                })),
-                // Campos adicionais para compatibilidade com schema
                 id: `noticia_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                 titulo: noticiaPrincipal.titulo,
                 resumo: noticiaPrincipal.resumo,
-                relevancia: Math.min(10, Math.max(1, Math.round(noticiaPrincipal.relevanceScore / 10))),
-                categoria: mapCategoriaToSchema(noticiaPrincipal.classification.id),
-                contextoAmazonico: gerarContextoAmazonico(noticiaPrincipal),
-                tempoEstimado: calcularTempoEstimado(noticiaPrincipal, grupoSimilar.length),
-                prioridade: calcularPrioridade(noticiaPrincipal.relevanceScore)
+                fonte: noticiaPrincipal.fonte,
+                categoria: mapearCategoriaParaPauta(noticiaPrincipal.classification.id),
+                relevanceScore: noticiaPrincipal.relevanceScore,
+                classification: noticiaPrincipal.classification
             });
         }
     }
     console.log(`[LOG] Agrupamento finalizado. ${noticiasAgrupadas.length} eventos únicos identificados.`);
-    if (noticiasAgrupadas.some(n => n.isSuperNoticia)) {
-        console.log('[LOG] Pelo menos uma "Super-Notícia" foi criada a partir de múltiplas fontes.');
-    }
     return noticiasAgrupadas;
 }
 
@@ -342,16 +339,22 @@ function calcularRelevanciaMedia(noticias: NoticiaEnriquecida[]): number {
     return Number((soma / noticias.length).toFixed(1));
 }
 
-function mapearCategoriaParaPauta(categoria: string): 'politica' | 'economia' | 'cidades' | 'cultura' | 'esportes' {
-    // Mapeia as categorias do schema para as categorias da pauta
-    switch (categoria) {
-        case 'politica': return 'politica';
-        case 'economia':
-        case 'tecnologia': return 'economia';
-        case 'cultura': return 'cultura';
-        case 'social':
-        case 'meio-ambiente': return 'cidades';
-        default: return 'cidades';
+function mapearCategoriaParaPauta(classificationId: string): 'politica' | 'economia' | 'cidades' | 'cultura' | 'esportes' | 'geral' {
+    // Mapeia os IDs de classificação para as categorias da pauta
+    const id = classificationId.split(' ')[0];
+    switch (id) {
+        case '🟡': // Política de Baré
+            return 'politica';
+        case '🚀': // Tecnologia & Inovação do Igarapé
+            return 'economia';
+        case '⚫️': // Segurança & BOs de Impacto
+        case '🔴': // Perrengues da Cidade
+            return 'cidades';
+        case '🎭': // Rolê Cultural
+        case '👽': // Bizarrices da Bubuia
+            return 'cultura';
+        default:
+            return 'geral';
     }
 }
 
@@ -384,42 +387,63 @@ function mapearCategoriaParaPauta(categoria: string): 'politica' | 'economia' | 
  */
 // === INTEGRAÇÃO COM SISTEMA DE SELEÇÃO MANUAL ===
 
-async function verificarSelecaoManual(): Promise<boolean> {
-    try {
-        const content = await fs.readFile(filePaths.selecaoManualFile, 'utf-8');
-        const selecao = JSON.parse(content);
-        
-        // Verificar se é uma seleção válida e recente
-        const dataSelecao = new Date(selecao.data);
-        const hoje = new Date();
-        const mesmoDia = dataSelecao.toDateString() === hoje.toDateString();
-        
-        return mesmoDia && selecao.manchete && selecao.noticiasEscolhidas;
-    } catch {
-        return false;
-    }
+interface SelecaoManual {
+  data: string;
+  manchete: string;
+  noticiasEscolhidas: string[];
+  observacoes?: string;
 }
 
-async function aplicarSelecaoManualExistente(): Promise<void> {
-    console.log('📝 Carregando seleção manual...');
+async function verificarSelecaoManual(): Promise<SelecaoManual | null> {
+  try {
+    console.log('📝 Verificando seleção manual...');
+    const content = await fs.readFile(filePaths.selecaoManualFile, 'utf-8');
+    const selecao = JSON.parse(content);
     
-    // Importar as funções do módulo completo
-    const { 
-        gerarEstruturaCategorizada, 
-        aplicarSelecaoManual 
-    } = await import('./analisarNoticiasCompleto.js');
+    // Verificar se é uma seleção válida e recente
+    const dataSelecao = new Date(selecao.data);
+    const hoje = new Date();
+    const mesmoDia = dataSelecao.toDateString() === hoje.toDateString();
     
-    // Gerar estrutura completa
-    await gerarEstruturaCategorizada();
+    if (mesmoDia && selecao.manchete && Array.isArray(selecao.noticiasEscolhidas)) {
+      console.log('✅ Seleção manual encontrada e válida');
+      return selecao;
+    }
     
-    // Carregar e aplicar seleção manual
-    const noticias = JSON.parse(
-        await fs.readFile(filePaths.noticiasCategorizadasFile, 'utf-8')
+    console.log('ℹ️ Nenhuma seleção manual válida encontrada');
+    return null;
+  } catch (error) {
+    console.log('ℹ️ Nenhuma seleção manual encontrada');
+    return null;
+  }
+}
+
+async function aplicarSelecaoManual(noticias: NoticiaSimplificada[], selecao: SelecaoManual): Promise<NoticiaSimplificada[]> {
+    console.log('📝 Aplicando seleção manual...');
+    
+    // Encontrar a manchete selecionada
+    const manchete = noticias.find(n => n.id === selecao.manchete);
+    if (!manchete) {
+        throw new Error('Manchete selecionada não encontrada nos dados');
+    }
+    
+    // Encontrar as notícias selecionadas
+    const noticiasEscolhidas = noticias.filter(n => 
+        selecao.noticiasEscolhidas.includes(n.id)
     );
     
-    await aplicarSelecaoManual(noticias);
+    // Ordenar notícias: manchete primeiro, depois selecionadas, depois restantes
+    const noticiasOrdenadas = [
+        manchete,
+        ...noticiasEscolhidas.filter(n => n.id !== manchete.id),
+        ...noticias.filter(n => 
+            n.id !== manchete.id && 
+            !selecao.noticiasEscolhidas.includes(n.id)
+        )
+    ];
     
-    console.log('✅ Seleção manual aplicada com sucesso!');
+    console.log('✅ Seleção manual aplicada com sucesso');
+    return noticiasOrdenadas;
 }
 
 export async function analisarNoticias() {
@@ -428,16 +452,9 @@ export async function analisarNoticias() {
     console.log(`📂 Arquivo de saída: ${filePaths.noticiasCategorizadasFile}`);
     
     // Verificar se existe seleção manual para aplicar
-    const existeSelecaoManual = await verificarSelecaoManual();
+    const selecaoManual = await verificarSelecaoManual();
     
-    if (existeSelecaoManual) {
-        console.log('📝 Seleção manual detectada - aplicando configuração...');
-        return await aplicarSelecaoManualExistente();
-    }
-    
-    // Modo automático - análise completa
-    console.log('🤖 Modo automático - executando análise completa...');
-    
+    // Carregar e processar notícias
     const inputFile = filePaths.noticiasRecentesFile;
     const outputFile = filePaths.noticiasCategorizadasFile;
     let todasAsNoticias: NoticiaCrua[];
@@ -480,7 +497,7 @@ export async function analisarNoticias() {
     }
     console.log(`[LOG] ${noticiasAnalisadas.length} notícias foram consideradas adequadas após a classificação da IA.`);
 
-    const pautaAgrupada = agruparNoticias(noticiasAnalisadas);
+    let pautaAgrupada = agruparNoticias(noticiasAnalisadas);
     pautaAgrupada.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
     if (pautaAgrupada.length === 0) {
@@ -488,57 +505,51 @@ export async function analisarNoticias() {
         throw new Error('Nenhuma notícia para a pauta.');
     }
 
-    // --- Montagem da Pauta Final (ESTRUTURA OTIMIZADA) ---
+    // Aplicar seleção manual se existir
+    if (selecaoManual) {
+        console.log('📝 Aplicando seleção manual existente...');
+        pautaAgrupada = await aplicarSelecaoManual(pautaAgrupada, selecaoManual);
+    }
 
-    // A notícia mais relevante vira a manchete
-    const manchete = pautaAgrupada.shift()!;
+    // A primeira notícia é sempre a manchete
+    const manchete = pautaAgrupada[0];
 
-    // Inicializa a pauta final com estrutura compatível com schema
+    // Inicializa a pauta final com estrutura simplificada
     const pautaFinal = {
         data: new Date().toISOString(),
-        manchete: manchete.tituloPrincipal,
-        efemerides: [], // Efemérides serão adicionadas em outra etapa (se necessário)
-        pauta: {
-            politica: [] as NoticiaEnriquecida[],
-            economia: [] as NoticiaEnriquecida[],
-            cidades: [] as NoticiaEnriquecida[],
-            cultura: [] as NoticiaEnriquecida[],
-            esportes: [] as NoticiaEnriquecida[],
+        manchete: manchete.titulo,
+        categorias: {
+            politica: [] as NoticiaSimplificada[],
+            economia: [] as NoticiaSimplificada[],
+            cidades: [] as NoticiaSimplificada[],
+            cultura: [] as NoticiaSimplificada[],
+            esportes: [] as NoticiaSimplificada[],
+            geral: [] as NoticiaSimplificada[]
         },
-        temaDestaque: gerarTemaDestaque(manchete, pautaAgrupada),
-        duracaoTotal: 0, // Será calculado depois
-        estatisticas: {
-            totalNoticias: pautaAgrupada.length + 1,
-            noticiasPorCategoria: {} as Record<string, number>,
-            relevanciaMedia: 0
+        rankingGeral: pautaAgrupada,
+        metadados: {
+            totalAnalisadas: todasAsNoticias.length,
+            totalRelevantes: noticiasAnalisadas.length,
+            fontesProcessadas: [...new Set(todasAsNoticias.map(n => n.fonte))],
+            tempoProcessamento: '0s',
+            versaoAnalise: '2.0'
         }
     };
 
-    // Adiciona a manchete à sua categoria correspondente
-    const categoriaManchete = mapearCategoriaParaPauta(manchete.categoria);
-    if (pautaFinal.pauta[categoriaManchete]) {
-        pautaFinal.pauta[categoriaManchete].push(manchete);
-    }
-
-    // Distribui as notícias restantes nas suas respectivas categorias
+    // Distribuir notícias nas categorias
     for (const noticia of pautaAgrupada) {
         const categoria = mapearCategoriaParaPauta(noticia.categoria);
-        if (pautaFinal.pauta[categoria] && pautaFinal.pauta[categoria].length < 4) { // Limita notícias por categoria
-            pautaFinal.pauta[categoria].push(noticia);
+        if (pautaFinal.categorias[categoria]) {
+            pautaFinal.categorias[categoria].push(noticia);
         }
     }
 
-    // Calcula estatísticas finais
-    pautaFinal.duracaoTotal = calcularDuracaoTotal(pautaFinal.pauta);
-    pautaFinal.estatisticas.noticiasPorCategoria = calcularDistribuicaoCategorias(pautaFinal.pauta);
-    pautaFinal.estatisticas.relevanciaMedia = calcularRelevanciaMedia([manchete, ...pautaAgrupada]);
-
-    // Validação da pauta final com Zod
+    // Validação da pauta final
     try {
         console.log('💾 Validando e salvando pauta final...');
         const pautaValidada = validateWithSchema(pautaFinal, PautaDoDiaSchema, 'analisarNoticias.output');
         await fs.writeFile(outputFile, JSON.stringify(pautaValidada, null, 2));
-        console.log(`\n✅ Análise finalizada! Pauta do dia com ${pautaAgrupada.length + 1} notícias categorizadas e validada foi salva em ${outputFile}`);
+        console.log(`\n✅ Análise finalizada! Pauta do dia com ${pautaAgrupada.length} notícias categorizadas e validada foi salva em ${outputFile}`);
     } catch (error) {
         console.error('🔥 Erro de validação da pauta final:', error);
         throw new Error('Erro na geração da pauta do dia. Verifique os logs para mais detalhes.');
@@ -546,12 +557,16 @@ export async function analisarNoticias() {
 }
 
 // Chamada direta se executado como script principal
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (
+    import.meta.url.includes('analisarNoticias.ts') ||
+    process.argv[1]?.includes('analisarNoticias')
+) {
     console.log('🚀 Executando analisarNoticias como script principal...');
     analisarNoticias()
         .then(() => console.log('✅ Script concluído com sucesso'))
         .catch(error => {
             console.error('❌ Erro no script:', error);
+            console.error('Stack:', error.stack);
             process.exit(1);
         });
 }

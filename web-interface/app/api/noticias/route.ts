@@ -18,36 +18,60 @@ import { converterFormatoAntigo } from '../../../lib/api';
 
 export async function GET() {
   try {
-    // Caminho para o arquivo de notícias categorizadas no projeto principal
+    // Caminho para o arquivo de notícias categorizadas
     const backendPath = path.resolve(process.cwd(), '..', 'data', 'noticias-categorizadas.json');
+    console.log('📂 Tentando carregar arquivo:', backendPath);
     
     let dados;
     
     try {
       const fileContent = await fs.readFile(backendPath, 'utf-8');
       dados = JSON.parse(fileContent);
-    } catch {
-      // Se não encontrar arquivo novo, tenta arquivo antigo para compatibilidade
-      const pastaPath = path.resolve(process.cwd(), '..', 'data');
-      const files = await fs.readdir(pastaPath);
       
-      // Procura por arquivos de pauta
-      const pautaFile = files.find(f => f.startsWith('pauta-') && f.endsWith('.json'));
-      
-      if (pautaFile) {
-        const pautaPath = path.join(pastaPath, pautaFile);
-        const pautaContent = await fs.readFile(pautaPath, 'utf-8');
-        const dadosAntigos = JSON.parse(pautaContent);
+      // Distribuir notícias nas categorias
+      if (dados.rankingGeral && Array.isArray(dados.rankingGeral)) {
+        const categorias = {
+          politica: [],
+          economia: [],
+          cidades: [],
+          cultura: [],
+          esportes: [],
+          geral: []
+        };
         
-        // Converte formato antigo para novo
-        dados = converterFormatoAntigo(dadosAntigos);
+        // Distribuir cada notícia em sua categoria
+        dados.rankingGeral.forEach(noticia => {
+          const categoria = noticia.categoria.toLowerCase();
+          if (categorias[categoria]) {
+            categorias[categoria].push(noticia);
+          } else {
+            categorias.geral.push(noticia);
+          }
+        });
         
-        if (!dados) {
-          throw new Error('Erro na conversão de formato antigo');
-        }
-      } else {
-        throw new Error('Nenhum arquivo de notícias encontrado');
+        // Atualizar as categorias no objeto de dados
+        dados.categorias = categorias;
       }
+      
+      // Log detalhado do conteúdo
+      console.log('📊 Conteúdo do arquivo:', {
+        path: backendPath,
+        rankingGeral: dados.rankingGeral?.length || 0,
+        categorias: Object.entries(dados.categorias || {}).reduce((acc, [cat, noticias]) => {
+          const length = Array.isArray(noticias) ? noticias.length : 0;
+          console.log(`   - ${cat}: ${length} notícias`);
+          acc[cat] = length;
+          return acc;
+        }, {} as Record<string, number>),
+        metadados: dados.metadados || {},
+        totalNoticias: Object.values(dados.categorias || {}).reduce((total, noticias) => 
+          total + (Array.isArray(noticias) ? noticias.length : 0), 0
+        )
+      });
+
+    } catch (error) {
+      console.error('❌ Erro ao carregar arquivo:', error);
+      throw new Error('Não foi possível carregar o arquivo de notícias');
     }
     
     // Validação básica dos dados
@@ -63,7 +87,7 @@ export async function GET() {
     return NextResponse.json(dados, { headers });
     
   } catch (error) {
-    console.error('Erro ao carregar notícias:', error);
+    console.error('❌ Erro ao carregar notícias:', error);
     
     return NextResponse.json(
       { 

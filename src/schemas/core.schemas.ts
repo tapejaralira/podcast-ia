@@ -155,10 +155,47 @@ export const SelecaoManualSchema = z.object({
 });
 
 /**
- * Schema legado - manter compatibilidade
- * @deprecated Use NoticiasCategorizadasCompletasSchema
+ * Schema simplificado para notícia
+ * @ai-validation Estrutura mínima necessária para visualização
  */
-export const PautaDoDiaSchema = NoticiasCategorizadasCompletasSchema;
+export const NoticiaSimplificadaSchema = z.object({
+    id: z.string(),
+    titulo: z.string(),
+    resumo: z.string(),
+    fonte: z.string(),
+    categoria: z.enum(['politica', 'economia', 'cidades', 'cultura', 'esportes', 'geral']),
+    relevanceScore: z.number(),
+    classification: z.object({
+        id: z.string(),
+        label: z.string(),
+        isAdequate: z.boolean()
+    })
+});
+
+/**
+ * Schema para pauta do dia (versão simplificada)
+ * @ai-validation Estrutura simplificada para visualização e seleção
+ */
+export const PautaDoDiaSchema = z.object({
+    data: z.string(),
+    manchete: z.string(),
+    categorias: z.object({
+        politica: z.array(NoticiaSimplificadaSchema),
+        economia: z.array(NoticiaSimplificadaSchema),
+        cidades: z.array(NoticiaSimplificadaSchema),
+        cultura: z.array(NoticiaSimplificadaSchema),
+        esportes: z.array(NoticiaSimplificadaSchema),
+        geral: z.array(NoticiaSimplificadaSchema)
+    }),
+    rankingGeral: z.array(NoticiaSimplificadaSchema),
+    metadados: z.object({
+        totalAnalisadas: z.number(),
+        totalRelevantes: z.number(),
+        fontesProcessadas: z.array(z.string()),
+        tempoProcessamento: z.string(),
+        versaoAnalise: z.string()
+    })
+});
 
 /**
  * Schema para roteiro estruturado do podcast
