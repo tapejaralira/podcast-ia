@@ -63,6 +63,39 @@ export interface Collector {
 }
 
 // ----------------------------------------------------------------------------
+// ETAPA 2: ANÁLISE E ENRIQUECIMENTO
+// ----------------------------------------------------------------------------
+
+/**
+ * Representa uma notícia após passar pelo processo de análise e enriquecimento da IA.
+ * Contém todos os dados da NoticiaCrua mais os metadados gerados.
+ */
+export interface NoticiaCompleta extends NoticiaCrua {
+  id: string;
+  categoria: string;
+  scoreTotal: number;
+  relevancia: number;
+  tempoEstimado: number;
+  // Adicione outros campos conforme necessário
+}
+
+/**
+ * Representa o conjunto de dados de notícias, organizadas por categorias
+ * e com um ranking geral, pronto para ser usado na geração do roteiro.
+ */
+export interface NoticiasCategorizadas {
+  data: string;
+  rankingGeral?: NoticiaCompleta[];
+  categorias: {
+    [nomeCategoria: string]: NoticiaCompleta[];
+  };
+  metadados?: {
+    totalAnalisadas: number;
+    totalRelevantes: number;
+  };
+}
+
+// ----------------------------------------------------------------------------
 // ENUMS E CONSTANTES
 // ----------------------------------------------------------------------------
 

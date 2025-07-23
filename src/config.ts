@@ -5,14 +5,17 @@
  */
 
 import * as path from 'path';
+import { fileURLToPath } from 'url'; // Importação necessária
 import { ProjectConfig, AIApiConfig } from './types.js';
 import { logError, logInfo } from './utils/logger.js';
 
-// Caminhos base do projeto
-const __dirname = path.resolve(path.dirname(''));
-const ROOT_DIR = path.resolve(__dirname, '..');
-export const SRC_DIR = path.resolve(__dirname, 'src');
-export const DATA_DIR = path.resolve(__dirname, 'data');
+// Caminhos base do projeto (CORRIGIDO para ser mais robusto)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename); // Isto aponta para /src
+const ROOT_DIR = path.resolve(__dirname, '..'); // Isto aponta para a raiz do projeto
+
+export const SRC_DIR = path.resolve(__dirname); // Simplificado
+export const DATA_DIR = path.resolve(ROOT_DIR, 'data'); // Corrigido para usar o novo ROOT_DIR
 export const ROTEIROS_DIR = path.join(ROOT_DIR, 'output', 'scripts');
 
 /**
@@ -158,7 +161,7 @@ export const config: ProjectConfig & {
     sugestoesAberturaFile: path.join(DATA_DIR, 'sugestoes-abertura.json'),
     personagensFile: path.join(DATA_DIR, 'personagens.json'),
     ttsConfigFile: path.join(DATA_DIR, 'tts-config.json'),
-    roteiroTemplateFile: path.join(ROOT_DIR, 'assets', 'templates', 'roteiro-template.md'),
+    roteiroTemplateFile: path.join(SRC_DIR, 'roteiro', 'roteiro-template.md'),
     roteirosDir: ROTEIROS_DIR,
     audioOutputDir: path.join(ROOT_DIR, 'output', 'audio')
   },
@@ -195,10 +198,11 @@ export const filePaths = {
   sugestoesAberturaFile: path.join(config.paths.data, 'sugestoes-abertura.json'),
   personagensFile: path.join(config.paths.data, 'personagens.json'),
   ttsConfigFile: path.join(config.paths.data, 'tts-config.json'),
-  roteiroTemplateFile: config.tts.roteiroTemplateFile,
-  
+  roteiroTemplateFile: path.join(SRC_DIR, 'roteiro', 'roteiro-template.md'),
+  roteiroOutputDir: ROTEIROS_DIR, // Adicionado para consistência
+
   // Backwards compatibility
-  pautaDoDiaFile: path.join(config.paths.data, 'noticias-categorizadas.json')
+  pautaDoDiaFile: path.join(DATA_DIR, 'noticias-categorizadas.json')
 };
 
 /**

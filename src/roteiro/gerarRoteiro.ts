@@ -1,10 +1,86 @@
 // src/roteiro/gerarRoteiro.ts
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { PautaDoDia, SugestoesAbertura, PersonagensConfig, NoticiaClassificada, Efemerie, Personagem } from '../types.js';
+import OpenAI from 'openai'; // <-- IMPORTAÇÃO RESTAURADA
+// Tipos corrigidos e limpos
+import { NoticiasCategorizadas, NoticiaCompleta } from '../types.js';
 import { config, filePaths } from '../config.js';
 import { PautaDoDiaSchema, RoteiroPodcastSchema } from '../schemas/core.schemas.js';
 import { validateWithSchema } from '../utils/validation.js';
+
+// --- IMPLEMENTAÇÃO REAL RESTAURADA ---
+const openai = new OpenAI({
+  apiKey: config.ai.openai.apiKey,
+});
+
+const carregarDadosNoticias = async (): Promise<NoticiasCategorizadas> => {
+  const data = await fs.readFile(filePaths.noticiasCategorizadasFile, 'utf-8');
+  return JSON.parse(data);
+};
+
+// A função agora aceita um novo parâmetro: 'personagens'
+async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string, personagens: any): Promise<string> {
+  console.log('🤖 Chamando API da OpenAI para gerar roteiro com contexto de personagens...');
+  
+  // O prompt foi drasticamente melhorado para incluir o contexto dos personagens
+  const prompt = `
+    Você é um roteirista de podcast especialista em criar diálogos naturais e envolventes para o programa "Bubuia News".
+
+    **Contexto dos Personagens e do Podcast (LEIA COM ATENÇÃO):**
+    ---
+    **Podcast:** ${personagens.podcast.nome} - ${personagens.podcast.slogan}
+    **Identidade:** ${personagens.podcast.identidade}
+
+    **Apresentadores:**
+    ${personagens.apresentadores.map((p: any) => `
+    - **Nome:** ${p.nome}
+      **Perfil:** ${p.perfil_geral}
+      **Tom de Voz:** ${p.tom_de_voz}
+      **Gírias Comuns:** ${p.girias.join(', ')}
+      **Relação com o outro:** ${p.relacao_com_outro_personagem}
+    `).join('\n')}
+
+    **Dinâmica Recorrente (use se for natural):**
+    ${personagens.dinamica_geral.brincadeiras_recorrentes.map((b: string) => `- ${b}`).join('\n')}
+    ---
+
+    **Template do Roteiro (Siga esta estrutura):**
+    ---
+    ${template}
+    ---
+
+    **Dados das Notícias (Use estes dados para preencher o template):**
+    - Manchete Principal: ${noticias.manchete.titulo}
+    - Outras Notícias Relevantes:
+      ${noticias.noticias.map((n: NoticiaCompleta) => `- ${n.titulo}`).join('\n')}
+    ---
+
+    **Instruções Finais:**
+    1.  **Use as fichas de personagem acima** para guiar o diálogo. Incorpore suas gírias, tom de voz e a dinâmica entre eles de forma autêntica.
+    2.  Use a manchete como o tópico principal do podcast.
+    3.  Incorpore as outras notícias de forma fluida nos diálogos.
+    4.  O roteiro final deve seguir estritamente a estrutura do template, incluindo as marcações [AUDIO:...].
+  `;
+
+  const response = await openai.chat.completions.create({
+    model: config.ai.openai.model,
+    messages: [{ role: 'user', content: prompt }],
+    temperature: config.ai.openai.temperature,
+    max_tokens: config.ai.openai.maxTokens,
+  });
+
+  const roteiroGerado = response.choices[0].message.content;
+  if (!roteiroGerado) {
+    throw new Error('A API da OpenAI não retornou um roteiro.');
+  }
+  
+  console.log('✅ Roteiro recebido da OpenAI.');
+  return roteiroGerado;
+}
+
 
 const ROTEIRO_TEMPLATE_PATH = filePaths.roteiroTemplateFile;
 const PAUTA_DO_DIA_PATH = filePaths.noticiasCategorizadasFile;
@@ -112,13 +188,14 @@ export async function gerarRoteiro() {
         // 1. Carregar dados das notícias
         const noticiasData = await carregarDadosNoticias();
         console.log('📊 Dados carregados:', {
-            totalNoticias: noticiasData.rankingGeral.length,
+            totalNoticias: noticiasData.rankingGeral?.length || 0,
             categorias: Object.keys(noticiasData.categorias).length
         });
         
         // 2. Carregar templates e configurações
-        const template = await fs.readFile(filePaths.roteiroTemplatePath, 'utf-8');
-        console.log('📝 Template de roteiro carregado');
+        const template = await fs.readFile(ROTEIRO_TEMPLATE_PATH, 'utf-8');
+        const fichaPersonagens = JSON.parse(await fs.readFile(PERSONAGENS_PATH, 'utf-8'));
+        console.log('🎭 Ficha de personagens carregada');
         
         // 3. Preparar notícias para o roteiro
         const noticiasParaRoteiro = prepararNoticiasParaRoteiro(noticiasData);
@@ -127,12 +204,16 @@ export async function gerarRoteiro() {
             totalNoticias: noticiasParaRoteiro.noticias.length
         });
         
-        // 4. Gerar roteiro usando IA
-        const roteiro = await gerarRoteiroComIA(noticiasParaRoteiro, template);
+        // 4. Gerar roteiro usando IA (agora com o contexto dos personagens)
+        const roteiro = await gerarRoteiroComIA(noticiasParaRoteiro, template, fichaPersonagens);
         console.log('✨ Roteiro gerado com sucesso');
         
         // 5. Salvar roteiro
-        const outputPath = path.join(config.paths.output, 'roteiro.md');
+        const outputPath = path.join(filePaths.roteiroOutputDir, formatarDataParaNomeArquivo(new Date()));
+        
+        // Garante que o diretório de saída exista antes de escrever o arquivo
+        await fs.mkdir(path.dirname(outputPath), { recursive: true });
+        
         await fs.writeFile(outputPath, roteiro, 'utf-8');
         console.log(`💾 Roteiro salvo em: ${outputPath}`);
         
@@ -143,12 +224,19 @@ export async function gerarRoteiro() {
     }
 }
 
+// Interface corrigida para usar o tipo NoticiaCompleta
 interface NoticiasParaRoteiro {
-    manchete: NoticiaEnriquecida;
-    noticias: NoticiaEnriquecida[];
+    manchete: NoticiaCompleta;
+    noticias: NoticiaCompleta[];
 }
 
-function prepararNoticiasParaRoteiro(dados: PautaDoDia): NoticiasParaRoteiro {
+// Função corrigida para usar o tipo correto e adicionar verificação de segurança
+function prepararNoticiasParaRoteiro(dados: NoticiasCategorizadas): NoticiasParaRoteiro {
+    // Verificação para evitar erro se rankingGeral não existir ou estiver vazio
+    if (!dados.rankingGeral || dados.rankingGeral.length === 0) {
+        throw new Error('Não há notícias no ranking geral para preparar o roteiro.');
+    }
+    
     // Usar ranking geral que já está ordenado por relevância e seleção manual
     const [manchete, ...noticias] = dados.rankingGeral;
     
