@@ -1,49 +1,67 @@
 /**
- * @ai-purpose Tipos compartilhados entre interface web e backend
+ * @ai-purpose Tipos compartilhados entre a interface web e o backend, garantindo consistência.
  */
 
-export interface NoticiaSimplificada {
+/**
+ * Representa a estrutura completa de um artigo de notícia após a análise.
+ */
+export interface NoticiaCompleta {
   id: string;
   titulo: string;
   resumo: string;
+  url: string;
   fonte: string;
+  dataPublicacao: string;
   categoria: string;
-  relevanceScore: number;
-  classification: {
-    id: string;
-    label: string;
-    isAdequate: boolean;
-  };
+  scoreTotal: number;
+  relevancia: number;
+  tempoEstimado: number;
+  // Adicione outros campos conforme necessário para corresponder aos seus dados
 }
 
+/**
+ * Representa o conjunto de dados de notícias, organizadas por categorias
+ * e com um ranking geral.
+ */
 export interface NoticiasCategorizadas {
   data: string;
-  manchete: string;
+  rankingGeral?: NoticiaCompleta[];
   categorias: {
-    politica: NoticiaSimplificada[];
-    economia: NoticiaSimplificada[];
-    cidades: NoticiaSimplificada[];
-    cultura: NoticiaSimplificada[];
-    esportes: NoticiaSimplificada[];
-    geral: NoticiaSimplificada[];
+    [nomeCategoria: string]: NoticiaCompleta[];
   };
-  rankingGeral: NoticiaSimplificada[];
-  metadados: {
+  metadados?: {
     totalAnalisadas: number;
     totalRelevantes: number;
-    fontesProcessadas: string[];
-    tempoProcessamento: string;
-    versaoAnalise: string;
   };
 }
 
+/**
+ * Representa a seleção final feita pelo curador para ser salva.
+ */
 export interface SelecaoManual {
   data: string;
-  manchete: string;
-  noticiasEscolhidas: string[];
-  observacoes?: string;
+  manchete: {
+    id: string;
+    titulo: string;
+    categoria: string;
+  };
+  noticiasEscolhidas: Array<{
+    categoria: string;
+    ids: string[];
+    total: number;
+  }>;
 }
 
+/**
+ * Filtros e ordenação aplicados às notícias.
+ */
+export interface FiltrosInterface {
+  ordenacao: 'score' | 'relevancia' | 'categoria';
+}
+
+/**
+ * Estado da seleção de notícias, incluindo observações do curador.
+ */
 export interface EstadoSelecao {
   manchete: string | null;
   noticias: Set<string>;

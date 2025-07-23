@@ -15,30 +15,38 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import NoticiaCard from '../components/NoticiaCard';
-import DetalhesModal from '../components/DetalhesModal';
-import { carregarNoticias, salvarSelecaoManual, carregarSelecaoExistente } from '../lib/api';
-import { NoticiasCategorizadasCompletas, NoticiaCompleta, SelecaoManual, FiltrosInterface } from '../lib/types';
+import { carregarNoticias, salvarSelecaoManual } from '../lib/api';
+import { NoticiasCategorizadas, NoticiaCompleta, SelecaoManual } from '../lib/types';
 
 export default function Home() {
   // Estados principais
-  const [dados, setDados] = useState<NoticiasCategorizadasCompletas | null>(null);
+  const [dados, setDados] = useState<NoticiasCategorizadas | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   // Estados da seleção
   const [mancheteSelecionada, setMancheteSelecionada] = useState<string | null>(null);
   const [noticiasSelecionadas, setNoticiasSelecionadas] = useState<Set<string>>(new Set());
-  const [observacoes, setObservacoes] = useState('');
   
-  // Estados da interface
-  const [noticiaDetalhes, setNoticiaDetalhes] = useState<NoticiaCompleta | null>(null);
-  const [filtros, setFiltros] = useState<FiltrosInterface>({
-    relevanciaMinima: 0,
-    ordenacao: 'score',
-    busca: '',
-  });
+  // O estado de observações foi removido para simplificar a interface.
   
   const [abaSelecionada, setAbaSelecionada] = useState<string>('todas');
+
+  // Função auxiliar para buscar notícia de forma segura
+  const buscarNoticia = (id: string): NoticiaCompleta | undefined => {
+    if (!dados) return undefined;
+    // Primeiro tenta no rankingGeral, depois nas categorias
+    let noticia = dados.rankingGeral?.find((n: NoticiaCompleta) => n.id === id);
+    if (!noticia && dados.categorias) {
+      for (const categoria of Object.values(dados.categorias)) {
+        if (Array.isArray(categoria)) {
+          noticia = categoria.find((n: NoticiaCompleta) => n.id === id);
+          if (noticia) break;
+        }
+      }
+    }
+    return noticia;
+  };
 
   // Carregar dados na inicialização
   useEffect(() => {
@@ -47,30 +55,14 @@ export default function Home() {
         setLoading(true);
         setError(null);
         
-        const [noticiasData, selecaoExistente] = await Promise.all([
-          carregarNoticias(),
-          carregarSelecaoExistente(),
-        ]);
+        // A chamada para carregarSelecaoExistente foi removida.
+        const noticiasData = await carregarNoticias();
         
         if (!noticiasData) {
           throw new Error('Não foi possível carregar as notícias');
         }
         
         setDados(noticiasData);
-        
-        // Restaurar seleção existente se houver
-        if (selecaoExistente) {
-          if (selecaoExistente.manchete) {
-            setMancheteSelecionada(selecaoExistente.manchete.id);
-          }
-          
-          const ids = new Set<string>();
-          selecaoExistente.noticiasEscolhidas.forEach(categoria => {
-            categoria.ids.forEach(id => ids.add(id));
-          });
-          setNoticiasSelecionadas(ids);
-          setObservacoes(selecaoExistente.observacoes || '');
-        }
         
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro desconhecido');
@@ -86,45 +78,23 @@ export default function Home() {
   const noticiasFiltradas = useMemo(() => {
     if (!dados) return [];
     
-    let noticias;
+    let noticias: NoticiaCompleta[];
     
-    // Filtrar por categoria (CORRIGIDO E ROBUSTO)
-    if (abaSelecionada !== 'todas') {
+    if (abaSelecionada === 'selecionadas') {
+      const todasAsNoticias: NoticiaCompleta[] = Object.values(dados.categorias).flat();
+      noticias = todasAsNoticias.filter((noticia: NoticiaCompleta) => noticiasSelecionadas.has(noticia.id));
+    } else if (abaSelecionada !== 'todas') {
       noticias = dados.categorias[abaSelecionada as keyof typeof dados.categorias] || [];
     } else {
       // Combina notícias de todas as categorias para garantir que a lista "Todas" esteja completa
       noticias = Object.values(dados.categorias).flat();
     }
     
-    // Filtrar por relevância mínima
-    noticias = noticias.filter(n => n.scoreTotal >= filtros.relevanciaMinima);
-    
-    // Filtrar por busca
-    if (filtros.busca) {
-      const termo = filtros.busca.toLowerCase();
-      noticias = noticias.filter(n => 
-        n.titulo.toLowerCase().includes(termo) ||
-        n.resumo.toLowerCase().includes(termo) ||
-        n.fonte.toLowerCase().includes(termo)
-      );
-    }
-    
-    // Ordenar
-    switch (filtros.ordenacao) {
-      case 'relevancia':
-        noticias.sort((a, b) => b.relevancia - a.relevancia);
-        break;
-      case 'categoria':
-        noticias.sort((a, b) => a.categoria.localeCompare(b.categoria));
-        break;
-      case 'score':
-      default:
-        noticias.sort((a, b) => b.scoreTotal - a.scoreTotal);
-        break;
-    }
+    // Ordenar por scoreTotal (mais alto para o mais baixo) por padrão
+    noticias.sort((a: NoticiaCompleta, b: NoticiaCompleta) => b.scoreTotal - a.scoreTotal);
     
     return noticias;
-  }, [dados, filtros, abaSelecionada]);
+  }, [dados, abaSelecionada, noticiasSelecionadas]);
 
   // Handlers
   const toggleSelecaoNoticia = (id: string) => {
@@ -144,7 +114,7 @@ export default function Home() {
     }
     
     try {
-      const mancheteNoticia = dados.rankingGeral.find(n => n.id === mancheteSelecionada);
+      const mancheteNoticia = buscarNoticia(mancheteSelecionada);
       if (!mancheteNoticia) {
         alert('Manchete não encontrada');
         return;
@@ -155,7 +125,7 @@ export default function Home() {
       const categorias = new Set<string>();
       
       Array.from(noticiasSelecionadas).forEach(id => {
-        const noticia = dados.rankingGeral.find(n => n.id === id);
+        const noticia = buscarNoticia(id);
         if (noticia) {
           categorias.add(noticia.categoria);
         }
@@ -163,7 +133,7 @@ export default function Home() {
       
       categorias.forEach(categoria => {
         const idsCategoria = Array.from(noticiasSelecionadas).filter(id => {
-          const noticia = dados.rankingGeral.find(n => n.id === id);
+          const noticia = buscarNoticia(id);
           return noticia?.categoria === categoria;
         });
         
@@ -184,15 +154,6 @@ export default function Home() {
           categoria: mancheteNoticia.categoria,
         },
         noticiasEscolhidas,
-        estatisticas: {
-          totalNoticias: noticiasSelecionadas.size,
-          duracaoEstimada: Array.from(noticiasSelecionadas).reduce((total, id) => {
-            const noticia = dados.rankingGeral.find(n => n.id === id);
-            return total + (noticia?.tempoEstimado || 0);
-          }, 0),
-          categorias: categorias.size,
-        },
-        observacoes: observacoes || undefined,
       };
       
       const sucesso = await salvarSelecaoManual(selecao);
@@ -244,7 +205,7 @@ export default function Home() {
     );
   }
 
-  const categorias = ['todas', 'politica', 'economia', 'cidades', 'cultura', 'esportes', 'geral'];
+  const categorias = ['todas', 'selecionadas', 'politica', 'economia', 'cidades', 'cultura', 'esportes', 'geral'];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -255,8 +216,8 @@ export default function Home() {
             Curadoria de Notícias - {new Date(dados.data).toLocaleDateString('pt-BR')}
           </h1>
           <p className="text-gray-600 mt-1">
-            {dados.metadados.totalAnalisadas} notícias analisadas • 
-            {dados.metadados.totalRelevantes} relevantes
+            {dados.metadados?.totalAnalisadas || 0} notícias analisadas • 
+            {dados.metadados?.totalRelevantes || 0} relevantes
           </p>
         </div>
       </header>
@@ -265,56 +226,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            {/* Filtros */}
-            <div className="bg-white rounded-lg shadow p-4 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Filtros</h3>
-              
-              {/* Busca */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Buscar
-                </label>
-                <input
-                  type="text"
-                  value={filtros.busca}
-                  onChange={(e) => setFiltros({...filtros, busca: e.target.value})}
-                  placeholder="Título, resumo ou fonte..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              {/* Relevância mínima */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Score mínimo: {filtros.relevanciaMinima}
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="10"
-                  step="0.5"
-                  value={filtros.relevanciaMinima}
-                  onChange={(e) => setFiltros({...filtros, relevanciaMinima: parseFloat(e.target.value)})}
-                  className="w-full"
-                />
-              </div>
-              
-              {/* Ordenação */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ordenar por
-                </label>
-                <select
-                  value={filtros.ordenacao}
-                  onChange={(e) => setFiltros({...filtros, ordenacao: e.target.value as 'score' | 'relevancia' | 'categoria'})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="score">Score Total</option>
-                  <option value="relevancia">Relevância</option>
-                  <option value="categoria">Categoria</option>
-                </select>
-              </div>
-            </div>
+            {/* A seção de Filtros foi removida */}
 
             {/* Estatísticas da Seleção */}
             <div className="bg-white rounded-lg shadow p-4">
@@ -330,31 +242,32 @@ export default function Home() {
                 
                 <div>
                   <span className="text-sm text-gray-600">Notícias:</span>
-                  <div className="font-medium">{noticiasSelecionadas.size}</div>
+                  <div className="font-medium text-black">{noticiasSelecionadas.size}</div>
                 </div>
                 
+                {/* Resumo por categoria das selecionadas */}
                 <div>
-                  <span className="text-sm text-gray-600">Duração estimada:</span>
-                  <div className="font-medium">
-                    {Array.from(noticiasSelecionadas).reduce((total, id) => {
-                      const noticia = dados.rankingGeral.find(n => n.id === id);
-                      return total + (noticia?.tempoEstimado || 0);
-                    }, 0)} min
-                  </div>
+                  <span className="text-sm text-gray-600">Selecionadas por categoria:</span>
+                  <ul className="mt-1 text-sm">
+                    {(() => {
+                      if (!dados) return null;
+                      // Conta selecionadas por categoria
+                      const resumo = Array.from(noticiasSelecionadas).reduce((acc, id) => {
+                        const noticia = buscarNoticia(id);
+                        if (noticia) {
+                          acc[noticia.categoria] = (acc[noticia.categoria] || 0) + 1;
+                        }
+                        return acc;
+                      }, {} as Record<string, number>);
+                      // Renderiza lista
+                      return Object.entries(resumo).map(([cat, qtd]) => (
+                        <li key={cat} className="text-black">
+                          <span className="font-medium">{cat.charAt(0).toUpperCase() + cat.slice(1)}:</span> {qtd}
+                        </li>
+                      ));
+                    })()}
+                  </ul>
                 </div>
-              </div>
-              
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Observações
-                </label>
-                <textarea
-                  value={observacoes}
-                  onChange={(e) => setObservacoes(e.target.value)}
-                  placeholder="Notas sobre a seleção..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
-                />
               </div>
               
               <button
@@ -372,7 +285,7 @@ export default function Home() {
             {/* Tabs de categorias */}
             <div className="bg-white rounded-lg shadow mb-6">
               <div className="border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8 px-4">
+                <nav className="-mb-px flex space-x-4 px-4">
                   {categorias.map((categoria) => (
                     <button
                       key={categoria}
@@ -384,7 +297,11 @@ export default function Home() {
                       }`}
                     >
                       {categoria === 'todas' ? 'Todas' : categoria.charAt(0).toUpperCase() + categoria.slice(1)}
-                      {categoria !== 'todas' && (
+                      {categoria === 'selecionadas' ? (
+                        <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                          {noticiasSelecionadas.size}
+                        </span>
+                      ) : categoria !== 'todas' && (
                         <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                           {dados.categorias[categoria as keyof typeof dados.categorias]?.length || 0}
                         </span>
@@ -394,26 +311,6 @@ export default function Home() {
                 </nav>
               </div>
             </div>
-
-            {/* Sugestão de manchete */}
-            {dados.sugestaoAutomatica.manchete && abaSelecionada === 'todas' && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <h3 className="font-semibold text-yellow-800 mb-2">💡 Sugestão de Manchete</h3>
-                <NoticiaCard
-                  noticia={dados.sugestaoAutomatica.manchete}
-                  selecionada={mancheteSelecionada === dados.sugestaoAutomatica.manchete.id}
-                  onSelecionar={(id) => setMancheteSelecionada(id === mancheteSelecionada ? null : id)}
-                  onVerDetalhes={setNoticiaDetalhes}
-                  destacarManchete={true}
-                />
-                <p className="text-yellow-700 text-sm mt-2">
-                  {dados.sugestaoAutomatica.justificativa}
-                  <span className="ml-2 font-medium">
-                    (Confiança: {(dados.sugestaoAutomatica.confianca * 100).toFixed(0)}%)
-                  </span>
-                </p>
-              </div>
-            )}
 
             {/* Lista de notícias */}
             <div className="space-y-4">
@@ -432,13 +329,14 @@ export default function Home() {
                   Nenhuma notícia encontrada com os filtros aplicados
                 </div>
               ) : (
-                noticiasFiltradas.map((noticia) => (
+                noticiasFiltradas.map((noticia: NoticiaCompleta) => (
                   <NoticiaCard
                     key={noticia.id}
                     noticia={noticia}
                     selecionada={noticiasSelecionadas.has(noticia.id)}
                     onSelecionar={toggleSelecaoNoticia}
-                    onVerDetalhes={setNoticiaDetalhes}
+                    isManchete={mancheteSelecionada === noticia.id}
+                    onSetManchete={(id) => setMancheteSelecionada(id === mancheteSelecionada ? null : id)}
                   />
                 ))
               )}
@@ -446,15 +344,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* Modal de detalhes */}
-      <DetalhesModal
-        noticia={noticiaDetalhes}
-        isOpen={!!noticiaDetalhes}
-        onClose={() => setNoticiaDetalhes(null)}
-        onSelecionar={toggleSelecaoNoticia}
-        selecionada={noticiaDetalhes ? noticiasSelecionadas.has(noticiaDetalhes.id) : false}
-      />
     </div>
   );
 }
