@@ -17,11 +17,11 @@ const carregarDadosNoticias = async (): Promise<NoticiasCategorizadas> => {
   return JSON.parse(data);
 };
 
-// A função agora aceita um novo parâmetro: 'personagens'
-async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string, personagens: any): Promise<string> {
-  console.log('🤖 Chamando API do Gemini para gerar roteiro com contexto de personagens...');
+// A função agora aceita quatro parâmetros: 'noticias', 'template', 'personagens' e 'sugestoesAbertura'
+async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string, personagens: any, sugestoesAbertura: any): Promise<string> {
+  console.log('🤖 Chamando API do Gemini para gerar roteiro com contexto completo...');
   
-  // O prompt foi drasticamente melhorado para incluir o contexto dos personagens
+  // O prompt foi enriquecido com sugestões de abertura e efemérides
   const prompt = `
     Você é um roteirista de podcast especialista em criar diálogos naturais e envolventes para o programa "Bubuia News".
 
@@ -43,6 +43,23 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
     ${personagens.dinamica_geral.brincadeiras_recorrentes.map((b: string) => `- ${b}`).join('\n')}
     ---
 
+    **Sugestões de Abertura Disponíveis (USE ESTAS PARA O COLD OPEN):**
+    ${sugestoesAbertura.ganchos ? sugestoesAbertura.ganchos.map((g: any, i: number) => `
+    ${i + 1}. **${g.tipo}**: ${g.ideia}
+       Apresentador: ${g.apresentador}
+       Texto sugerido: "${g.texto}"
+    `).join('\n') : 'Nenhuma sugestão específica disponível.'}
+
+    **Efeméride do Dia (IMPORTANTE - Use no Cold Open se disponível):**
+    ${sugestoesAbertura.efemeride ? `
+    - **Título:** ${sugestoesAbertura.efemeride.titulo}
+    - **Fato:** ${sugestoesAbertura.efemeride.texto}
+    - **Fonte:** ${sugestoesAbertura.efemeride.fonte}
+    
+    INSTRUÇÃO ESPECIAL: Incorpore esta efeméride no Cold Open de forma natural e envolvente.
+    ` : 'Nenhuma efeméride específica encontrada para hoje.'}
+    ---
+
     **Template do Roteiro (Siga esta estrutura):**
     ---
     ${template}
@@ -55,10 +72,11 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
     ---
 
     **Instruções Finais:**
-    1.  **Use as fichas de personagem acima** para guiar o diálogo. Incorpore suas gírias, tom de voz e a dinâmica entre eles de forma autêntica.
-    2.  Use a manchete como o tópico principal do podcast.
-    3.  Incorpore as outras notícias de forma fluida nos diálogos.
-    4.  O roteiro final deve seguir estritamente a estrutura do template, incluindo as marcações [AUDIO:...].
+    1.  **USE AS SUGESTÕES DE ABERTURA ACIMA** para criar um Cold Open autêntico baseado em efemérides reais ou ganchos estruturados.
+    2.  **Use as fichas de personagem** para guiar o diálogo. Incorpore suas gírias, tom de voz e a dinâmica entre eles.
+    3.  Use a manchete como o tópico principal do podcast.
+    4.  Incorpore as outras notícias de forma fluida nos diálogos.
+    5.  O roteiro final deve seguir estritamente a estrutura do template, incluindo as marcações [AUDIO:...].
   `;
 
   const result = await geminiModel.generateContent(prompt);
@@ -189,7 +207,16 @@ export async function gerarRoteiro() {
         const fichaPersonagens = JSON.parse(await fs.readFile(PERSONAGENS_PATH, 'utf-8'));
         console.log('🎭 Ficha de personagens carregada');
         
-        // 3. Preparar notícias para o roteiro
+        // 3. Carregar sugestões de abertura (efemérides e ganchos)
+        let sugestoesAbertura = {};
+        try {
+            sugestoesAbertura = JSON.parse(await fs.readFile(SUGESTOES_ABERTURA_PATH, 'utf-8'));
+            console.log('🎯 Sugestões de abertura carregadas');
+        } catch (error) {
+            console.log('⚠️ Sugestões de abertura não encontradas. Execute primeiro: npx tsx src/roteiro/sugerirAbertura.ts');
+        }
+        
+        // 4. Preparar notícias para o roteiro
         const noticiasParaRoteiro = prepararNoticiasParaRoteiro(noticiasData);
         console.log('📋 Notícias preparadas para roteiro:', {
             manchete: noticiasParaRoteiro.manchete.titulo,
@@ -197,7 +224,7 @@ export async function gerarRoteiro() {
         });
         
         // 4. Gerar roteiro usando IA (agora com o contexto dos personagens)
-        const roteiro = await gerarRoteiroComIA(noticiasParaRoteiro, template, fichaPersonagens);
+        const roteiro = await gerarRoteiroComIA(noticiasParaRoteiro, template, fichaPersonagens, sugestoesAbertura);
         console.log('✨ Roteiro gerado com sucesso');
         
         // 5. Salvar roteiro

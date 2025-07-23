@@ -24,10 +24,10 @@ const PAUTA_FILE = path.join(config.paths.data, 'noticias-categorizadas.json');
 const SUGESTOES_FILE = path.join(config.paths.data, 'sugestoes-abertura.json');
 
 const FALLBACK_CURIOSIDADE: Efemerie = {
-  titulo: 'Curiosidade da Bubuia',
+  titulo: 'Curiosidade Amazônica',
   texto:
-    'O Teatro Amazonas, um dos cartões-postais de Manaus, foi inaugurado em 1896 e é um dos mais importantes teatros de ópera do Brasil, conhecido por sua arquitetura renascentista e pela cúpula com as cores da bandeira brasileira.',
-  fonte: 'Conhecimento geral',
+    'Manaus é conhecida como o "Portal de Entrada da Amazônia" e possui mais de 2 milhões de habitantes, sendo uma das maiores cidades da região amazônica. A cidade fica localizada na confluência dos rios Negro e Solimões, que formam o Rio Amazonas.',
+  fonte: 'IBGE - Instituto Brasileiro de Geografia e Estatística',
 };
 
 /**
@@ -108,50 +108,130 @@ async function gerarConteudoIA(prompt: string): Promise<string> {
 
 /**
  * Busca um fato histórico ou data comemorativa com fallback para uma curiosidade.
+ * Prioriza informações verificáveis e usa fallback quando há dúvidas.
  * @param datasParaPesquisar Array de datas formatadas para a pesquisa.
  * @returns Um objeto Efemerie.
  */
 async function buscarFatoHistoricoComFallback(datasParaPesquisar: string[]): Promise<Efemerie> {
-  console.log('[LOG] Buscando Efeméride ESTRITAMENTE VERIFICÁVEL...');
+  console.log('[LOG] Buscando Efeméride com sistema de prioridades e validação rigorosa...');
   
   // Define um tipo local para a resposta da IA, que é mais complexa
   type RespostaEfemerieIA = { encontrado: boolean; } & Efemerie;
 
   try {
+    // PRIORIDADE 1: Buscar fatos históricos importantes (com validação extra)
     for (const dataFormatada of datasParaPesquisar) {
-      console.log(` -> Pesquisando para a data: ${dataFormatada}`);
+      console.log(` -> [PRIORIDADE 1] Pesquisando fatos históricos para: ${dataFormatada}`);
       const promptFatoReal = `
-        Encontre um fato histórico, evento importante ou data comemorativa RELEVANTE (nascimento/morte de figura importante, evento histórico, etc.) que ocorreu em ${dataFormatada}.
-        A resposta DEVE ser um JSON com a seguinte estrutura:
+        AVISO IMPORTANTE: Como modelo de IA, você pode ter limitações de acesso a dados históricos precisos.
+        
+        Pergunta: Existe um fato histórico AMPLAMENTE CONHECIDO que ocorreu EXATAMENTE em ${dataFormatada}?
+        
+        SEJA EXTREMAMENTE CONSERVADOR:
+        - Se você não tem 100% de certeza da data exata, responda "encontrado: false"
+        - Apenas eventos MUITO FAMOSOS e AMPLAMENTE DOCUMENTADOS
+        - Se há QUALQUER dúvida, prefira responder "false"
+        
+        Formato:
         {
           "encontrado": boolean,
-          "titulo": string (Ex: "Inauguração da Torre Eiffel"),
-          "texto": string (um parágrafo explicando o fato),
-          "fonte": string (URL da fonte ou nome do livro/documento)
+          "titulo": string,
+          "texto": string,
+          "fonte": string
         }
-        Se NADA relevante for encontrado para esta data, retorne um JSON com "encontrado: false".
-        Seja factual e verificável. Evite fatos obscuros ou irrelevantes.
-        Priorize eventos relacionados ao Brasil ou de impacto global.
+        
+        Exemplos de eventos que devem retornar "false" por incerteza de data:
+        - Eventos regionais pouco conhecidos
+        - Datas que você não tem certeza absoluta
+        - Fatos que podem ter ocorrido em data aproximada
       `;
 
       const responseJson = await gerarConteudoIA(promptFatoReal);
       const efemerideResult: RespostaEfemerieIA = JSON.parse(responseJson);
 
-      // Se a IA encontrou um fato válido, retorna o objeto no formato correto de Efemerie
+      // Validação extra: rejeitar alguns resultados comuns que podem estar incorretos
       if (efemerideResult.encontrado && efemerideResult.titulo) {
-        console.log(`[LOG] Efeméride encontrada: ${efemerideResult.titulo}`);
+        // Lista de títulos que frequentemente têm datas incorretas
+        const titulosProblematicos = [
+          'revolução constitucionalista',
+          'colônia agrícola',
+          'rebelião',
+          'rotary club',
+          'fundação de'
+        ];
+        
+        const tituloLower = efemerideResult.titulo.toLowerCase();
+        const temTituloProblematico = titulosProblematicos.some(termo => 
+          tituloLower.includes(termo)
+        );
+        
+        if (temTituloProblematico) {
+          console.log(`[LOG] ⚠️ Título potencialmente problemático rejeitado: ${efemerideResult.titulo}`);
+        } else {
+          console.log(`[LOG] ✅ Fato histórico encontrado: ${efemerideResult.titulo}`);
+          return {
+            titulo: efemerideResult.titulo,
+            texto: efemerideResult.texto,
+            fonte: efemerideResult.fonte,
+          };
+        }
+      }
+    }
+
+    // PRIORIDADE 2: Buscar datas comemorativas oficiais (mais conservador)
+    for (const dataFormatada of datasParaPesquisar) {
+      console.log(` -> [PRIORIDADE 2] Pesquisando datas comemorativas para: ${dataFormatada}`);
+      const promptDataComemorativa = `
+        Pergunta específica: Que datas comemorativas são celebradas em ${dataFormatada}?
+        
+        Procure por datas comemorativas OFICIAIS estabelecidas no Brasil, incluindo:
+        - Dias de profissões (Dia do Guarda Rodoviário, Dia do Professor, etc.)
+        - Dias temáticos nacionais (Dia do Idoso, Dia da Mulher, etc.)
+        - Datas estabelecidas por leis federais, estaduais ou municipais
+        - Datas reconhecidas por organizações oficiais
+        
+        INSTRUÇÕES:
+        - Se existe uma data comemorativa conhecida para ${dataFormatada}, retorne "encontrado: true"
+        - Inclua datas de profissões, grupos sociais, temas de conscientização
+        - Não precisa ser extremamente famosa, pode ser uma data comemorativa oficial menor
+        - Se não souber de nenhuma, retorne "encontrado: false"
+        
+        Formato de resposta:
+        {
+          "encontrado": boolean,
+          "titulo": string (Ex: "Dia do Guarda Rodoviário"),
+          "texto": string (explicação sobre a data e sua importância para a sociedade),
+          "fonte": string (referência simples - Ex: "Polícia Rodoviária Federal" ou "Calendário Oficial")
+        }
+        
+        Exemplos de datas que DEVEM ser encontradas se existirem:
+        - Dia do Guarda Rodoviário (23 de julho)
+        - Dia do Policial Rodoviário  
+        - Dia do Idoso Institucionalizado
+        - Outras datas profissionais ou temáticas
+      `;
+
+      const responseJson2 = await gerarConteudoIA(promptDataComemorativa);
+      const dataComemoResult: RespostaEfemerieIA = JSON.parse(responseJson2);
+
+      if (dataComemoResult.encontrado && dataComemoResult.titulo) {
+        console.log(`[LOG] 🎉 Data comemorativa encontrada: ${dataComemoResult.titulo}`);
         return {
-          titulo: efemerideResult.titulo,
-          texto: efemerideResult.texto,
-          fonte: efemerideResult.fonte,
+          titulo: dataComemoResult.titulo,
+          texto: dataComemoResult.texto,
+          fonte: dataComemoResult.fonte,
         };
       }
     }
 
-    console.log('[LOG] Nenhum fato histórico encontrado. Usando curiosidade sobre a Amazônia como fallback.');
-    return FALLBACK_CURIOSIDADE; // Retorna o fallback se o loop terminar
+    // PRIORIDADE 3: Fallback - Curiosidade Amazônica Verificável
+    console.log('[LOG] ⚠️ Nenhum fato histórico ou data comemorativa VERIFICÁVEL encontrada para esta data.');
+    console.log('[LOG] ℹ️ Usando curiosidade amazônica verificável como fallback.');
+    return FALLBACK_CURIOSIDADE;
+    
   } catch (error) {
-    console.error('❌ Erro ao buscar fato histórico:', error);
+    console.error('❌ Erro ao buscar fato histórico ou data comemorativa:', error);
+    console.log('[LOG] ℹ️ Usando fallback devido a erro na busca.');
     return FALLBACK_CURIOSIDADE; // Retorna o fallback em caso de erro
   }
 }
@@ -165,18 +245,19 @@ export async function sugerirAbertura(): Promise<void> {
     const pautaRaw = await fs.readFile(PAUTA_FILE, 'utf-8');
     const pautaDoDia: PautaDoDia = JSON.parse(pautaRaw);
 
-    // 1. Buscar Efeméride
-    const hoje = new Date(pautaDoDia.data);
+    // 1. Buscar Efeméride (usando data atual, não do arquivo)
+    const hoje = new Date(); // Data atual, não do arquivo
     const dia = hoje.getDate();
     const mes = hoje.toLocaleString('pt-BR', { month: 'long' });
+    console.log(`[LOG] Buscando efemérides para: ${dia} de ${mes}`);
     const efemeride = await buscarFatoHistoricoComFallback([`${dia} de ${mes}`]);
 
     // 2. Gerar Sugestões de Gancho com base na pauta usando template estruturado
     const pautaContent = `
       - Manchete: ${pautaDoDia.manchete}
-      - Política: ${pautaDoDia.pauta.politica.map(n => n.tituloPrincipal).join(', ') || 'N/A'}
-      - Cidades: ${pautaDoDia.pauta.cidades.map(n => n.tituloPrincipal).join(', ') || 'N/A'}
-      - Cultura: ${pautaDoDia.pauta.cultura.map(n => n.tituloPrincipal).join(', ') || 'N/A'}
+      - Política: ${pautaDoDia.categorias.politica.map((n: any) => n.titulo || n.tituloPrincipal).join(', ') || 'N/A'}
+      - Cidades: ${pautaDoDia.categorias.cidades.map((n: any) => n.titulo || n.tituloPrincipal).join(', ') || 'N/A'}
+      - Cultura: ${pautaDoDia.categorias.cultura.map((n: any) => n.titulo || n.tituloPrincipal).join(', ') || 'N/A'}
     `;
 
     const promptGanchos = renderTemplate(generateHooksPrompt, {
@@ -199,4 +280,28 @@ export async function sugerirAbertura(): Promise<void> {
     console.error('🔥 Erro fatal ao gerar sugestões de abertura:', error);
     throw error; // Propaga o erro para o pipeline principal
   }
+}
+
+// === DETECÇÃO ROBUSTA DE EXECUÇÃO DIRETA ===
+if (
+  import.meta.url.includes('sugerirAbertura.ts') ||
+  process.argv[1]?.includes('sugerirAbertura')
+) {
+  console.log('🚀 Iniciando sistema de sugestões de abertura...');
+  console.log(`📅 Data: ${new Date().toLocaleDateString('pt-BR')}`);
+
+  (async () => {
+    try {
+      console.log('📂 Carregando dados da pauta...');
+      
+      await sugerirAbertura();
+      
+      console.log('\n🎉 Sugestões de abertura geradas com sucesso!');
+      console.log('💡 Agora você pode executar: npx tsx src/roteiro/gerarRoteiro.ts');
+    } catch (error) {
+      console.error('\n❌ Erro durante a geração de sugestões:', (error as Error).message);
+      console.error('Stack:', (error as Error).stack);
+      process.exit(1);
+    }
+  })();
 }

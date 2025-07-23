@@ -378,6 +378,7 @@ export interface NoticiaEnriquecida {
 export interface PautaDoDia {
     data: string;
     manchete: string;
+    efemerides?: Efemerie[];
     categorias: {
         politica: NoticiaEnriquecida[];
         economia: NoticiaEnriquecida[];
