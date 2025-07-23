@@ -1,20 +1,16 @@
 // src/roteiro/gerarRoteiro.ts
-import * as dotenv from 'dotenv';
-dotenv.config();
-
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import OpenAI from 'openai'; // <-- IMPORTAÇÃO RESTAURADA
+import { GoogleGenerativeAI } from '@google/generative-ai'; // <-- MUDANÇA: Importa Gemini
 // Tipos corrigidos e limpos
 import { NoticiasCategorizadas, NoticiaCompleta } from '../types.js';
 import { config, filePaths } from '../config.js';
 import { PautaDoDiaSchema, RoteiroPodcastSchema } from '../schemas/core.schemas.js';
 import { validateWithSchema } from '../utils/validation.js';
 
-// --- IMPLEMENTAÇÃO REAL RESTAURADA ---
-const openai = new OpenAI({
-  apiKey: config.ai.openai.apiKey,
-});
+// --- IMPLEMENTAÇÃO COM GEMINI ---
+const genAI = new GoogleGenerativeAI(config.ai.gemini.apiKey);
+const geminiModel = genAI.getGenerativeModel({ model: config.ai.gemini.model });
 
 const carregarDadosNoticias = async (): Promise<NoticiasCategorizadas> => {
   const data = await fs.readFile(filePaths.noticiasCategorizadasFile, 'utf-8');
@@ -23,7 +19,7 @@ const carregarDadosNoticias = async (): Promise<NoticiasCategorizadas> => {
 
 // A função agora aceita um novo parâmetro: 'personagens'
 async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string, personagens: any): Promise<string> {
-  console.log('🤖 Chamando API da OpenAI para gerar roteiro com contexto de personagens...');
+  console.log('🤖 Chamando API do Gemini para gerar roteiro com contexto de personagens...');
   
   // O prompt foi drasticamente melhorado para incluir o contexto dos personagens
   const prompt = `
@@ -65,19 +61,15 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
     4.  O roteiro final deve seguir estritamente a estrutura do template, incluindo as marcações [AUDIO:...].
   `;
 
-  const response = await openai.chat.completions.create({
-    model: config.ai.openai.model,
-    messages: [{ role: 'user', content: prompt }],
-    temperature: config.ai.openai.temperature,
-    max_tokens: config.ai.openai.maxTokens,
-  });
+  const result = await geminiModel.generateContent(prompt);
+  const response = await result.response;
+  const roteiroGerado = response.text();
 
-  const roteiroGerado = response.choices[0].message.content;
   if (!roteiroGerado) {
-    throw new Error('A API da OpenAI não retornou um roteiro.');
+    throw new Error('A API do Gemini não retornou um roteiro.');
   }
   
-  console.log('✅ Roteiro recebido da OpenAI.');
+  console.log('✅ Roteiro recebido do Gemini.');
   return roteiroGerado;
 }
 

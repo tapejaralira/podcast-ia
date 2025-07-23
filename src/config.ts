@@ -4,8 +4,13 @@
  * Estrutura AI-friendly - versão final sem legacy
  */
 
+import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { fileURLToPath } from 'url'; // Importação necessária
+
+// Garante que as variáveis de ambiente sejam carregadas ANTES de qualquer outra coisa.
+dotenv.config();
+
 import { ProjectConfig, AIApiConfig } from './types.js';
 import { logError, logInfo } from './utils/logger.js';
 
