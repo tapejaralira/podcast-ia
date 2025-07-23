@@ -272,8 +272,12 @@ export async function sugerirAbertura(): Promise<void> {
     await fs.writeFile(PAUTA_FILE, JSON.stringify(pautaDoDia, null, 2));
     console.log(`[LOG] Arquivo de pauta (${path.basename(PAUTA_FILE)}) atualizado com a efemeride do dia.`);
 
-    // 4. Salvar as sugestões de abertura
-    await fs.writeFile(SUGESTOES_FILE, JSON.stringify(sugestoes, null, 2));
+    // 4. Incluir a efeméride no objeto de sugestões e salvar
+    const sugestoesCompletas = {
+      ...sugestoes,
+      efemeride: efemeride
+    };
+    await fs.writeFile(SUGESTOES_FILE, JSON.stringify(sugestoesCompletas, null, 2));
     console.log(`✅ Sugestões de abertura salvas em: ${path.basename(SUGESTOES_FILE)}`);
 
   } catch (error) {

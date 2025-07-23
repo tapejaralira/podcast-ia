@@ -23,9 +23,9 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
   
   // O prompt foi enriquecido com sugestões de abertura e efemérides
   const prompt = `
-    Você é um roteirista de podcast especialista em criar diálogos naturais e envolventes para o programa "Bubuia News".
+    Você é um roteirista de podcast especialista em criar conteúdo estruturado e otimizado para TTS.
 
-    **Contexto dos Personagens e do Podcast (LEIA COM ATENÇÃO):**
+    **Contexto dos Personagens e do Podcast:**
     ---
     **Podcast:** ${personagens.podcast.nome} - ${personagens.podcast.slogan}
     **Identidade:** ${personagens.podcast.identidade}
@@ -36,47 +36,76 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
       **Perfil:** ${p.perfil_geral}
       **Tom de Voz:** ${p.tom_de_voz}
       **Gírias Comuns:** ${p.girias.join(', ')}
-      **Relação com o outro:** ${p.relacao_com_outro_personagem}
     `).join('\n')}
-
-    **Dinâmica Recorrente (use se for natural):**
-    ${personagens.dinamica_geral.brincadeiras_recorrentes.map((b: string) => `- ${b}`).join('\n')}
     ---
 
-    **Sugestões de Abertura Disponíveis (USE ESTAS PARA O COLD OPEN):**
-    ${sugestoesAbertura.ganchos ? sugestoesAbertura.ganchos.map((g: any, i: number) => `
-    ${i + 1}. **${g.tipo}**: ${g.ideia}
-       Apresentador: ${g.apresentador}
-       Texto sugerido: "${g.texto}"
-    `).join('\n') : 'Nenhuma sugestão específica disponível.'}
-
-    **Efeméride do Dia (IMPORTANTE - Use no Cold Open se disponível):**
+    **Efeméride do Dia (Use no Cold Open):**
     ${sugestoesAbertura.efemeride ? `
     - **Título:** ${sugestoesAbertura.efemeride.titulo}
     - **Fato:** ${sugestoesAbertura.efemeride.texto}
-    - **Fonte:** ${sugestoesAbertura.efemeride.fonte}
-    
-    INSTRUÇÃO ESPECIAL: Incorpore esta efeméride no Cold Open de forma natural e envolvente.
-    ` : 'Nenhuma efeméride específica encontrada para hoje.'}
+    ` : 'Use curiosidade amazônica como fallback.'}
+
+    **Sugestões de Abertura:**
+    ${sugestoesAbertura.ganchos ? sugestoesAbertura.ganchos.map((g: any, i: number) => `
+    ${i + 1}. **${g.tipo}**: ${g.texto}
+    `).join('\n') : 'Nenhuma sugestão específica disponível.'}
     ---
 
-    **Template do Roteiro (Siga esta estrutura):**
+    **Template do Roteiro (Preencha EXATAMENTE esta estrutura):**
     ---
     ${template}
     ---
 
-    **Dados das Notícias (Use estes dados para preencher o template):**
-    - Manchete Principal: ${noticias.manchete.titulo}
-    - Outras Notícias Relevantes:
-      ${noticias.noticias.map((n: NoticiaCompleta) => `- ${n.titulo}`).join('\n')}
+    **Dados das Notícias para usar:**
+    - **Manchete Principal:** ${noticias.manchete.titulo}
+    - **Notícias Selecionadas (use as 5 primeiras):**
+      ${noticias.noticias.slice(0, 5).map((n: NoticiaCompleta, i: number) => `
+      ${i + 1}. **${n.titulo}** (Categoria: ${n.categoria})
+         Resumo: ${n.resumo?.substring(0, 200)}...
+      `).join('\n')}
     ---
 
-    **Instruções Finais:**
-    1.  **USE AS SUGESTÕES DE ABERTURA ACIMA** para criar um Cold Open autêntico baseado em efemérides reais ou ganchos estruturados.
-    2.  **Use as fichas de personagem** para guiar o diálogo. Incorpore suas gírias, tom de voz e a dinâmica entre eles.
-    3.  Use a manchete como o tópico principal do podcast.
-    4.  Incorpore as outras notícias de forma fluida nos diálogos.
-    5.  O roteiro final deve seguir estritamente a estrutura do template, incluindo as marcações [AUDIO:...].
+    **Instruções CRÍTICAS:**
+    
+    1. **PREENCHA O TEMPLATE**: Substitua TODOS os {{placeholders}} pelos valores corretos:
+       - {{data}}: Use a data atual
+       - {{numeroEpisodio}}: Use um número sequencial
+       - {{tituloSugerido}}: Crie um título baseado na manchete
+       - {{tipoColdOpen}}: Baseado na efeméride ou sugestão
+       - {{apresentadorColdOpen}}: Tainá ou Iraí
+       - {{textoColdOpen}}: Texto da abertura baseado na efeméride
+       - {{apresentadorCardapio}}: O outro apresentador (alternância)
+       - {{cardapioNoticias}}: Lista rápida das 5 notícias do episódio
+       
+    2. **ESTRUTURA DAS 5 NOTÍCIAS**: Para cada notícia (1 a 5):
+       - {{noticiaX_categoria}}: Use o emoji da classificação
+       - {{noticiaX_titulo}}: Título da notícia
+       - {{noticiaX_trilha}}: Nome do arquivo de trilha baseado na categoria
+       - {{noticiaX_volume}}: Volume da trilha (ex: -10dB)
+       - {{noticiaX_apresentador}}: Tainá, Iraí, Tainá, Iraí, Tainá (alternância)
+       - {{noticiaX_texto_completo}}: Texto completo de 40-60 segundos
+       - {{noticiaX_comentarista}}: Iraí, Tainá, Iraí, Tainá, Iraí (alternância inversa)
+       - {{noticiaX_comentario}}: Comentário de 20-30 segundos
+    
+    3. **MAPEAMENTO DE TRILHAS POR CATEGORIA:**
+       - ⚫️ (Segurança): trilha_seria.mp3, -12dB
+       - 🟡 (Política): trilha_politica.mp3, -10dB
+       - 🔴 (Urgente): trilha_tensao.mp3, -8dB
+       - 🚀 (Tecnologia): trilha_animada.mp3, -10dB
+       - 🎬 (Entretenimento): trilha_cultural.mp3, -10dB
+       - 🎭 (Cultura): trilha_eventos.mp3, -10dB
+       - 📰 (Geral): trilha_neutra.mp3, -10dB
+    
+    4. **ALTERNÂNCIA DE APRESENTADORES:**
+       - Notícia 1: Tainá apresenta, Iraí comenta
+       - Notícia 2: Iraí apresenta, Tainá comenta
+       - Notícia 3: Tainá apresenta, Iraí comenta
+       - Notícia 4: Iraí apresenta, Tainá comenta
+       - Notícia 5: Tainá apresenta, Iraí comenta
+    
+    5. **TEXTOS COMPLETOS E CONTEXTUALIZADOS**: Cada texto deve ser auto-suficiente para TTS.
+    
+    IMPORTANTE: Retorne APENAS o roteiro preenchido, sem explicações adicionais.
   `;
 
   const result = await geminiModel.generateContent(prompt);

@@ -7,52 +7,109 @@
 
 ## Bloco 0: Abertura (Cold Open)
 
-**(0-20 segundos)**
-
 **Tipo:** {{tipoColdOpen}}
+**Apresentador:** {{apresentadorColdOpen}}
 
-**Ideia:** {{ideiaColdOpen}}
-
-**Apresentador(a):** {{apresentadorColdOpen}}
+**{{apresentadorColdOpen}}:**
 
 > {{textoColdOpen}}
 
-**(Soa a vinheta de abertura)**
+[AUDIO: vinheta_abertura.mp3]
 
 ---
 
-## Bloco 1: Introdução
+## Bloco 1: Introdução e Cardápio
 
-**(Apresentadores Tainá e Iraí)**
+[AUDIO: introducao_fixa.mp3]
 
-**Tainá:** (Saudação energética, usando gírias locais)
+**{{apresentadorCardapio}}:**
 
-> {{saudacaoTaina}}
-
-**Iraí:** (Saudação mais calma e analítica)
-
-> {{saudacaoIrai}}
-
-**(Breve resumo do que vai rolar no episódio, usando os ganchos)**
-
-> {{resumoEpisodio}}
+> {{cardapioNoticias}}
 
 ---
 
-## Bloco 2: Giro de Notícias
+## Bloco 2: Notícias Completas
 
-{{blocoNoticias}}
+### Notícia 1: {{noticia1_categoria}} {{noticia1_titulo}}
+
+[TRILHA_INICIO: {{noticia1_trilha}}, {{noticia1_volume}}]
+
+**{{noticia1_apresentador}}:**
+
+> {{noticia1_texto_completo}}
+
+**{{noticia1_comentarista}}:**
+
+> {{noticia1_comentario}}
+
+[TRILHA_FIM]
+
+---
+
+### Notícia 2: {{noticia2_categoria}} {{noticia2_titulo}}
+
+[TRILHA_INICIO: {{noticia2_trilha}}, {{noticia2_volume}}]
+
+**{{noticia2_apresentador}}:**
+
+> {{noticia2_texto_completo}}
+
+**{{noticia2_comentarista}}:**
+
+> {{noticia2_comentario}}
+
+[TRILHA_FIM]
+
+---
+
+### Notícia 3: {{noticia3_categoria}} {{noticia3_titulo}}
+
+[TRILHA_INICIO: {{noticia3_trilha}}, {{noticia3_volume}}]
+
+**{{noticia3_apresentador}}:**
+
+> {{noticia3_texto_completo}}
+
+**{{noticia3_comentarista}}:**
+
+> {{noticia3_comentario}}
+
+[TRILHA_FIM]
+
+---
+
+### Notícia 4: {{noticia4_categoria}} {{noticia4_titulo}}
+
+[TRILHA_INICIO: {{noticia4_trilha}}, {{noticia4_volume}}]
+
+**{{noticia4_apresentador}}:**
+
+> {{noticia4_texto_completo}}
+
+**{{noticia4_comentarista}}:**
+
+> {{noticia4_comentario}}
+
+[TRILHA_FIM]
+
+---
+
+### Notícia 5: {{noticia5_categoria}} {{noticia5_titulo}}
+
+[TRILHA_INICIO: {{noticia5_trilha}}, {{noticia5_volume}}]
+
+**{{noticia5_apresentador}}:**
+
+> {{noticia5_texto_completo}}
+
+**{{noticia5_comentarista}}:**
+
+> {{noticia5_comentario}}
+
+[TRILHA_FIM]
 
 ---
 
 ## Bloco 3: Encerramento
 
-**Tainá:**
-
-> {{despedidaTaina}}
-
-**Iraí:**
-
-> {{despedidaIrai}}
-
-**(Soa a vinheta de encerramento)**
+[AUDIO: encerramento_fixo.mp3]
