@@ -17,7 +17,7 @@ const TEMP_DIR = path.join(config.paths.output.cache, 'mixagem-temp');
 
 // --- Tipos e Interfaces ---
 
-type NomeApresentador = 'taina' | 'irai';
+type NomeApresentador = 'tainá' | 'iraí';
 
 interface ParteDoBloco {
     type: 'vinheta' | 'trilha_inicio' | 'trilha_fim' | 'fala';
@@ -46,7 +46,7 @@ function aplicarEfeitos(inputPath: string, outputPath: string, nomeApresentador:
             'loudnorm=I=-16:TP=-1.5:LRA=11',
             'aecho=1:0.8:20:0.2'
         ];
-        if (nomeApresentador === 'taina') {
+        if (nomeApresentador === 'tainá') {
             filterChain.unshift('volume=2.8');
         }
         const filterString = filterChain.join(',');
@@ -214,33 +214,56 @@ export async function montarEpisodio(): Promise<void> {
         const linhas = bloco.split('\n').filter(l => l.trim() !== '');
 
         for (const linha of linhas) {
-            const matchFala = linha.match(/^(?:\*\*)?(Tainá|Iraí)(?:\*\*)?:/);
+            // Detectar linhas de fala dos apresentadores
+            let matchFala = null;
+            if (linha === '**Tainá Oliveira:**' || linha.trim() === '**Tainá Oliveira:**') {
+                matchFala = ['**Tainá Oliveira:**', 'Tainá Oliveira'];
+            } else if (linha === '**Iraí Santos:**' || linha.trim() === '**Iraí Santos:**') {
+                matchFala = ['**Iraí Santos:**', 'Iraí Santos'];
+            }
+            
             const matchTrilhaInicio = linha.match(/\[TRILHA_INICIO: (.*?),\s*(-?\d+dB)\s*\]/);
             const matchTrilhaFim = linha.match(/\[TRILHA_FIM:.*?\]/);
             const matchAudio = linha.match(/\[AUDIO:\s*(.*?)\s*\]/);
 
             if (matchAudio) {
+                console.log(`   [DEBUG] Encontrou vinheta: ${matchAudio[1]}`);
                 partesDoBloco.push({ type: 'vinheta', file: matchAudio[1] });
             } else if (matchTrilhaInicio) {
+                console.log(`   [DEBUG] Encontrou trilha início: ${matchTrilhaInicio[1]}`);
                 partesDoBloco.push({ type: 'trilha_inicio', file: matchTrilhaInicio[1], volume: matchTrilhaInicio[2] });
             } else if (matchTrilhaFim) {
+                console.log(`   [DEBUG] Encontrou trilha fim`);
                 partesDoBloco.push({ type: 'trilha_fim' });
             } else if (matchFala) {
-                const nomeApresentadorRaw = matchFala[1].toLowerCase() as NomeApresentador;
-                const nomeApresentador = normalizeString(nomeApresentadorRaw);
-                const numeroFala = String(falaCounter).padStart(2, '0'); // CORREÇÃO: Usar falaCounter atual (começa em 0)
-                const nomeArquivoFala = `fala_${numeroFala}_${nomeApresentador}.mp3`;
-                const caminhoOriginal = path.join(episodioAudioDir, nomeArquivoFala);
-                const caminhoProcessado = path.join(TEMP_DIR, `fala_${numeroFala}_${nomeApresentador}_fx.mp3`);
+                console.log(`   [DEBUG] ✅ FALA DETECTADA: ${matchFala[1]}`);
+                const nomeCapturado = matchFala[1];
+                let nomeApresentadorRaw = '';
+                let nomeArquivo = '';
                 
-                console.log(`   -> Procurando: ${nomeArquivoFala}`); // Debug
+                if (nomeCapturado.includes('Tainá')) {
+                    nomeApresentadorRaw = 'tainá';
+                    nomeArquivo = 'taina oliveira';
+                } else if (nomeCapturado.includes('Iraí')) {
+                    nomeApresentadorRaw = 'iraí';
+                    nomeArquivo = 'irai santos';
+                }
+                
+                const numeroFala = String(falaCounter).padStart(2, '0');
+                const nomeArquivoFala = `fala_${numeroFala}_${nomeArquivo}.mp3`;
+                const caminhoOriginal = path.join(episodioAudioDir, nomeArquivoFala);
+                const caminhoProcessado = path.join(TEMP_DIR, `fala_${numeroFala}_${nomeArquivo.replace(' ', '_')}_fx.mp3`);
+                
+                console.log(`   -> Procurando: ${nomeArquivoFala}`);
                 
                 try {
                     await fs.access(caminhoOriginal);
-                    await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentadorRaw);
+                    console.log(`   -> ✅ Arquivo encontrado, aplicando efeitos...`);
+                    await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentadorRaw as NomeApresentador);
                     partesDoBloco.push({ type: 'fala', path: caminhoProcessado });
                     partesDoBloco.push({ type: 'fala', path: silencio1s });
                     falaCounter++; // CORREÇÃO: Incrementar apenas APÓS processar com sucesso
+                    console.log(`   -> ✅ Fala processada: contador agora é ${falaCounter}`);
                 } catch (err) { 
                     console.warn(`   [AVISO] Falha ao processar o arquivo de fala: ${caminhoOriginal}`);
                 }

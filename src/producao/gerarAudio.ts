@@ -164,7 +164,7 @@ export async function gerarAudiosDoRoteiro(): Promise<void> {
             const linha = linhas[i].trim();
             
             // Detectar apresentador
-            if (linha === '**Tainá:**' || linha === '**Iraí:**') {
+            if (linha === '**Tainá Oliveira:**' || linha === '**Iraí Santos:**') {
                 // Salvar fala anterior se existir
                 if (apresentadorAtual && textoAtual.length > 0) {
                     const textoCompleto = textoAtual.join(' ').trim();

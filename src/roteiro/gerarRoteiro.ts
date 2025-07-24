@@ -398,10 +398,10 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
        - {{noticiaX_comentario}}: Comentário de 25-35 segundos
     
     3. **MAPEAMENTO DE TRILHAS POR CATEGORIA:**
-       - ⚫️ (Segurança): trilha_seria.mp3, -12dB
+       - ⚫️ (Segurança): trilha_tensao_leve.mp3, -12dB
        - 🟡 (Política): trilha_politica.mp3, -10dB
-       - 🔴 (Urgente): trilha_tensao.mp3, -8dB
-       - 🚀 (Tecnologia): trilha_animada.mp3, -10dB
+       - 🔴 (Urgente): trilha_tensao_leve.mp3, -8dB
+       - 🚀 (Tecnologia): trilha_tecnologica_upbeat.mp3, -10dB
        - 🎬 (Entretenimento): trilha_cultural.mp3, -10dB
        - 🎭 (Cultura): trilha_eventos.mp3, -10dB
        - 📰 (Geral): trilha_neutra.mp3, -10dB
