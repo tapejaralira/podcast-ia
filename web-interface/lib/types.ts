@@ -9,14 +9,22 @@ export interface NoticiaCompleta {
   id: string;
   titulo: string;
   resumo: string;
-  url: string;
-  fonte: string;
-  dataPublicacao: string;
+  url?: string; // Manter compatibilidade
+  link: string; // Link principal
+  links: string[]; // ✅ NOVO: Array de todos os links encontrados
+  fonte: string; // Fonte principal
+  fontes: string[]; // ✅ NOVO: Array de todas as fontes
+  dataPublicacao?: string;
   categoria: string;
-  scoreTotal: number;
+  scoreTotal?: number;
+  relevanceScore: number; // Score de relevância
   relevancia: number;
   tempoEstimado: number;
-  // Adicione outros campos conforme necessário para corresponder aos seus dados
+  classification?: {
+    id: string;
+    label: string;
+    isAdequate: boolean;
+  };
 }
 
 /**

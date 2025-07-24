@@ -83,15 +83,22 @@ export default function Home() {
     if (abaSelecionada === 'selecionadas') {
       const todasAsNoticias: NoticiaCompleta[] = Object.values(dados.categorias).flat();
       noticias = todasAsNoticias.filter((noticia: NoticiaCompleta) => noticiasSelecionadas.has(noticia.id));
-    } else if (abaSelecionada !== 'todas') {
-      noticias = dados.categorias[abaSelecionada as keyof typeof dados.categorias] || [];
-    } else {
-      // Combina notícias de todas as categorias para garantir que a lista "Todas" esteja completa
+    } else if (abaSelecionada === 'todas') {
+      // Para "Todas": combinar todas as categorias e ordenar APENAS por relevância
       noticias = Object.values(dados.categorias).flat();
+      // Ordenar puramente por relevanceScore (maior para menor), ignorando categoria
+      noticias.sort((a: NoticiaCompleta, b: NoticiaCompleta) => 
+        (b.relevanceScore || 0) - (a.relevanceScore || 0)
+      );
+      return noticias; // Retorna direto para evitar dupla ordenação
+    } else {
+      noticias = dados.categorias[abaSelecionada as keyof typeof dados.categorias] || [];
     }
     
-    // Ordenar por scoreTotal (mais alto para o mais baixo) por padrão
-    noticias.sort((a: NoticiaCompleta, b: NoticiaCompleta) => b.scoreTotal - a.scoreTotal);
+    // Ordenação para outras abas (não "todas")
+    noticias.sort((a: NoticiaCompleta, b: NoticiaCompleta) => 
+      (b.scoreTotal || b.relevanceScore || 0) - (a.scoreTotal || a.relevanceScore || 0)
+    );
     
     return noticias;
   }, [dados, abaSelecionada, noticiasSelecionadas]);

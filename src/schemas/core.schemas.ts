@@ -163,6 +163,9 @@ export const NoticiaSimplificadaSchema = z.object({
     titulo: z.string(),
     resumo: z.string(),
     fonte: z.string(),
+    link: z.string(),
+    links: z.array(z.string()),        // ✅ NOVO: Array de todos os links
+    fontes: z.array(z.string()),       // ✅ NOVO: Array de todas as fontes
     categoria: z.enum(['politica', 'economia', 'cidades', 'cultura', 'esportes', 'geral']),
     relevanceScore: z.number(),
     classification: z.object({

@@ -155,6 +155,16 @@ export async function buscarNoticias() {
 }
 
 // Executa apenas quando chamado diretamente, não quando importado
-if (require.main === module || import.meta.url === pathToFileURL(process.argv[1]).href) {
-    buscarNoticias().catch(console.error);
+if (
+    import.meta.url.includes('buscarNoticias.ts') ||
+    process.argv[1]?.includes('buscarNoticias')
+) {
+    console.log('🚀 Executando buscarNoticias como script principal...');
+    buscarNoticias()
+        .then(() => console.log('✅ Script concluído com sucesso'))
+        .catch(error => {
+            console.error('❌ Erro no script:', error);
+            console.error('Stack:', error.stack);
+            process.exit(1);
+        });
 }

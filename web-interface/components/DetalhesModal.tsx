@@ -77,16 +77,16 @@ export const DetalhesModal: React.FC<DetalhesModalProps> = ({
                 <span>•</span>
                 <span className="capitalize">{noticia.categoria}</span>
                 <span>•</span>
-                <span className="capitalize">{noticia.prioridade} prioridade</span>
-                <span>•</span>
                 <span>{noticia.tempoEstimado} min</span>
               </div>
             </div>
             
             <div className="flex items-center gap-3">
-              <div className={`text-2xl font-bold ${getScoreColor(noticia.scoreTotal)}`}>
-                {noticia.scoreTotal.toFixed(1)}
-              </div>
+              {(noticia.scoreTotal || noticia.relevanceScore) && (
+                <div className={`text-2xl font-bold ${getScoreColor(noticia.scoreTotal || noticia.relevanceScore)}`}>
+                  {(noticia.scoreTotal || noticia.relevanceScore).toFixed(1)}
+                </div>
+              )}
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600 text-xl font-bold w-8 h-8 flex items-center justify-center"
@@ -104,129 +104,124 @@ export const DetalhesModal: React.FC<DetalhesModalProps> = ({
               <p className="text-gray-700 leading-relaxed">{noticia.resumo}</p>
             </section>
 
-            {/* Contexto Amazônico */}
-            {noticia.contextoAmazonico && (
-              <section>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Contexto Amazônico</h3>
-                <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded">
-                  <p className="text-green-800">{noticia.contextoAmazonico}</p>
-                </div>
-              </section>
-            )}
-
-            {/* Scores Detalhados */}
+            {/* Scores */}
             <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Análise Detalhada</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Análise de Relevância</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(noticia.scoreDetalhado).map(([key, value]) => (
-                  <div key={key} className="bg-gray-50 p-3 rounded">
-                    <div className="font-medium text-gray-700 capitalize mb-1">
-                      {key.replace(/([A-Z])/g, ' $1').trim()}
-                    </div>
-                    <div className={`text-xl font-bold ${getScoreColor(value)}`}>
-                      {value.toFixed(1)}/10
+                {noticia.scoreTotal && (
+                  <div className="bg-gray-50 p-3 rounded">
+                    <div className="font-medium text-gray-700 mb-1">Score Total</div>
+                    <div className={`text-xl font-bold ${getScoreColor(noticia.scoreTotal)}`}>
+                      {noticia.scoreTotal.toFixed(1)}/10
                     </div>
                   </div>
-                ))}
+                )}
+                <div className="bg-gray-50 p-3 rounded">
+                  <div className="font-medium text-gray-700 mb-1">Relevância</div>
+                  <div className={`text-xl font-bold ${getScoreColor(noticia.relevancia)}`}>
+                    {noticia.relevancia.toFixed(1)}/10
+                  </div>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <div className="font-medium text-gray-700 mb-1">Score de Relevância</div>
+                  <div className={`text-xl font-bold ${getScoreColor(noticia.relevanceScore)}`}>
+                    {noticia.relevanceScore.toFixed(1)}/10
+                  </div>
+                </div>
               </div>
             </section>
 
-            {/* Razão da Relevância */}
-            {noticia.razaoRelevancia && (
+            {/* Classificação */}
+            {noticia.classification && (
               <section>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Por que é Relevante</h3>
-                <p className="text-gray-700 leading-relaxed">{noticia.razaoRelevancia}</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Classificação</h3>
+                <div className="bg-blue-50 p-4 rounded">
+                  <div className="font-medium text-blue-700">{noticia.classification.label}</div>
+                  <div className={`text-sm mt-1 ${noticia.classification.isAdequate ? 'text-green-600' : 'text-red-600'}`}>
+                    {noticia.classification.isAdequate ? '✓ Adequada' : '✗ Não adequada'} para o público
+                  </div>
+                </div>
               </section>
             )}
 
-            {/* Status de Seleção */}
+            {/* Fontes e Links */}
             <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Status da Análise</h3>
-              <div className="bg-blue-50 p-4 rounded">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-sm text-gray-600">Posição no Ranking:</span>
-                    <div className="font-bold text-blue-700">#{noticia.statusSelecao.posicaoRanking}</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Fontes e Links</h3>
+              
+              {/* Múltiplas fontes */}
+              {noticia.fontes && noticia.fontes.length > 1 ? (
+                <div className="mb-4">
+                  <h4 className="text-md font-medium text-gray-700 mb-2">
+                    Fontes Consolidadas ({noticia.fontes.length}):
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {noticia.fontes.map((fonte, index) => (
+                      <span
+                        key={index}
+                        className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium"
+                      >
+                        {fonte}
+                      </span>
+                    ))}
                   </div>
-                  <div>
-                    <span className="text-sm text-gray-600">Probabilidade de Seleção:</span>
-                    <div className="font-bold text-blue-700">
-                      {(noticia.statusSelecao.probabilidadeSelecao * 100).toFixed(1)}%
-                    </div>
-                  </div>
-                  {noticia.statusSelecao.motivoSelecao && (
-                    <div className="col-span-2">
-                      <span className="text-sm text-gray-600">Motivo da Seleção Automática:</span>
-                      <div className="font-medium text-blue-700 capitalize">
-                        {noticia.statusSelecao.motivoSelecao}
+                </div>
+              ) : (
+                <div className="mb-4">
+                  <h4 className="text-md font-medium text-gray-700 mb-2">Fonte:</h4>
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {noticia.fonte}
+                  </span>
+                </div>
+              )}
+
+              {/* Múltiplos links */}
+              {noticia.links && noticia.links.length > 0 ? (
+                <div>
+                  <h4 className="text-md font-medium text-gray-700 mb-2">
+                    Links Originais ({noticia.links.length}):
+                  </h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {noticia.links.map((link, index) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <span className="text-xs text-gray-500 mt-1 min-w-[20px]">
+                          {index + 1}.
+                        </span>
+                        <a
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline break-all text-sm"
+                        >
+                          {link}
+                        </a>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </section>
-
-            {/* Informações Editoriais */}
-            <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Análise Editorial</h3>
-              <div className="bg-purple-50 p-4 rounded space-y-3">
-                <div>
-                  <span className="text-sm text-gray-600">Ângulo da Pauta:</span>
-                  <div className="font-medium text-purple-700">{noticia.editorial.anguloPauta}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600">Potencial de Polêmica:</span>
-                  <div className={`font-medium capitalize ${
-                    noticia.editorial.potencialPolemica === 'alto' ? 'text-red-600' :
-                    noticia.editorial.potencialPolemica === 'medio' ? 'text-yellow-600' : 'text-green-600'
-                  }`}>
-                    {noticia.editorial.potencialPolemica}
+                    ))}
                   </div>
                 </div>
+              ) : (noticia.url || noticia.link) ? (
                 <div>
-                  <span className="text-sm text-gray-600">Adequação ao Público:</span>
-                  <div className="font-medium text-purple-700">
-                    {noticia.editorial.adequacaoPublico}/10
-                  </div>
+                  <h4 className="text-md font-medium text-gray-700 mb-2">Link Original:</h4>
+                  <a
+                    href={noticia.url || noticia.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 underline break-all"
+                  >
+                    {noticia.url || noticia.link}
+                  </a>
                 </div>
-              </div>
-            </section>
-
-            {/* Tags */}
-            {noticia.tagsDetectadas && noticia.tagsDetectadas.length > 0 && (
-              <section>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Tags Detectadas</h3>
-                <div className="flex flex-wrap gap-2">
-                  {noticia.tagsDetectadas.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Link Original */}
-            <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Fonte Original</h3>
-              <a
-                href={noticia.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline break-all"
-              >
-                {noticia.url}
-              </a>
+              ) : null}
             </section>
           </div>
 
           {/* Footer com ações */}
           <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex justify-between items-center">
             <div className="text-sm text-gray-500">
-              Data: {new Date(noticia.dataPublicacao).toLocaleDateString('pt-BR')}
+              {noticia.dataPublicacao ? (
+                <>Data: {new Date(noticia.dataPublicacao).toLocaleDateString('pt-BR')}</>
+              ) : (
+                'Sem data de publicação'
+              )}
             </div>
             
             <div className="flex gap-3">

@@ -76,6 +76,8 @@ export interface NoticiaCompleta extends NoticiaCrua {
   scoreTotal: number;
   relevancia: number;
   tempoEstimado: number;
+  links?: string[];          // ✅ NOVO: Array de todos os links encontrados
+  fontes?: string[];         // ✅ NOVO: Array de todas as fontes
   // Adicione outros campos conforme necessário
 }
 

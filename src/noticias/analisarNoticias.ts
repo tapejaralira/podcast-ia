@@ -71,6 +71,9 @@ interface NoticiaSimplificada {
     titulo: string;
     resumo: string;
     fonte: string;
+    link: string;
+    links: string[];           // ✅ NOVO: Array de todos os links encontrados
+    fontes: string[];          // ✅ NOVO: Array de todas as fontes
     categoria: 'politica' | 'economia' | 'cidades' | 'cultura' | 'esportes' | 'geral';
     relevanceScore: number;
     classification: Classification;
@@ -225,11 +228,24 @@ function agruparNoticias(noticias: NoticiaAnalisada[]): NoticiaSimplificada[] {
             const noticiaPrincipal = grupoSimilar[0];
             processados.add(noticiaPrincipal.link);
 
+            // ✅ NOVO: Coletar todos os links e fontes do grupo
+            const todosOsLinks = grupoSimilar
+                .map(n => n.link)
+                .filter(link => link && link.trim() !== '')
+                .filter((link, index, self) => self.indexOf(link) === index); // Remove duplicatas
+            
+            const todasAsFontes = [...new Set(grupoSimilar.map(n => n.fonte))];
+
+            console.log(`[LOG] Grupo "${noticiaPrincipal.titulo.substring(0, 50)}...": ${grupoSimilar.length} notícias, ${todosOsLinks.length} links únicos`);
+
             noticiasAgrupadas.push({
                 id: `noticia_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                 titulo: noticiaPrincipal.titulo,
                 resumo: noticiaPrincipal.resumo,
                 fonte: noticiaPrincipal.fonte,
+                link: noticiaPrincipal.link,
+                links: todosOsLinks,           // ✅ Todos os links encontrados
+                fontes: todasAsFontes,         // ✅ Todas as fontes
                 categoria: mapearCategoriaParaPauta(noticiaPrincipal.classification.id),
                 relevanceScore: noticiaPrincipal.relevanceScore,
                 classification: noticiaPrincipal.classification
@@ -385,74 +401,12 @@ function mapearCategoriaParaPauta(classificationId: string): 'politica' | 'econo
  * console.log('Pauta gerada para produção do episódio');
  * ```
  */
-// === INTEGRAÇÃO COM SISTEMA DE SELEÇÃO MANUAL ===
-
-interface SelecaoManual {
-  data: string;
-  manchete: string;
-  noticiasEscolhidas: string[];
-  observacoes?: string;
-}
-
-async function verificarSelecaoManual(): Promise<SelecaoManual | null> {
-  try {
-    console.log('📝 Verificando seleção manual...');
-    const content = await fs.readFile(filePaths.selecaoManualFile, 'utf-8');
-    const selecao = JSON.parse(content);
-    
-    // Verificar se é uma seleção válida e recente
-    const dataSelecao = new Date(selecao.data);
-    const hoje = new Date();
-    const mesmoDia = dataSelecao.toDateString() === hoje.toDateString();
-    
-    if (mesmoDia && selecao.manchete && Array.isArray(selecao.noticiasEscolhidas)) {
-      console.log('✅ Seleção manual encontrada e válida');
-      return selecao;
-    }
-    
-    console.log('ℹ️ Nenhuma seleção manual válida encontrada');
-    return null;
-  } catch (error) {
-    console.log('ℹ️ Nenhuma seleção manual encontrada');
-    return null;
-  }
-}
-
-async function aplicarSelecaoManual(noticias: NoticiaSimplificada[], selecao: SelecaoManual): Promise<NoticiaSimplificada[]> {
-    console.log('📝 Aplicando seleção manual...');
-    
-    // Encontrar a manchete selecionada
-    const manchete = noticias.find(n => n.id === selecao.manchete);
-    if (!manchete) {
-        throw new Error('Manchete selecionada não encontrada nos dados');
-    }
-    
-    // Encontrar as notícias selecionadas
-    const noticiasEscolhidas = noticias.filter(n => 
-        selecao.noticiasEscolhidas.includes(n.id)
-    );
-    
-    // Ordenar notícias: manchete primeiro, depois selecionadas, depois restantes
-    const noticiasOrdenadas = [
-        manchete,
-        ...noticiasEscolhidas.filter(n => n.id !== manchete.id),
-        ...noticias.filter(n => 
-            n.id !== manchete.id && 
-            !selecao.noticiasEscolhidas.includes(n.id)
-        )
-    ];
-    
-    console.log('✅ Seleção manual aplicada com sucesso');
-    return noticiasOrdenadas;
-}
+// === ANÁLISE E PROCESSAMENTO DE NOTÍCIAS ===
 
 export async function analisarNoticias() {
     console.log('🧠 Bubuia News - Iniciando análise e curadoria...');
     console.log(`📂 Arquivo de entrada: ${filePaths.noticiasRecentesFile}`);
     console.log(`📂 Arquivo de saída: ${filePaths.noticiasCategorizadasFile}`);
-    
-    // Verificar se existe seleção manual para aplicar
-    const selecaoManual = await verificarSelecaoManual();
     
     // Carregar e processar notícias
     const inputFile = filePaths.noticiasRecentesFile;
@@ -503,12 +457,6 @@ export async function analisarNoticias() {
     if (pautaAgrupada.length === 0) {
         console.warn('\n[AVISO] Nenhuma notícia adequada foi encontrada para formar a pauta. O processo será interrompido.');
         throw new Error('Nenhuma notícia para a pauta.');
-    }
-
-    // Aplicar seleção manual se existir
-    if (selecaoManual) {
-        console.log('📝 Aplicando seleção manual existente...');
-        pautaAgrupada = await aplicarSelecaoManual(pautaAgrupada, selecaoManual);
     }
 
     // A primeira notícia é sempre a manchete

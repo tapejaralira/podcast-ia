@@ -53,19 +53,92 @@ export const NoticiaCard: React.FC<NoticiaCardProps> = ({
         </button>
       </div>
 
-      {/* Fonte e categoria */}
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-sm text-gray-600">{noticia.fonte}</span>
-        <span className="text-gray-400">•</span>
-        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-          {noticia.categoria}
-        </span>
+      {/* Fonte(s) e categoria */}
+      <div className="flex flex-col gap-2 mb-2">
+        <div className="flex items-center gap-2">
+          {/* Mostrar múltiplas fontes se disponível */}
+          {noticia.fontes && noticia.fontes.length > 1 ? (
+            <div className="flex flex-wrap gap-1">
+              <span className="text-sm text-gray-600 font-medium">
+                {noticia.fontes.length} fontes:
+              </span>
+              {noticia.fontes.map((fonte, index) => (
+                <span key={index} className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                  {fonte}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <span className="text-sm text-gray-600">{noticia.fonte}</span>
+          )}
+          <span className="text-gray-400">•</span>
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            {noticia.categoria}
+          </span>
+        </div>
+
+        {/* Links múltiplos */}
+        {noticia.links && noticia.links.length > 0 && (
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-500 font-medium">
+              {noticia.links.length === 1 ? 'Link:' : `${noticia.links.length} links:`}
+            </span>
+            <div className="flex flex-col gap-1 max-h-20 overflow-y-auto">
+              {noticia.links.map((link, index) => (
+                <a
+                  key={index}
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate"
+                  title={link}
+                >
+                  {link}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Fallback para link único (compatibilidade) */}
+        {(!noticia.links || noticia.links.length === 0) && noticia.url && (
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-500 font-medium">Link:</span>
+            <a
+              href={noticia.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate"
+              title={noticia.url}
+            >
+              {noticia.url}
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Resumo */}
       <p className="text-gray-700 text-sm">
         {noticia.resumo}
       </p>
+
+      {/* Informações adicionais se disponíveis */}
+      {(noticia.relevanceScore || noticia.classification) && (
+        <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500">
+          {noticia.relevanceScore && (
+            <span className="bg-gray-100 px-2 py-1 rounded">
+              Relevância: {noticia.relevanceScore}
+            </span>
+          )}
+          {noticia.classification && (
+            <span className="bg-gray-100 px-2 py-1 rounded">
+              {typeof noticia.classification === 'object' 
+                ? noticia.classification.label 
+                : noticia.classification}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Status de seleção */}
       {selecionada && (
