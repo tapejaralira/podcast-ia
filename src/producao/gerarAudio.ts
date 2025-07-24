@@ -52,6 +52,44 @@ async function textoParaAudio(
     }
 }
 
+// Função auxiliar para processar uma fala individual
+async function processarFala(
+    nomeApresentador: string, 
+    texto: string, 
+    numeroFala: number, 
+    estiloDeVoz: keyof TtsConfig['estilos_de_voz'],
+    ttsConfig: TtsConfig,
+    episodioAudioDir: string
+): Promise<void> {
+    console.log(`\n  -> Fala ${numeroFala}: ${nomeApresentador}`);
+    console.log(`     Texto (${texto.length} chars): "${texto.substring(0, 100)}..."`);
+    
+    const nomeCompleto = nomeApresentador.includes('Tainá') ? 'Tainá Oliveira' : 'Iraí Santos';
+    const voiceId = ttsConfig.voices[nomeCompleto as keyof typeof ttsConfig.voices];
+    
+    if (!voiceId) {
+        console.warn(`  -> [AVISO] Voice ID não encontrado para ${nomeApresentador}. Pulando...`);
+        return;
+    }
+    
+    const voiceSettings = ttsConfig.estilos_de_voz[estiloDeVoz] || ttsConfig.estilos_de_voz['padrao'];
+    
+    console.log(`  -> Gerando áudio ${numeroFala} para ${nomeApresentador} (Estilo: ${String(estiloDeVoz)})...`);
+    
+    const audioBuffer = await textoParaAudio(texto, voiceId, voiceSettings);
+    
+    if (audioBuffer) {
+        const numeroFalaFormatado = String(numeroFala).padStart(2, '0');
+        const nomeNormalizado = normalizeString(nomeApresentador.toLowerCase());
+        const audioFilename = path.join(episodioAudioDir, `fala_${numeroFalaFormatado}_${nomeNormalizado}.mp3`);
+        await fs.writeFile(audioFilename, Buffer.from(audioBuffer));
+        console.log(`     -> Áudio salvo em: ${audioFilename}`);
+    }
+    
+    // Delay para não sobrecarregar a API
+    await new Promise(resolve => setTimeout(resolve, 1200));
+}
+
 // --- Função Principal ---
 /**
  * @ai-purpose Gera áudios de alta qualidade usando síntese de voz a partir de roteiro estruturado
@@ -117,37 +155,45 @@ export async function gerarAudiosDoRoteiro(): Promise<void> {
             estiloDeVoz = 'curioso_ou_bizarro';
         }
 
-        const regexFalas = /^(?:\*\*)?(Tainá|Iraí)(?:\*\*)?:\s*(.*)$/gm;
-        const falas = [...bloco.matchAll(regexFalas)];
-
-        for (const fala of falas) {
-            falaCounter++;
-            const [_, nomeApresentadorRaw, textoFala] = fala;
+        // CORREÇÃO: Abordagem mais robusta para extrair falas
+        const linhas = bloco.split('\n');
+        let apresentadorAtual = null;
+        let textoAtual = [];
+        
+        for (let i = 0; i < linhas.length; i++) {
+            const linha = linhas[i].trim();
             
-            const nomeCompleto = nomeApresentadorRaw.includes('Tainá') ? 'Tainá Oliveira' : 'Iraí Santos';
-            const voiceId = ttsConfig.voices[nomeCompleto as keyof typeof ttsConfig.voices];
-            
-            const voiceSettings = ttsConfig.estilos_de_voz[estiloDeVoz] || ttsConfig.estilos_de_voz['padrao'];
-            const textoLimpo = textoFala.trim();
-
-            if (!voiceId) {
-                console.warn(`  -> [AVISO] Voice ID não encontrado para ${nomeApresentadorRaw}. Pulando...`);
-                continue;
+            // Detectar apresentador
+            if (linha === '**Tainá:**' || linha === '**Iraí:**') {
+                // Salvar fala anterior se existir
+                if (apresentadorAtual && textoAtual.length > 0) {
+                    const textoCompleto = textoAtual.join(' ').trim();
+                    if (textoCompleto.length > 0) {
+                        await processarFala(apresentadorAtual, textoCompleto, falaCounter, estiloDeVoz, ttsConfig, episodioAudioDir);
+                        falaCounter++;
+                    }
+                }
+                
+                // Iniciar nova fala
+                apresentadorAtual = linha.replace(/\*\*/g, '').replace(':', '');
+                textoAtual = [];
             }
-
-            console.log(`\n  -> Gerando áudio ${falaCounter} para ${nomeApresentadorRaw} (Estilo: ${String(estiloDeVoz)})...`);
-            
-            const audioBuffer = await textoParaAudio(textoLimpo, voiceId, voiceSettings);
-
-            if (audioBuffer) {
-                const numeroFala = String(falaCounter).padStart(2, '0');
-                const nomeNormalizado = normalizeString(nomeApresentadorRaw.toLowerCase());
-                const audioFilename = path.join(episodioAudioDir, `fala_${numeroFala}_${nomeNormalizado}.mp3`);
-                await fs.writeFile(audioFilename, Buffer.from(audioBuffer));
-                console.log(`     -> Áudio salvo em: ${audioFilename}`);
+            // Extrair texto de citações
+            else if (linha.startsWith('>')) {
+                const textoCitacao = linha.replace(/^>\s*/, '').trim();
+                if (textoCitacao.length > 0) {
+                    textoAtual.push(textoCitacao);
+                }
             }
-            // Adiciona um pequeno delay para não sobrecarregar a API
-            await new Promise(resolve => setTimeout(resolve, 1200)); 
+        }
+        
+        // Processar última fala do bloco
+        if (apresentadorAtual && textoAtual.length > 0) {
+            const textoCompleto = textoAtual.join(' ').trim();
+            if (textoCompleto.length > 0) {
+                await processarFala(apresentadorAtual, textoCompleto, falaCounter, estiloDeVoz, ttsConfig, episodioAudioDir);
+                falaCounter++;
+            }
         }
     }
 

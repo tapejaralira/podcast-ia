@@ -226,19 +226,21 @@ export async function montarEpisodio(): Promise<void> {
             } else if (matchTrilhaFim) {
                 partesDoBloco.push({ type: 'trilha_fim' });
             } else if (matchFala) {
-                falaCounter++;
                 const nomeApresentadorRaw = matchFala[1].toLowerCase() as NomeApresentador;
                 const nomeApresentador = normalizeString(nomeApresentadorRaw);
-                const numeroFala = String(falaCounter).padStart(2, '0');
+                const numeroFala = String(falaCounter).padStart(2, '0'); // CORREÇÃO: Usar falaCounter atual (começa em 0)
                 const nomeArquivoFala = `fala_${numeroFala}_${nomeApresentador}.mp3`;
                 const caminhoOriginal = path.join(episodioAudioDir, nomeArquivoFala);
                 const caminhoProcessado = path.join(TEMP_DIR, `fala_${numeroFala}_${nomeApresentador}_fx.mp3`);
+                
+                console.log(`   -> Procurando: ${nomeArquivoFala}`); // Debug
                 
                 try {
                     await fs.access(caminhoOriginal);
                     await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentadorRaw);
                     partesDoBloco.push({ type: 'fala', path: caminhoProcessado });
                     partesDoBloco.push({ type: 'fala', path: silencio1s });
+                    falaCounter++; // CORREÇÃO: Incrementar apenas APÓS processar com sucesso
                 } catch (err) { 
                     console.warn(`   [AVISO] Falha ao processar o arquivo de fala: ${caminhoOriginal}`);
                 }
