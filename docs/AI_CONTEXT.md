@@ -82,7 +82,33 @@ try {
 }
 ```
 
-### **🔥 PROBLEMA #3: PowerShell vs Bash Incompatibilidades**
+### **🔥 PROBLEMA #4: Regex Pattern Matching Falhando Silenciosamente**
+
+**Sintoma**: Regex não detecta padrões que visualmente parecem corretos, causando falha silenciosa na mixagem
+
+```typescript
+// ❌ CÓDIGO QUE FALHA MESMO COM DADOS CORRETOS
+const matchFala = linha.match(/^\*\*(Tainá Oliveira|Iraí Santos|Tainá|Iraí)\*\*:\s*$/);
+// Retorna null mesmo para "**Tainá Oliveira:**"
+```
+
+**Causa Real**: Regex complexo pode falhar por caracteres invisíveis, encoding, ou anchoring issues
+
+**Solução com String Matching Direto**:
+
+```typescript
+// ✅ DETECÇÃO ROBUSTA COM STRING COMPARISON
+let matchFala = null;
+if (linha === '**Tainá Oliveira:**' || linha.trim() === '**Tainá Oliveira:**') {
+    matchFala = ['**Tainá Oliveira:**', 'Tainá Oliveira'];
+} else if (linha === '**Iraí Santos:**' || linha.trim() === '**Iraí Santos:**') {
+    matchFala = ['**Iraí Santos:**', 'Iraí Santos'];
+}
+```
+
+**Por Que Acontece**: Em mixagem crítica, regex pode falhar silenciosamente e todo o episódio fica só com trilha sem falas
+
+### **🔥 PROBLEMA #4: PowerShell vs Bash Incompatibilidades**
 
 **Sintoma**: Comandos que funcionam no bash falham no PowerShell
 

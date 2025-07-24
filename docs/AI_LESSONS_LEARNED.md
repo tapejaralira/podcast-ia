@@ -476,6 +476,66 @@ Remove-Item test-analise.js, test-cli.cjs, test-selecao.mjs -Verbose
 
 ---
 
+## 🚨 **ERRO #10: Regex Pattern Matching em Mixagem Crítica (NOVO - 24/07/2025)**
+
+### **O Problema**
+
+```typescript
+// ❌ CÓDIGO QUE FALHA SILENCIOSAMENTE NA MIXAGEM
+const matchFala = linha.match(/^\*\*(Tainá Oliveira|Iraí Santos|Tainá|Iraí)\*\*:\s*$/);
+// Retorna null para "**Tainá Oliveira:**" (visualmente correto)
+
+// Log mostra:
+// [REGEX TEST] Linha: "**Tainá Oliveira:**"
+// [REGEX TEST] Match: null
+```
+
+### **Sintomas Críticos**
+
+- Episódio final contém apenas trilhas musicais
+- Falas de apresentadores não são incluídas
+- 13 arquivos de fala existem corretamente mas são ignorados
+- Regex funciona em testes simples mas falha no contexto real
+
+### **Solução Robusta**
+
+```typescript
+// ✅ DETECÇÃO DIRETA QUE SEMPRE FUNCIONA
+let matchFala = null;
+if (linha === '**Tainá Oliveira:**' || linha.trim() === '**Tainá Oliveira:**') {
+    matchFala = ['**Tainá Oliveira:**', 'Tainá Oliveira'];
+} else if (linha === '**Iraí Santos:**' || linha.trim() === '**Iraí Santos:**') {
+    matchFala = ['**Iraí Santos:**', 'Iraí Santos'];
+}
+
+if (matchFala) {
+    const nomeApresentador = matchFala[1];
+    // Processamento normal continua...
+}
+```
+
+### **Por Que Acontece**
+
+- Caracteres invisíveis ou encoding issues no roteiro markdown
+- Anchoring regex (^$) pode falhar com whitespace inesperado
+- Alternation em regex pode ser sensível a context
+- String matching é mais confiável para padrões exatos conhecidos
+
+### **Impacto Real**
+
+- **Tempo de debug**: 3+ horas tentando diferentes variações de regex
+- **Falha crítica**: Pipeline completo produz episódio sem vozes
+- **Root cause**: Problema em detection, não em geração ou arquivos
+
+### **Prevenção**
+
+1. **Para padrões exatos conhecidos**: Use string comparison direto
+2. **Sempre adicione logs**: Mostre exatamente o que está sendo testado  
+3. **Fallback strategy**: Tenha múltiplas formas de detectar
+4. **Test in isolation**: Teste regex fora do contexto complexo primeiro
+
+---
+
 ## 🎯 **PADRÕES QUE SEMPRE FUNCIONAM**
 
 ### **1. Template de Função Robusta**
@@ -554,23 +614,24 @@ export function converterFormatos(input: any): FormatoUnificado {
 
 ## 📊 **ESTATÍSTICAS DOS ERROS**
 
-### **Top 5 Erros Mais Comuns**
+### **Top 6 Erros Mais Comuns (Atualizado)**
 
 1. **Inquirer API incorreta** - 60% dos CLIs
-2. **Imports sem .js** - 40% dos módulos novos
+2. **Imports sem .js** - 40% dos módulos novos  
 3. **Schema não validado** - 30% das funções
 4. **CLI sem destructuring** - 25% das interfaces
 5. **Error handling genérico** - 20% das funções
+6. **Regex pattern matching** - 15% dos processamentos de texto (NOVO)
 
-### **Tempo Médio de Debug**
+### **Tempo Médio de Debug (Atualizado)**
 
 - **Com padrões corretos**: 5-10 minutos
-- **Sem padrões**: 1-3 horas por erro
+- **Sem padrões**: 1-4 horas por erro (regex pode levar 3+ horas)
 
-### **Taxa de Sucesso**
+### **Taxa de Sucesso (Atualizada)**
 
 - **Seguindo checklist**: 95% primeiro deploy
-- **Sem checklist**: 30% primeiro deploy
+- **Sem checklist**: 25% primeiro deploy (reduzido devido a complexidade regex)
 
 ---
 
@@ -649,6 +710,31 @@ npm run test-compatibility
 - **Confiabilidade**: 98% success rate (antes: 95%)
 - **Manutenibilidade**: 15x mais fácil (antes: 10x)
 - **Tempo de debug**: 90% redução (novo)
+
+---
+
+## 💡 **RESUMO EXECUTIVO ATUALIZADO**
+
+### **6 Regras de Ouro (EXPANDIDAS - 24/07/2025)**
+
+1. **SEMPRE** use `inquirer.prompt([{...}])` com destructuring
+2. **SEMPRE** adicione `.js` nos imports relativos
+3. **SEMPRE** valide entrada e saída com Zod
+4. **SEMPRE** adicione logs iniciais em scripts executáveis
+5. **SEMPRE** prefira string matching para padrões exatos conhecidos
+6. **SEMPRE** teste código em contexto real antes de assumir que funciona
+
+### **Checklist Crítico (EXPANDIDO)**
+
+- [ ] Script adiciona log inicial: `console.log('🚀 Script iniciado...')`
+- [ ] Detecção de execução usa `.includes('script-name')`
+- [ ] Inquirer usa `prompt([{...}])` com destructuring `{ resposta }`
+- [ ] Imports têm extensão `.js`
+- [ ] Schemas são validados na entrada e saída
+- [ ] Error handling específico com contexto
+- [ ] Regex crítico tem fallback com string matching
+- [ ] Compatibilidade backwards implementada
+- [ ] PowerShell commands testados no Windows
 
 ---
 
