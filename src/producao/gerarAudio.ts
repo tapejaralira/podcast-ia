@@ -4,6 +4,7 @@ import path from 'path';
 import 'dotenv/config';
 import { config, filePaths } from '../config.js';
 import { TtsConfig } from '../types.js';
+import { getDataManaus, getDataHoraManausCompacta, getTimezoneInfo } from '../utils/timezone.js';
 
 // --- Função para normalizar strings ---
 function normalizeString(str: string): string {
@@ -82,7 +83,11 @@ export async function gerarAudiosDoRoteiro(): Promise<void> {
     console.log('🔊 Bubuia News - Iniciando geração de áudios...');
 
     const ttsConfig: TtsConfig = JSON.parse(await fs.readFile(filePaths.ttsConfigFile, 'utf-8'));
-    const dataDeHoje = new Date().toISOString().split('T')[0];
+    
+    // ALTERAÇÃO: Usar data de Manaus em vez de UTC
+    const dataDeHoje = getDataManaus();
+    console.log(`📅 Data de Manaus: ${dataDeHoje} (${getDataHoraManausCompacta()})`);
+    
     const roteiroFilename = path.join(config.paths.roteiros, `roteiro-${dataDeHoje}.md`);
     
     let roteiroContent: string;
@@ -102,12 +107,13 @@ export async function gerarAudiosDoRoteiro(): Promise<void> {
     for (const bloco of blocos) {
         let estiloDeVoz: keyof TtsConfig['estilos_de_voz'] = 'padrao';
 
-        const matchTitulo = bloco.match(/#### Notícia \d+: \[(.+?)\s/);
+        // CORREÇÃO: Nova regex para detectar categoria no novo formato
+        const matchTitulo = bloco.match(/### Notícia \d+: (.+?)$/m);
         if (matchTitulo && matchTitulo[1]) {
-            const idCompleto = matchTitulo[1];
-            const emojiCategoria = idCompleto.split(' ')[0] as keyof typeof config.geracaoAudio.categoriaParaEstilo;
+            const tituloCompleto = matchTitulo[1];
+            const emojiCategoria = tituloCompleto.split(' ')[0] as keyof typeof config.geracaoAudio.categoriaParaEstilo;
             estiloDeVoz = config.geracaoAudio.categoriaParaEstilo[emojiCategoria] || 'padrao';
-        } else if (bloco.includes('COLD OPEN')) {
+        } else if (bloco.includes('Bloco 0: Abertura (Cold Open)')) {
             estiloDeVoz = 'curioso_ou_bizarro';
         }
 
@@ -146,4 +152,19 @@ export async function gerarAudiosDoRoteiro(): Promise<void> {
     }
 
     console.log(`\n✅ Geração de áudio finalizada! Total de ${falaCounter} falas geradas.`);
+}
+
+// Chamada direta se executado como script principal
+if (
+    import.meta.url.includes('gerarAudio.ts') ||
+    process.argv[1]?.includes('gerarAudio')
+) {
+    console.log('🚀 Executando gerarAudio como script principal...');
+    gerarAudiosDoRoteiro()
+        .then(() => console.log('✅ Script concluído com sucesso'))
+        .catch(error => {
+            console.error('❌ Erro no script:', error);
+            console.error('Stack:', error.stack);
+            process.exit(1);
+        });
 }

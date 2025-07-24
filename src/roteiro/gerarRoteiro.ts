@@ -7,6 +7,7 @@ import { NoticiasCategorizadas, NoticiaCompleta } from '../types.js';
 import { config, filePaths } from '../config.js';
 import { PautaDoDiaSchema, RoteiroPodcastSchema } from '../schemas/core.schemas.js';
 import { validateWithSchema } from '../utils/validation.js';
+import { getDataManaus, getDataCompletaManaus } from '../utils/timezone.js';
 
 // --- IMPLEMENTAÇÃO COM GEMINI ---
 const genAI = new GoogleGenerativeAI(config.ai.gemini.apiKey);
@@ -127,10 +128,9 @@ const SUGESTOES_ABERTURA_PATH = filePaths.sugestoesAberturaFile;
 const PERSONAGENS_PATH = filePaths.personagensFile;
 
 function formatarDataParaNomeArquivo(data: Date): string {
-  const ano = data.getFullYear();
-  const mes = String(data.getMonth() + 1).padStart(2, '0');
-  const dia = String(data.getDate()).padStart(2, '0');
-  return `roteiro-${ano}-${mes}-${dia}.md`;
+  // ALTERAÇÃO: Usar data de Manaus
+  const dataManaus = getDataManaus();
+  return `roteiro-${dataManaus}.md`;
 }
 
 function formatarBlocoNoticias(noticias: any[], tituloBloco: string): string {

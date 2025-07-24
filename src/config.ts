@@ -180,7 +180,8 @@ export const config: ProjectConfig & {
       '🚀': 'animado',
       '🎬': 'animado',
       '🎭': 'animado',
-      '👽': 'curioso_ou_bizarro',
+      '�': 'padrao',
+      '�👽': 'curioso_ou_bizarro',
     }
   },
 

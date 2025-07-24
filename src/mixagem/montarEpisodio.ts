@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import { config } from '../config.js';
+import { getDataManaus } from '../utils/timezone.js';
 
 // --- Configuração do FFmpeg ---
 if (config.mixagem.ffmpegPath) {
@@ -108,7 +109,7 @@ async function mixarSegmentoMusical(segmentoInfo: SegmentoMusical, outputPath: s
         vocalParts.push(segmentoInfo.vinheta);
     }
     
-    const silencioPath = path.join(config.paths.audios, 'assets', 'silencio_3s.mp3');
+    const silencioPath = path.join('assets', 'audio', 'assets', 'silencio_3s.mp3');
     vocalParts.push(silencioPath);
     vocalParts.push(...segmentoInfo.falas);
     vocalParts.push(silencioPath);
@@ -160,12 +161,16 @@ async function mixarSegmentoMusical(segmentoInfo: SegmentoMusical, outputPath: s
 export async function montarEpisodio(): Promise<void> {
     console.log('\n🎧 Bubuia News - Iniciando montagem do episódio...');
 
-    const dataDeHoje = new Date().toISOString().split('T')[0];
+    // ALTERAÇÃO: Usar data de Manaus
+    const dataDeHoje = getDataManaus();
+    console.log(`📅 Data de Manaus: ${dataDeHoje}`);
+    
     const roteiroFilename = path.join(config.paths.roteiros, `roteiro-${dataDeHoje}.md`);
     const episodioAudioDir = path.join(config.paths.output.audio, `episodio-${dataDeHoje}`);
     
-    const silencio1s = path.join(config.paths.audios, 'assets', 'silencio_1s.mp3');
-    const silencio3s = path.join(config.paths.audios, 'assets', 'silencio_3s.mp3');
+    // CORREÇÃO: Usar paths corretos para arquivos de áudio
+    const silencio1s = path.join('assets', 'audio', 'assets', 'silencio_1s.mp3');
+    const silencio3s = path.join('assets', 'audio', 'assets', 'silencio_3s.mp3');
 
     try {
         await fs.access(episodioAudioDir);
@@ -248,7 +253,7 @@ export async function montarEpisodio(): Promise<void> {
             if (parte.type === 'trilha_inicio' && parte.file && parte.volume) {
                 segmentoMusical = {
                     id: `${i}_${j}`,
-                    trilha: { path: path.join(config.paths.audios, 'trilhas', parte.file), volume: parte.volume },
+                    trilha: { path: path.join('assets', 'audio', 'trilhas', parte.file), volume: parte.volume },
                     vinheta: null,
                     falas: []
                 };
@@ -269,7 +274,7 @@ export async function montarEpisodio(): Promise<void> {
                 }
             } else {
                 if (parte.type === 'vinheta' && parte.file) {
-                    audiosConsolidadosDoBloco.push(path.join(config.paths.audios, 'vinhetas', parte.file));
+                    audiosConsolidadosDoBloco.push(path.join('assets', 'audio', 'vinhetas', parte.file));
                 } else if (parte.type === 'fala' && parte.path) {
                     audiosConsolidadosDoBloco.push(parte.path);
                 }
@@ -302,4 +307,19 @@ export async function montarEpisodio(): Promise<void> {
     console.log('🧹 Limpando arquivos temporários...');
     await fs.rm(TEMP_DIR, { recursive: true, force: true });
     console.log('✨ Processo concluído!');
+}
+
+// Chamada direta se executado como script principal
+if (
+    import.meta.url.includes('montarEpisodio.ts') ||
+    process.argv[1]?.includes('montarEpisodio')
+) {
+    console.log('🚀 Executando montarEpisodio como script principal...');
+    montarEpisodio()
+        .then(() => console.log('✅ Script concluído com sucesso'))
+        .catch(error => {
+            console.error('❌ Erro no script:', error);
+            console.error('Stack:', error.stack);
+            process.exit(1);
+        });
 }

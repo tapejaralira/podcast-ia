@@ -10,6 +10,7 @@ import { PautaDoDia, SugestoesAbertura, Efemerie, SugestaoGancho, NoticiaClassif
 import { generateHooksPrompt } from '../ai/prompts/generate-hooks.prompt.js';
 import { renderTemplate } from '../ai/prompts/prompt-template.js';
 import { AIPerformanceCollector } from '../ai/metrics/ai-performance.js';
+import { getDataManaus, getDataCompletaManaus, getDateTimeManaus } from '../utils/timezone.js';
 
 // Initialize AI metrics collector
 const aiMetrics = new AIPerformanceCollector();
@@ -245,11 +246,11 @@ export async function sugerirAbertura(): Promise<void> {
     const pautaRaw = await fs.readFile(PAUTA_FILE, 'utf-8');
     const pautaDoDia: PautaDoDia = JSON.parse(pautaRaw);
 
-    // 1. Buscar Efeméride (usando data atual, não do arquivo)
-    const hoje = new Date(); // Data atual, não do arquivo
-    const dia = hoje.getDate();
-    const mes = hoje.toLocaleString('pt-BR', { month: 'long' });
-    console.log(`[LOG] Buscando efemérides para: ${dia} de ${mes}`);
+    // 1. Buscar Efeméride (usando data de Manaus, não do arquivo)
+    const dataManaus = getDateTimeManaus();
+    const dia = dataManaus.day;
+    const mes = dataManaus.toFormat('MMMM', { locale: 'pt-BR' });
+    console.log(`[LOG] Buscando efemérides para: ${dia} de ${mes} (Data de Manaus: ${getDataCompletaManaus()})`);
     const efemeride = await buscarFatoHistoricoComFallback([`${dia} de ${mes}`]);
 
     // 2. Gerar Sugestões de Gancho com base na pauta usando template estruturado
@@ -292,7 +293,7 @@ if (
   process.argv[1]?.includes('sugerirAbertura')
 ) {
   console.log('🚀 Iniciando sistema de sugestões de abertura...');
-  console.log(`📅 Data: ${new Date().toLocaleDateString('pt-BR')}`);
+  console.log(`📅 Data de Manaus: ${getDataCompletaManaus()} (${getDataManaus()})`);
 
   (async () => {
     try {
