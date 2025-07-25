@@ -40,6 +40,8 @@ interface BlocoComTiming {
     vocalPath: string;
     duracaoVocais: number;
     inicioTempo: number;
+    duracaoVinhetas: number; // duração das vinhetas de transição no início
+    inicioFalas: number; // tempo quando começam as falas (após vinhetas)
 }
 
 // --- Funções Auxiliares ---
@@ -55,7 +57,9 @@ function aplicarEfeitos(inputPath: string, outputPath: string, nomeApresentador:
             'aecho=1:0.8:20:0.2'
         ];
         if (nomeApresentador === 'tainá') {
-            filterChain.unshift('volume=2.8');
+            filterChain.unshift('volume=2.4');
+        } else if (nomeApresentador === 'iraí') {
+            filterChain.unshift('volume=1.9'); // Aumentado de 1.0 (padrão) para 1.9
         }
         const filterString = filterChain.join(',');
         console.log(`   [FX] Aplicando filtros em ${nomeApresentador} (SEM loudness norm)...`);
@@ -70,9 +74,23 @@ function aplicarEfeitos(inputPath: string, outputPath: string, nomeApresentador:
 async function criarTrilhaContinuaComCrossfade(blocosComTrilha: BlocoComTiming[]): Promise<string> {
     if (blocosComTrilha.length === 0) return '';
     
-    console.log(`   -> Criando trilha contínua com crossfade de 4s para ${blocosComTrilha.length} blocos`);
+    console.log(`   -> Criando trilha contínua com crossfade sincronizado às falas para ${blocosComTrilha.length} blocos`);
     
     const trilhaFinalPath = path.join(TEMP_DIR, 'trilha_continua_crossfade.mp3');
+    
+    if (blocosComTrilha.length === 1) {
+        // Apenas uma trilha
+        const bloco = blocosComTrilha[0];
+        return new Promise((resolve, reject) => {
+            ffmpeg()
+                .input(bloco.trilha!.path)
+                .audioFilters(`volume=${bloco.trilha!.volume}`)
+                .duration(bloco.duracaoVocais)
+                .on('error', (err) => reject(new Error(`Erro ao processar trilha única: ${err.message}`)))
+                .on('end', () => resolve(trilhaFinalPath))
+                .save(trilhaFinalPath);
+        });
+    }
     
     return new Promise((resolve, reject) => {
         const command = ffmpeg();
@@ -83,26 +101,65 @@ async function criarTrilhaContinuaComCrossfade(blocosComTrilha: BlocoComTiming[]
         });
         
         let filterComplex = '';
-        const trilhasProcessadas: string[] = [];
+        let tempoAcumuladoVocal = 0;
         
-        // Processar cada trilha com volume e duração
+        // Calcular os tempos baseados na camada vocal COMPLETA (incluindo vinhetas)
+        // CORREÇÃO: Precisamos considerar que o crossfade de 4s significa sobreposição progressiva
         blocosComTrilha.forEach((bloco, index) => {
-            const duracaoTrilha = bloco.duracaoVocais; // Trilha dura o mesmo que as vozes
-            filterComplex += `[${index}:a]volume=${bloco.trilha!.volume},atrim=duration=${duracaoTrilha}[trilha${index}];`;
-            trilhasProcessadas.push(`[trilha${index}]`);
+            if (index === 0) {
+                // Primeira trilha: inicia imediatamente (no tempo 0)
+                bloco.inicioTempo = 0;
+                // Tempo quando começa a primeira fala (após vinheta de transição, se houver)
+                const inicioFalaRealTrilha = bloco.duracaoVinhetas; 
+                tempoAcumuladoVocal = bloco.duracaoVocais;
+                
+                console.log(`   -> Trilha ${index} (${bloco.trilha!.path.split('/').pop()}): inicia em ${bloco.inicioTempo.toFixed(1)}s, fala em ${inicioFalaRealTrilha.toFixed(1)}s, duração total: ${bloco.duracaoVocais.toFixed(1)}s`);
+            } else {
+                // CORREÇÃO: Para trilhas subsequentes, o crossfade deve estar sincronizado perfeitamente
+                // A nova trilha deve começar de forma que, no MEIO do crossfade (2s), coincida com o início da fala
+                const inicioFalaNovo = tempoAcumuladoVocal + bloco.duracaoVinhetas;
+                bloco.inicioTempo = inicioFalaNovo - 2; // -2s para que o MEIO do crossfade (4s/2=2s) coincida com a fala
+                
+                console.log(`   -> Trilha ${index} (${bloco.trilha!.path.split('/').pop()}): inicia em ${bloco.inicioTempo.toFixed(1)}s, crossfade meio em ${inicioFalaNovo.toFixed(1)}s (início fala), vinhetas: ${bloco.duracaoVinhetas.toFixed(1)}s`);
+                
+                tempoAcumuladoVocal += bloco.duracaoVocais;
+            }
         });
         
-        // Aplicar crossfade de 4 segundos entre trilhas adjacentes
-        let resultado = trilhasProcessadas[0];
-        for (let i = 1; i < trilhasProcessadas.length; i++) {
-            const novoResultado = i === trilhasProcessadas.length - 1 ? '' : `[mix${i}]`;
-            filterComplex += `${resultado}${trilhasProcessadas[i]}acrossfade=d=4${novoResultado ? novoResultado : ''};`;
+        // Processar cada trilha com delay calculado para sincronizar com as falas
+        blocosComTrilha.forEach((bloco, index) => {
+            if (index === 0) {
+                // Primeira trilha: duração total + 2s extra para o crossfade (meio do crossfade)
+                const duracaoTotal = index < blocosComTrilha.length - 1 
+                    ? bloco.duracaoVocais + 2 // +2s para permitir crossfade até o meio
+                    : bloco.duracaoVocais;
+                
+                filterComplex += `[${index}:a]volume=${bloco.trilha!.volume},atrim=duration=${duracaoTotal}[trilha${index}];`;
+            } else {
+                // Trilhas subsequentes: delay calculado + duração + margem para crossfade
+                const delay = Math.max(0, bloco.inicioTempo * 1000); // milissegundos
+                const duracaoTotal = index < blocosComTrilha.length - 1 
+                    ? bloco.duracaoVocais + 4 // +4s (2s crossfade in + 2s crossfade out)
+                    : bloco.duracaoVocais + 2; // +2s só crossfade in
+                
+                filterComplex += `[${index}:a]volume=${bloco.trilha!.volume},adelay=${delay},atrim=duration=${duracaoTotal}[trilha${index}];`;
+            }
+        });
+        
+        // Aplicar crossfade sequencial sincronizado
+        let resultado = `[trilha0]`;
+        for (let i = 1; i < blocosComTrilha.length; i++) {
+            const novoResultado = i === blocosComTrilha.length - 1 ? '' : `[mix${i}]`;
+            
+            console.log(`   -> Crossfade ${i}: sincronizado com início da fala da notícia ${i}`);
+            
+            filterComplex += `${resultado}[trilha${i}]acrossfade=d=4${novoResultado ? novoResultado : ''};`;
             resultado = novoResultado || resultado;
         }
         
         command
             .complexFilter(filterComplex)
-            .on('error', (err) => reject(new Error(`Erro no crossfade das trilhas: ${err.message}`)))
+            .on('error', (err) => reject(new Error(`Erro no crossfade sincronizado das trilhas: ${err.message}`)))
             .on('end', () => resolve(trilhaFinalPath))
             .save(trilhaFinalPath);
     });
@@ -308,7 +365,7 @@ export async function montarEpisodio(): Promise<void> {
         if (i > 0) {
             console.log(`   [INFO] Adicionando vinheta de transição no início do bloco ${i}`);
             partesDoBloco.push({ type: 'vinheta', file: 'VINHETA_CURTA_DE_TRANSICAO.mp3' });
-            partesDoBloco.push({ type: 'fala', path: silencio3s });
+            // Removido o silêncio de 3s após a vinheta de transição
         }
 
         // Processar conteúdo do bloco
@@ -369,10 +426,18 @@ export async function montarEpisodio(): Promise<void> {
         
         // Criar faixa vocal consolidada para este bloco
         const audiosVocaisDoBloco: string[] = [];
+        let duracaoVinhetasTransicao = 0;
+        
+        // CORREÇÃO: Todas as partes ficam na camada vocal (incluindo vinhetas de transição)
         for (const parte of partesDoBloco) {
             if (parte.type === 'vinheta' && parte.file) {
                 const vinhetaPath = path.join('assets', 'audio', 'vinhetas', parte.file);
                 audiosVocaisDoBloco.push(vinhetaPath);
+                
+                // Se é vinheta de transição (no início do bloco), calcular duração
+                if (i > 0 && audiosVocaisDoBloco.length === 1) { // apenas a vinheta (sem silêncio)
+                    duracaoVinhetasTransicao += await obterDuracaoAudio(vinhetaPath);
+                }
             } else if (parte.type === 'fala' && parte.path) {
                 audiosVocaisDoBloco.push(parte.path);
             }
@@ -396,7 +461,9 @@ export async function montarEpisodio(): Promise<void> {
                     },
                     vocalPath: blocoVocalPath,
                     duracaoVocais: duracaoVocal,
-                    inicioTempo: 0 // será calculado durante processamento
+                    inicioTempo: 0, // será calculado durante processamento
+                    duracaoVinhetas: duracaoVinhetasTransicao,
+                    inicioFalas: duracaoVinhetasTransicao // falas começam após as vinhetas
                 });
             } else {
                 // Bloco sem trilha
