@@ -33,6 +33,15 @@ interface SegmentoMusical {
     falas: string[];
 }
 
+interface BlocoComTiming {
+    id: string;
+    tipo: 'com_trilha' | 'sem_trilha';
+    trilha?: { path: string; volume: string };
+    vocalPath: string;
+    duracaoVocais: number;
+    inicioTempo: number;
+}
+
 // --- Funções Auxiliares ---
 
 function normalizeString(str: string): string {
@@ -43,19 +52,88 @@ function aplicarEfeitos(inputPath: string, outputPath: string, nomeApresentador:
     return new Promise((resolve, reject) => {
         const filterChain = [
             'compand=attacks=0:points=-80/-90|-45/-15|-27/-9|-12/-5|0/-3|20/-1.5',
-            'loudnorm=I=-16:TP=-1.5:LRA=11',
             'aecho=1:0.8:20:0.2'
         ];
         if (nomeApresentador === 'tainá') {
             filterChain.unshift('volume=2.8');
         }
         const filterString = filterChain.join(',');
-        console.log(`   [FX] Aplicando filtros em ${nomeApresentador}...`);
+        console.log(`   [FX] Aplicando filtros em ${nomeApresentador} (SEM loudness norm)...`);
         ffmpeg(inputPath)
             .audioFilter(filterString)
             .on('error', (err) => reject(new Error(`Erro ao aplicar efeitos em ${inputPath}: ${err.message}`)))
             .on('end', () => resolve())
             .save(outputPath);
+    });
+}
+
+async function criarTrilhaContinuaComCrossfade(blocosComTrilha: BlocoComTiming[]): Promise<string> {
+    if (blocosComTrilha.length === 0) return '';
+    
+    console.log(`   -> Criando trilha contínua com crossfade de 4s para ${blocosComTrilha.length} blocos`);
+    
+    const trilhaFinalPath = path.join(TEMP_DIR, 'trilha_continua_crossfade.mp3');
+    
+    return new Promise((resolve, reject) => {
+        const command = ffmpeg();
+        
+        // Adicionar todas as trilhas como inputs
+        blocosComTrilha.forEach(bloco => {
+            command.input(bloco.trilha!.path);
+        });
+        
+        let filterComplex = '';
+        const trilhasProcessadas: string[] = [];
+        
+        // Processar cada trilha com volume e duração
+        blocosComTrilha.forEach((bloco, index) => {
+            const duracaoTrilha = bloco.duracaoVocais; // Trilha dura o mesmo que as vozes
+            filterComplex += `[${index}:a]volume=${bloco.trilha!.volume},atrim=duration=${duracaoTrilha}[trilha${index}];`;
+            trilhasProcessadas.push(`[trilha${index}]`);
+        });
+        
+        // Aplicar crossfade de 4 segundos entre trilhas adjacentes
+        let resultado = trilhasProcessadas[0];
+        for (let i = 1; i < trilhasProcessadas.length; i++) {
+            const novoResultado = i === trilhasProcessadas.length - 1 ? '' : `[mix${i}]`;
+            filterComplex += `${resultado}${trilhasProcessadas[i]}acrossfade=d=4${novoResultado ? novoResultado : ''};`;
+            resultado = novoResultado || resultado;
+        }
+        
+        command
+            .complexFilter(filterComplex)
+            .on('error', (err) => reject(new Error(`Erro no crossfade das trilhas: ${err.message}`)))
+            .on('end', () => resolve(trilhaFinalPath))
+            .save(trilhaFinalPath);
+    });
+}
+
+async function mixarCamadaVocalComTrilhaContinua(vocaisPath: string, trilhaPath: string, outputPath: string): Promise<void> {
+    console.log(`   -> Mixando camada vocal com trilha contínua`);
+    
+    return new Promise((resolve, reject) => {
+        ffmpeg()
+            .input(vocaisPath)
+            .input(trilhaPath)
+            .complexFilter([
+                '[0:a][1:a]amix=inputs=2:duration=first,volume=2.8'
+            ])
+            .on('error', (err) => reject(new Error(`Erro ao mixar vocal com trilha contínua: ${err.message}`)))
+            .on('end', () => resolve())
+            .save(outputPath);
+    });
+}
+
+async function obterDuracaoAudio(audioPath: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(audioPath, (err: any, metadata: any) => {
+            if (err) {
+                reject(new Error(`Erro ao obter duração de ${audioPath}: ${err.message}`));
+            } else {
+                const duracao = metadata.format.duration || 0;
+                resolve(duracao);
+            }
+        });
     });
 }
 
@@ -105,14 +183,14 @@ async function mixarSegmentoMusical(segmentoInfo: SegmentoMusical, outputPath: s
     console.log(`   -> Mixando segmento musical para a trilha: ${path.basename(segmentoInfo.trilha.path)}`);
 
     const vocalParts: string[] = [];
+    
+    // Se temos vinheta específica, adicionar
     if (segmentoInfo.vinheta) {
         vocalParts.push(segmentoInfo.vinheta);
     }
     
-    const silencioPath = path.join('assets', 'audio', 'assets', 'silencio_3s.mp3');
-    vocalParts.push(silencioPath);
+    // Adicionar todas as falas (já incluem vinheta de transição e silêncios)
     vocalParts.push(...segmentoInfo.falas);
-    vocalParts.push(silencioPath);
 
     const vocalTrackPath = path.join(TEMP_DIR, `vocal_track_${segmentoInfo.id}.mp3`);
     await concatenarBlocos(vocalParts, vocalTrackPath);
@@ -202,17 +280,38 @@ export async function montarEpisodio(): Promise<void> {
     }
 
     const blocosFinaisParaCrossfade: string[] = [];
+    const blocosComTrilha: BlocoComTiming[] = [];
     let falaCounter = 0;
     const blocosPrincipais = roteiroContent.split('---');
 
+    // FASE 1: Processar todos os blocos e extrair informações
     for (let i = 0; i < blocosPrincipais.length; i++) {
         const bloco = blocosPrincipais[i];
         if (bloco.trim().length === 0) continue;
-        console.log(`\n🎬 Processando e consolidando o Bloco Principal ${i}...`);
+        console.log(`\n🎬 Analisando Bloco Principal ${i}...`);
 
         const partesDoBloco: ParteDoBloco[] = [];
+        let trilhaDoBloco: { file: string; volume: string } | null = null;
+        
+        // Procurar trilha neste bloco
         const linhas = bloco.split('\n').filter(l => l.trim() !== '');
+        for (const linha of linhas) {
+            const matchTrilhaInicio = linha.match(/\[TRILHA_INICIO: (.*?),\s*(-?\d+dB)\s*\]/);
+            if (matchTrilhaInicio) {
+                trilhaDoBloco = { file: matchTrilhaInicio[1], volume: matchTrilhaInicio[2] };
+                console.log(`   [INFO] Trilha detectada: ${trilhaDoBloco.file} (${trilhaDoBloco.volume})`);
+                break;
+            }
+        }
+        
+        // Adicionar vinheta de transição no início de cada bloco (exceto o primeiro)
+        if (i > 0) {
+            console.log(`   [INFO] Adicionando vinheta de transição no início do bloco ${i}`);
+            partesDoBloco.push({ type: 'vinheta', file: 'VINHETA_CURTA_DE_TRANSICAO.mp3' });
+            partesDoBloco.push({ type: 'fala', path: silencio3s });
+        }
 
+        // Processar conteúdo do bloco
         for (const linha of linhas) {
             // Detectar linhas de fala dos apresentadores
             let matchFala = null;
@@ -227,16 +326,14 @@ export async function montarEpisodio(): Promise<void> {
             const matchAudio = linha.match(/\[AUDIO:\s*(.*?)\s*\]/);
 
             if (matchAudio) {
-                console.log(`   [DEBUG] Encontrou vinheta: ${matchAudio[1]}`);
+                console.log(`   [INFO] Vinheta encontrada: ${matchAudio[1]}`);
                 partesDoBloco.push({ type: 'vinheta', file: matchAudio[1] });
             } else if (matchTrilhaInicio) {
-                console.log(`   [DEBUG] Encontrou trilha início: ${matchTrilhaInicio[1]}`);
-                partesDoBloco.push({ type: 'trilha_inicio', file: matchTrilhaInicio[1], volume: matchTrilhaInicio[2] });
+                console.log(`   [INFO] Confirmada trilha início: ${matchTrilhaInicio[1]}`);
             } else if (matchTrilhaFim) {
-                console.log(`   [DEBUG] Encontrou trilha fim`);
-                partesDoBloco.push({ type: 'trilha_fim' });
+                console.log(`   [INFO] Trilha fim detectada`);
             } else if (matchFala) {
-                console.log(`   [DEBUG] ✅ FALA DETECTADA: ${matchFala[1]}`);
+                console.log(`   [INFO] ✅ FALA DETECTADA: ${matchFala[1]}`);
                 const nomeCapturado = matchFala[1];
                 let nomeApresentadorRaw = '';
                 let nomeArquivo = '';
@@ -262,60 +359,70 @@ export async function montarEpisodio(): Promise<void> {
                     await aplicarEfeitos(caminhoOriginal, caminhoProcessado, nomeApresentadorRaw as NomeApresentador);
                     partesDoBloco.push({ type: 'fala', path: caminhoProcessado });
                     partesDoBloco.push({ type: 'fala', path: silencio1s });
-                    falaCounter++; // CORREÇÃO: Incrementar apenas APÓS processar com sucesso
+                    falaCounter++;
                     console.log(`   -> ✅ Fala processada: contador agora é ${falaCounter}`);
                 } catch (err) { 
-                    console.warn(`   [AVISO] Falha ao processar o arquivo de fala: ${caminhoOriginal}`);
+                    console.warn(`   [AVISO] Falha ao processar arquivo de fala: ${caminhoOriginal}`);
                 }
             }
         }
         
-        const audiosConsolidadosDoBloco: string[] = [];
-        let segmentoMusical: SegmentoMusical | null = null;
-        for (let j = 0; j < partesDoBloco.length; j++) {
-            const parte = partesDoBloco[j];
-
-            if (parte.type === 'trilha_inicio' && parte.file && parte.volume) {
-                segmentoMusical = {
-                    id: `${i}_${j}`,
-                    trilha: { path: path.join('assets', 'audio', 'trilhas', parte.file), volume: parte.volume },
-                    vinheta: null,
-                    falas: []
-                };
-                const parteAnterior = partesDoBloco[j-1];
-                if (j > 0 && parteAnterior.type === 'vinheta' && parteAnterior.file?.includes('TRANSICAO')) {
-                    segmentoMusical.vinheta = audiosConsolidadosDoBloco.pop() || null;
-                }
-            } else if (parte.type === 'trilha_fim') {
-                if (segmentoMusical) {
-                    const outputPath = path.join(TEMP_DIR, `segmento_musical_${segmentoMusical.id}.mp3`);
-                    await mixarSegmentoMusical(segmentoMusical, outputPath);
-                    audiosConsolidadosDoBloco.push(outputPath);
-                    segmentoMusical = null;
-                }
-            } else if (segmentoMusical) {
-                if(parte.type === 'fala' && parte.path) {
-                    segmentoMusical.falas.push(parte.path);
-                }
-            } else {
-                if (parte.type === 'vinheta' && parte.file) {
-                    audiosConsolidadosDoBloco.push(path.join('assets', 'audio', 'vinhetas', parte.file));
-                } else if (parte.type === 'fala' && parte.path) {
-                    audiosConsolidadosDoBloco.push(parte.path);
-                }
+        // Criar faixa vocal consolidada para este bloco
+        const audiosVocaisDoBloco: string[] = [];
+        for (const parte of partesDoBloco) {
+            if (parte.type === 'vinheta' && parte.file) {
+                const vinhetaPath = path.join('assets', 'audio', 'vinhetas', parte.file);
+                audiosVocaisDoBloco.push(vinhetaPath);
+            } else if (parte.type === 'fala' && parte.path) {
+                audiosVocaisDoBloco.push(parte.path);
             }
         }
-        if (segmentoMusical) {
-            const outputPath = path.join(TEMP_DIR, `segmento_musical_${segmentoMusical.id}.mp3`);
-            await mixarSegmentoMusical(segmentoMusical, outputPath);
-            audiosConsolidadosDoBloco.push(outputPath);
-        }
 
-        if (audiosConsolidadosDoBloco.length > 0) {
-            const blocoConsolidadoPath = path.join(TEMP_DIR, `bloco_final_${i}.mp3`);
-            await concatenarBlocos(audiosConsolidadosDoBloco, blocoConsolidadoPath);
-            blocosFinaisParaCrossfade.push(blocoConsolidadoPath);
+        if (audiosVocaisDoBloco.length > 0) {
+            const blocoVocalPath = path.join(TEMP_DIR, `bloco_vocal_${i}.mp3`);
+            await concatenarBlocos(audiosVocaisDoBloco, blocoVocalPath);
+            
+            // Calcular duração do bloco vocal
+            const duracaoVocal = await obterDuracaoAudio(blocoVocalPath);
+            
+            if (trilhaDoBloco) {
+                // Bloco com trilha de fundo
+                blocosComTrilha.push({
+                    id: `bloco_${i}`,
+                    tipo: 'com_trilha',
+                    trilha: { 
+                        path: path.join('assets', 'audio', 'trilhas', trilhaDoBloco.file), 
+                        volume: trilhaDoBloco.volume 
+                    },
+                    vocalPath: blocoVocalPath,
+                    duracaoVocais: duracaoVocal,
+                    inicioTempo: 0 // será calculado durante processamento
+                });
+            } else {
+                // Bloco sem trilha
+                blocosFinaisParaCrossfade.push(blocoVocalPath);
+            }
         }
+    }
+
+    // FASE 2: Estratégia de Duas Camadas para blocos com trilha
+    if (blocosComTrilha.length > 0) {
+        console.log(`\n🎼 Aplicando estratégia de duas camadas para ${blocosComTrilha.length} blocos com trilha...`);
+        
+        // Criar trilha contínua com crossfade
+        const trilhaContinuaPath = await criarTrilhaContinuaComCrossfade(blocosComTrilha);
+        
+        // Criar camada vocal contínua
+        const vocaisParaConcatenacao = blocosComTrilha.map(b => b.vocalPath);
+        const camadaVocalPath = path.join(TEMP_DIR, 'camada_vocal_continua.mp3');
+        await concatenarBlocos(vocaisParaConcatenacao, camadaVocalPath);
+        
+        // Mixar camada vocal com trilha contínua
+        const segmentoMusicalFinalPath = path.join(TEMP_DIR, 'segmento_musical_final.mp3');
+        await mixarCamadaVocalComTrilhaContinua(camadaVocalPath, trilhaContinuaPath, segmentoMusicalFinalPath);
+        
+        blocosFinaisParaCrossfade.push(segmentoMusicalFinalPath);
+        console.log(`   ✅ Estratégia de duas camadas concluída`);
     }
 
     if (blocosFinaisParaCrossfade.length === 0) {
@@ -323,9 +430,9 @@ export async function montarEpisodio(): Promise<void> {
         return;
     }
 
-    console.log('\n🎬 Montando o episódio final com crossfade entre os blocos...');
+    console.log('\n🎬 Montando o episódio final (sem crossfade)...');
     const outputFinal = path.join(config.paths.output.episodes, `bubuia_news_${dataDeHoje}.mp3`);
-    await concatenarComCrossfade(blocosFinaisParaCrossfade, outputFinal);
+    await concatenarBlocos(blocosFinaisParaCrossfade, outputFinal);
 
     console.log(`\n✅ Episódio finalizado com sucesso! Salvo em: ${outputFinal}`);
     
