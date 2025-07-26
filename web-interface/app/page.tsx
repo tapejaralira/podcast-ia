@@ -15,20 +15,25 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import NoticiaCard from '../components/NoticiaCard';
-import { carregarNoticias, salvarSelecaoManual } from '../lib/api';
-import { NoticiasCategorizadas, NoticiaCompleta, SelecaoManual } from '../lib/types';
+import EfemeridesSelector from '../components/EfemeridesSelector';
+import { carregarNoticias, salvarSelecaoManual, carregarSugestoesAbertura } from '../lib/api';
+import { NoticiasCategorizadas, NoticiaCompleta, SelecaoManual, SugestoesAbertura, Efemeride } from '../lib/types';
 
 export default function Home() {
   // Estados principais
   const [dados, setDados] = useState<NoticiasCategorizadas | null>(null);
+  const [sugestoesAbertura, setSugestoesAbertura] = useState<SugestoesAbertura | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   // Estados da seleção
   const [mancheteSelecionada, setMancheteSelecionada] = useState<string | null>(null);
   const [noticiasSelecionadas, setNoticiasSelecionadas] = useState<Set<string>>(new Set());
-  
-  // O estado de observações foi removido para simplificar a interface.
+  const [efemerideSelecionada, setEfemerideSelecionada] = useState<{
+    tipo: 'fatosBrasileiros' | 'efemeridesIA' | 'curiosidadesAmazonicas';
+    indice: number;
+    efemeride: Efemeride;
+  } | null>(null);
   
   const [abaSelecionada, setAbaSelecionada] = useState<string>('todas');
 
@@ -55,14 +60,31 @@ export default function Home() {
         setLoading(true);
         setError(null);
         
-        // A chamada para carregarSelecaoExistente foi removida.
-        const noticiasData = await carregarNoticias();
+        // Carregar dados em paralelo
+        const [noticiasData, sugestoesData] = await Promise.all([
+          carregarNoticias(),
+          carregarSugestoesAbertura()
+        ]);
         
         if (!noticiasData) {
           throw new Error('Não foi possível carregar as notícias');
         }
         
         setDados(noticiasData);
+        setSugestoesAbertura(sugestoesData);
+        
+        // Se há sugestões de abertura, definir efeméride recomendada como padrão
+        if (sugestoesData?.opcoesEfemerides?.recomendacao) {
+          const { tipo, indice } = sugestoesData.opcoesEfemerides.recomendacao;
+          const efemerides = sugestoesData.opcoesEfemerides[tipo];
+          if (efemerides && efemerides[indice]) {
+            setEfemerideSelecionada({
+              tipo,
+              indice,
+              efemeride: efemerides[indice]
+            });
+          }
+        }
         
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro desconhecido');
@@ -114,6 +136,14 @@ export default function Home() {
     setNoticiasSelecionadas(novas);
   };
 
+  const selecionarEfemeride = (
+    tipo: 'fatosBrasileiros' | 'efemeridesIA' | 'curiosidadesAmazonicas',
+    indice: number,
+    efemeride: Efemeride
+  ) => {
+    setEfemerideSelecionada({ tipo, indice, efemeride });
+  };
+
   const salvarSelecao = async () => {
     if (!dados || !mancheteSelecionada) {
       alert('Por favor, selecione uma manchete primeiro');
@@ -161,6 +191,7 @@ export default function Home() {
           categoria: mancheteNoticia.categoria,
         },
         noticiasEscolhidas,
+        efemerideSelecionada: efemerideSelecionada || undefined,
       };
       
       const sucesso = await salvarSelecaoManual(selecao);
@@ -212,7 +243,7 @@ export default function Home() {
     );
   }
 
-  const categorias = ['todas', 'selecionadas', 'politica', 'economia', 'cidades', 'cultura', 'esportes', 'geral'];
+  const categorias = ['todas', 'selecionadas', 'efemerides', 'politica', 'economia', 'cidades', 'cultura', 'esportes', 'geral'];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -250,6 +281,19 @@ export default function Home() {
                 <div>
                   <span className="text-sm text-gray-600">Notícias:</span>
                   <div className="font-medium text-black">{noticiasSelecionadas.size}</div>
+                </div>
+                
+                <div>
+                  <span className="text-sm text-gray-600">Efeméride:</span>
+                  <div className="font-medium text-purple-700">
+                    {efemerideSelecionada ? '✓ Selecionada' : 'Não selecionada'}
+                  </div>
+                  {efemerideSelecionada && (
+                    <div className="mt-1 p-2 bg-purple-50 border border-purple-200 rounded text-xs">
+                      <div className="font-medium text-purple-800">{efemerideSelecionada.efemeride.titulo}</div>
+                      <div className="text-purple-600 mt-1">{efemerideSelecionada.efemeride.texto.substring(0, 100)}...</div>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Resumo por categoria das selecionadas */}
@@ -303,10 +347,17 @@ export default function Home() {
                           : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
                     >
-                      {categoria === 'todas' ? 'Todas' : categoria.charAt(0).toUpperCase() + categoria.slice(1)}
+                      {categoria === 'todas' ? 'Todas' : 
+                       categoria === 'selecionadas' ? 'Selecionadas' :
+                       categoria === 'efemerides' ? '📅 Efemérides' :
+                       categoria.charAt(0).toUpperCase() + categoria.slice(1)}
                       {categoria === 'selecionadas' ? (
                         <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                           {noticiasSelecionadas.size}
+                        </span>
+                      ) : categoria === 'efemerides' ? (
+                        <span className="ml-2 text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                          {efemerideSelecionada ? '✓' : '?'}
                         </span>
                       ) : categoria !== 'todas' && (
                         <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
@@ -319,35 +370,56 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Lista de notícias */}
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {abaSelecionada === 'todas' ? 'Todas as Notícias' : 
-                   `Categoria: ${abaSelecionada.charAt(0).toUpperCase() + abaSelecionada.slice(1)}`}
-                </h2>
-                <span className="text-sm text-gray-500">
-                  {noticiasFiltradas.length} notícias
-                </span>
-              </div>
-              
-              {noticiasFiltradas.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  Nenhuma notícia encontrada com os filtros aplicados
-                </div>
+            {/* Conteúdo baseado na aba selecionada */}
+            {abaSelecionada === 'efemerides' ? (
+              // Mostrar seletor de efemérides
+              sugestoesAbertura?.opcoesEfemerides ? (
+                <EfemeridesSelector
+                  opcoes={sugestoesAbertura.opcoesEfemerides}
+                  selecionada={efemerideSelecionada ? {
+                    tipo: efemerideSelecionada.tipo,
+                    indice: efemerideSelecionada.indice
+                  } : null}
+                  onSelecionar={selecionarEfemeride}
+                />
               ) : (
-                noticiasFiltradas.map((noticia: NoticiaCompleta) => (
-                  <NoticiaCard
-                    key={noticia.id}
-                    noticia={noticia}
-                    selecionada={noticiasSelecionadas.has(noticia.id)}
-                    onSelecionar={toggleSelecaoNoticia}
-                    isManchete={mancheteSelecionada === noticia.id}
-                    onSetManchete={(id) => setMancheteSelecionada(id === mancheteSelecionada ? null : id)}
-                  />
-                ))
-              )}
-            </div>
+                <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+                  Carregando opções de efemérides...
+                </div>
+              )
+            ) : (
+              // Mostrar lista de notícias
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {abaSelecionada === 'todas' ? 'Todas as Notícias' : 
+                     abaSelecionada === 'selecionadas' ? 'Notícias Selecionadas' :
+                     `Categoria: ${abaSelecionada.charAt(0).toUpperCase() + abaSelecionada.slice(1)}`}
+                  </h2>
+                  <span className="text-sm text-gray-500">
+                    {noticiasFiltradas.length} notícias
+                  </span>
+                </div>
+                
+                {noticiasFiltradas.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    Nenhuma notícia encontrada com os filtros aplicados
+                  </div>
+                ) : (
+                  noticiasFiltradas.map((noticia: NoticiaCompleta) => (
+                    <NoticiaCard
+                      key={noticia.id}
+                      noticia={noticia}
+                      selecionada={noticiasSelecionadas.has(noticia.id)}
+                      onSelecionar={toggleSelecaoNoticia}
+                      isManchete={mancheteSelecionada === noticia.id}
+                      onSetManchete={(id) => setMancheteSelecionada(id === mancheteSelecionada ? null : id)}
+                      mostrarResumo={abaSelecionada !== 'selecionadas'}
+                    />
+                  ))
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

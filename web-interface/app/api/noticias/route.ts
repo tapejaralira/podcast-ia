@@ -14,7 +14,7 @@
 import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { converterFormatoAntigo } from '../../../lib/api';
+import { NoticiaCompleta } from '../../../lib/types';
 
 export async function GET() {
   try {
@@ -30,7 +30,7 @@ export async function GET() {
       
       // Distribuir notícias nas categorias
       if (dados.rankingGeral && Array.isArray(dados.rankingGeral)) {
-        const categorias = {
+        const categorias: { [key: string]: NoticiaCompleta[] } = {
           politica: [],
           economia: [],
           cidades: [],
@@ -40,7 +40,7 @@ export async function GET() {
         };
         
         // Distribuir cada notícia em sua categoria
-        dados.rankingGeral.forEach(noticia => {
+        dados.rankingGeral.forEach((noticia: NoticiaCompleta) => {
           const categoria = noticia.categoria.toLowerCase();
           if (categorias[categoria]) {
             categorias[categoria].push(noticia);
@@ -64,7 +64,7 @@ export async function GET() {
           return acc;
         }, {} as Record<string, number>),
         metadados: dados.metadados || {},
-        totalNoticias: Object.values(dados.categorias || {}).reduce((total, noticias) => 
+        totalNoticias: Object.values(dados.categorias || {}).reduce((total: number, noticias) => 
           total + (Array.isArray(noticias) ? noticias.length : 0), 0
         )
       });

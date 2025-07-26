@@ -11,6 +11,7 @@ interface NoticiaCardProps {
   onSelecionar: (id: string) => void;
   isManchete: boolean;
   onSetManchete: (id: string) => void;
+  mostrarResumo?: boolean; // Nova prop opcional
 }
 
 export const NoticiaCard: React.FC<NoticiaCardProps> = ({
@@ -19,6 +20,7 @@ export const NoticiaCard: React.FC<NoticiaCardProps> = ({
   onSelecionar,
   isManchete,
   onSetManchete,
+  mostrarResumo = true, // Padrão é mostrar o resumo
 }) => {
   const handleMancheteClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Impede que o card seja selecionado/desselecionado
@@ -117,10 +119,12 @@ export const NoticiaCard: React.FC<NoticiaCardProps> = ({
         )}
       </div>
 
-      {/* Resumo */}
-      <p className="text-gray-700 text-sm">
-        {noticia.resumo}
-      </p>
+      {/* Resumo - apenas se mostrarResumo for true */}
+      {mostrarResumo && (
+        <p className="text-gray-700 text-sm">
+          {noticia.resumo}
+        </p>
+      )}
 
       {/* Informações adicionais se disponíveis */}
       {(noticia.relevanceScore || noticia.classification) && (

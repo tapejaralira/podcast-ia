@@ -81,6 +81,53 @@ interface NoticiaSimplificada {
 
 // --- Funções Principais ---
 
+/**
+ * Verifica se uma notícia é adequada para podcast em áudio
+ * Filtra conteúdo que não funciona bem em formato de áudio
+ */
+function isNoticiaAdequadaParaPodcast(noticia: NoticiaCrua): boolean {
+    const titulo = noticia.titulo.toLowerCase();
+    const resumo = noticia.resumo.toLowerCase();
+    const textoCompleto = `${titulo} ${resumo}`;
+    
+    // Palavras-chave que indicam conteúdo inadequado para áudio
+    const palavrasInadequadas = [
+        'vídeo', 'video', 'imagem', 'imagens', 'foto', 'fotos', 'galeria',
+        'assista', 'veja o vídeo', 'confira as imagens', 'confira o vídeo',
+        'clique aqui', 'clique para ver', 'veja mais', 'veja também',
+        'infográfico', 'gráfico', 'tabela', 'lista completa',
+        'visual', 'visualização', 'meme', 'gif', 'printscreen',
+        'stories', 'instagram', 'tiktok', 'reels'
+    ];
+    
+    // Verifica se contém palavras inadequadas
+    const temConteudoInadequado = palavrasInadequadas.some(palavra => 
+        textoCompleto.includes(palavra)
+    );
+    
+    if (temConteudoInadequado) {
+        console.log(`  [FILTRO] ❌ Descartada por conteúdo inadequado para áudio: "${noticia.titulo.substring(0, 60)}..."`);
+        return false;
+    }
+    
+    // Verifica se o título é muito curto ou genérico
+    if (titulo.length < 10) {
+        console.log(`  [FILTRO] ❌ Descartada por título muito curto: "${noticia.titulo}"`);
+        return false;
+    }
+    
+    // Verifica se é apenas redirect ou link
+    const ehApenasLink = titulo.includes('clique') || titulo.includes('acesse') || 
+                        resumo.includes('clique aqui') || resumo.includes('acesse o link');
+    
+    if (ehApenasLink) {
+        console.log(`  [FILTRO] ❌ Descartada por ser apenas redirect: "${noticia.titulo.substring(0, 60)}..."`);
+        return false;
+    }
+    
+    return true;
+}
+
 async function chamarIAparaClassificar(article: NoticiaCrua): Promise<Classification> {
     console.log(`  -> Classificando com IA: "${article.titulo.substring(0, 40)}..."`);
     const startTime = Date.now();
@@ -439,9 +486,15 @@ export async function analisarNoticias() {
         throw error;
     }
 
-    console.log(`\n[LOG] ${todasAsNoticias.length} artigos brutos encontrados. Iniciando classificação...`);
+    console.log(`\n[LOG] ${todasAsNoticias.length} artigos brutos encontrados. Aplicando pré-filtros...`);
+    
+    // NOVO: Aplicar pré-filtro para conteúdo inadequado para podcast
+    const noticiasFiltradasPreIA = todasAsNoticias.filter(noticia => isNoticiaAdequadaParaPodcast(noticia));
+    console.log(`[LOG] ${noticiasFiltradasPreIA.length}/${todasAsNoticias.length} notícias passaram no pré-filtro de adequação para podcast (${(noticiasFiltradasPreIA.length / todasAsNoticias.length * 100).toFixed(1)}%)`);
+    
+    console.log(`[LOG] Iniciando classificação com IA para ${noticiasFiltradasPreIA.length} notícias...`);
     const noticiasAnalisadas: NoticiaAnalisada[] = [];
-    for (const article of todasAsNoticias) {
+    for (const article of noticiasFiltradasPreIA) {
         const classification = await chamarIAparaClassificar(article);
         const relevanceScore = calcularRelevanceScore(article, classification);
         if (relevanceScore > -100) {
@@ -477,10 +530,13 @@ export async function analisarNoticias() {
         rankingGeral: pautaAgrupada,
         metadados: {
             totalAnalisadas: todasAsNoticias.length,
+            totalFiltradas: noticiasFiltradasPreIA.length,
             totalRelevantes: noticiasAnalisadas.length,
+            taxaAprovacaoPreFiltro: Number((noticiasFiltradasPreIA.length / todasAsNoticias.length * 100).toFixed(1)),
+            taxaAprovacaoIA: Number((noticiasAnalisadas.length / noticiasFiltradasPreIA.length * 100).toFixed(1)),
             fontesProcessadas: [...new Set(todasAsNoticias.map(n => n.fonte))],
             tempoProcessamento: '0s',
-            versaoAnalise: '2.0'
+            versaoAnalise: '2.1'
         }
     };
 

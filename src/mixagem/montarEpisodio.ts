@@ -57,7 +57,7 @@ function aplicarEfeitos(inputPath: string, outputPath: string, nomeApresentador:
             'aecho=1:0.8:20:0.2'
         ];
         if (nomeApresentador === 'tainá') {
-            filterChain.unshift('volume=2.4');
+            filterChain.unshift('volume=2.1');
         } else if (nomeApresentador === 'iraí') {
             filterChain.unshift('volume=1.9'); // Aumentado de 1.0 (padrão) para 1.9
         }

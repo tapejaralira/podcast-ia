@@ -44,6 +44,50 @@ export interface NoticiasCategorizadas {
 }
 
 /**
+ * Representa uma efeméride/fato histórico
+ */
+export interface Efemeride {
+  titulo: string;
+  texto: string;
+  fonte: string;
+}
+
+/**
+ * Opções de efemérides disponíveis para seleção
+ */
+export interface OpcoesEfemerides {
+  fatosBrasileiros: Efemeride[];
+  efemeridesIA: Efemeride[];
+  curiosidadesAmazonicas: Efemeride[];
+  recomendacao: {
+    tipo: 'fatosBrasileiros' | 'efemeridesIA' | 'curiosidadesAmazonicas';
+    indice: number;
+    motivo: string;
+  };
+}
+
+/**
+ * Sugestões de abertura com ganchos e efemérides
+ */
+export interface SugestoesAbertura {
+  ganchos: Array<{
+    tipo: string;
+    texto: string;
+    trilha_sugerida: string;
+  }>;
+  efemeride: Efemeride;
+  opcoesEfemerides: OpcoesEfemerides;
+  instrucoes: {
+    como_escolher: string;
+    categorias: {
+      fatosBrasileiros: string;
+      efemeridesIA: string;
+      curiosidadesAmazonicas: string;
+    };
+  };
+}
+
+/**
  * Representa a seleção final feita pelo curador para ser salva.
  */
 export interface SelecaoManual {
@@ -58,6 +102,11 @@ export interface SelecaoManual {
     ids: string[];
     total: number;
   }>;
+  efemerideSelecionada?: {
+    tipo: 'fatosBrasileiros' | 'efemeridesIA' | 'curiosidadesAmazonicas';
+    indice: number;
+    efemeride: Efemeride;
+  };
 }
 
 /**

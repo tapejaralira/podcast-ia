@@ -26,6 +26,15 @@ interface SelecaoManual {
     total: number;
   }>;
   observacoes?: string;
+  efemerideSelecionada?: {
+    tipo: 'fatosBrasileiros' | 'efemeridesIA' | 'curiosidadesAmazonicas';
+    indice: number;
+    efemeride: {
+      titulo: string;
+      texto: string;
+      fonte: string;
+    };
+  };
 }
 
 async function verificarSelecaoManual(): Promise<SelecaoManual | null> {
@@ -588,8 +597,18 @@ export async function gerarRoteiro() {
             console.log('⚠️ Sugestões de abertura não encontradas. Execute primeiro: npx tsx src/roteiro/sugerirAbertura.ts');
         }
         
+        // 3.1. Verificar se há seleção manual e usar efeméride selecionada
+        const selecaoManual = await verificarSelecaoManual();
+        if (selecaoManual?.efemerideSelecionada) {
+            console.log('📅 Usando efeméride selecionada manualmente:', selecaoManual.efemerideSelecionada.efemeride.titulo);
+            sugestoesAbertura = {
+                ...sugestoesAbertura,
+                efemeride: selecaoManual.efemerideSelecionada.efemeride
+            };
+        }
+        
         // 4. Preparar notícias para o roteiro
-        const noticiasParaRoteiro = await prepararNoticiasParaRoteiro(noticiasData);
+        const noticiasParaRoteiro = await prepararNoticiasParaRoteiro(noticiasData, selecaoManual);
         console.log('📋 Notícias preparadas para roteiro:', {
             manchete: noticiasParaRoteiro.manchete.titulo,
             totalNoticias: noticiasParaRoteiro.noticias.length
@@ -622,14 +641,13 @@ interface NoticiasParaRoteiro {
 }
 
 // Função corrigida para usar o tipo correto e adicionar verificação de segurança
-async function prepararNoticiasParaRoteiro(dados: NoticiasCategorizadas): Promise<NoticiasParaRoteiro> {
+async function prepararNoticiasParaRoteiro(dados: NoticiasCategorizadas, selecaoManual?: SelecaoManual | null): Promise<NoticiasParaRoteiro> {
     // Verificação para evitar erro se rankingGeral não existir ou estiver vazio
     if (!dados.rankingGeral || dados.rankingGeral.length === 0) {
         throw new Error('Não há notícias no ranking geral para preparar o roteiro.');
     }
     
     // 🆕 NOVO: Verificar e aplicar seleção manual
-    const selecaoManual = await verificarSelecaoManual();
     let noticiasParaProcessar = dados.rankingGeral;
     
     if (selecaoManual) {
