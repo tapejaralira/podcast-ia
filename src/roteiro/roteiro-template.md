@@ -7,6 +7,8 @@
 
 ## Bloco 0: Abertura (Cold Open)
 
+[AUDIO: vinheta_abertura.mp3]
+
 **Tipo:** {{tipoColdOpen}}
 **Apresentador Principal:** {{apresentadorColdOpen}}
 **Reagente:** {{apresentadorReagente}}
@@ -18,8 +20,6 @@
 **{{apresentadorReagente}}:**
 
 > {{reacaoColdOpen}}
-
-[AUDIO: vinheta_abertura.mp3]
 
 ---
 
