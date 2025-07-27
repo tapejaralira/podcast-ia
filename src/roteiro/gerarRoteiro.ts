@@ -296,7 +296,7 @@ const carregarDadosNoticias = async (): Promise<NoticiasCategorizadas> => {
 
 // A função agora aceita quatro parâmetros: 'noticias', 'template', 'personagens' e 'sugestoesAbertura'
 async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string, personagens: any, sugestoesAbertura: any): Promise<string> {
-  console.log('🤖 Chamando API do Gemini para gerar roteiro...');
+  console.log('🤖 Chamando API do Gemini para gerar roteiro com contexto completo...');
   
   // O prompt foi enriquecido com sugestões de abertura e efemérides
   const prompt = `
@@ -325,19 +325,14 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
 
     **INSTRUÇÕES PARA O COLD OPEN:**
     - Use a efeméride/curiosidade acima como base
-    - Um apresentador conta a curiosidade (35-45 segundos) de forma super casual
-    - O outro reage naturalmente (20-25 segundos)
-    - IMPORTANTE: É uma conversa APENAS ENTRE ELES - não se dirijam à audiência ainda
-    - Use linguagem super informal: "Cara", "Mano", "Tu sabia que...", "Nossa"
-    - NÃO conecte com as notícias - é só uma curiosidade entre amigos
-    - Tom: descontraído, amigável, como uma conversa antes do trabalho começar
-    - APLIQUE todas as regras de formatação TTS (números por extenso, quebras de linha, pontuação natural)
-    
-    **INSTRUÇÕES PARA AS NOTÍCIAS (DO CARDÁPIO EM DIANTE):**
-    - Agora sim podem falar DIRETAMENTE para os ouvintes do podcast
-    - Tom profissional mas próximo, como apresentadores experientes
-    - Podem interagir com a audiência: "Pessoal", "Galera", "Vocês que tão ouvindo"
-    - Use linguagem informal amazônica mas mantenha clareza jornalística
+    - Um apresentador conta a curiosidade (35-45 segundos) como se estivesse compartilhando algo interessante com um amigo
+    - O outro reage naturalmente usando sua personalidade
+    - Deve ser uma conversa CASUAL e NATURAL entre os dois apresentadores
+    - NÃO se dirijam à audiência - falem entre vocês como amigos conversando
+    - Use linguagem informal: "Cara", "Mano", "Tu sabia que..."
+    - NÃO conecte com as notícias do episódio
+    - Use as reações exemplares dos personagens para inspiração
+    - APLIQUE todas as regras de formatação TTS (números por extenso, pausas, quebras de linha)
     ---
 
     **Template do Roteiro (Preencha EXATAMENTE esta estrutura):**
@@ -388,13 +383,6 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
        - {{apresentadorCardapio}}: O outro apresentador (alternância)
        - {{cardapioNoticias}}: Lista rápida das 5 notícias do episódio
        
-       **IMPORTANTE**: Para cada notícia (1-5), o {{noticiaX_texto_completo}} deve SEMPRE começar com uma frase de contexto específica da posição da notícia:
-       - Notícia 1: Frase da categoria "PRIMEIRA NOTÍCIA"
-       - Notícia 2: Frase da categoria "SEGUNDA NOTÍCIA"  
-       - Notícia 3: Frase da categoria "TERCEIRA NOTÍCIA"
-       - Notícia 4: Frase da categoria "QUARTA NOTÍCIA"
-       - Notícia 5: Frase da categoria "QUINTA NOTÍCIA (ÚLTIMA)"
-       
     2. **COLD OPEN ESPECIAL**: 
        - Deve ser TOTALMENTE independente das notícias do dia
        - Uma curiosidade, efeméride ou data comemorativa
@@ -408,159 +396,43 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
          * Apresentador 1: "Cara, tu sabia que hoje faz duzentos anos que..." [conta a curiosidade]
          * Apresentador 2: "Sério? Nossa, que massa! Eu não sabia disso..." [reação natural e casual]
        
-    3. **ESTRUTURA DAS 5 NOTÍCIAS COM GANCHOS NATURAIS**: Para cada notícia (1 a 5):
+    3. **ESTRUTURA DAS 5 NOTÍCIAS**: Para cada notícia (1 a 5):
        - {{noticiaX_categoria}}: Use o emoji da classificação
        - {{noticiaX_titulo}}: Título da notícia
        - {{noticiaX_trilha}}: Nome do arquivo de trilha baseado na categoria
-       - {{noticiaX_volume}}: Volume da trilha (ex: -24dB)
+       - {{noticiaX_volume}}: Volume da trilha (ex: -10dB)
        - {{noticiaX_apresentador}}: Tainá, Iraí, Tainá, Iraí, Tainá (alternância)
-       - {{noticiaX_contexto}}: Frase de contexto/introdução específica para a posição da notícia
-       - {{noticiaX_texto_completo}}: Texto completo EXTENSO de 80-120 segundos + GANCHO NATURAL ao final
+       - {{noticiaX_texto_completo}}: Texto completo EXTENSO de 80-120 segundos (bem detalhado e informativo)
        - {{noticiaX_comentarista}}: Iraí, Tainá, Iraí, Tainá, Iraí (alternância inversa)
        - {{noticiaX_comentario}}: Comentário de 25-35 segundos
     
-    **FRASES DE CONTEXTO POR POSIÇÃO (Use como inspiração variada):**
+    3. **MAPEAMENTO DE TRILHAS POR CATEGORIA:**
+       - ⚫️ (Segurança): trilha_tensao_leve.mp3, -12dB
+       - 🟡 (Política): trilha_politica.mp3, -10dB
+       - 🔴 (Urgente): trilha_tensao_leve.mp3, -8dB
+       - 🚀 (Tecnologia): trilha_tecnologica_upbeat.mp3, -10dB
+       - 🎬 (Entretenimento): trilha_cultural.mp3, -10dB
+       - 🎭 (Cultura): trilha_eventos.mp3, -10dB
+       - 📰 (Geral): trilha_neutra.mp3, -10dB
     
-    **PRIMEIRA NOTÍCIA:**
-    - "Para a primeira notícia de hoje..."
-    - "Vamos começar com uma notícia que..."
-    - "A primeira matéria fala sobre..."
-    - "Para abrir o noticiário de hoje..."
-    - "Começamos com uma informação importante sobre..."
-    - "A primeira notícia que trouxemos hoje..."
-    - "Para iniciar, vamos falar sobre..."
-    - "Nossa matéria de abertura trata de..."
+    4. **ALTERNÂNCIA DE APRESENTADORES E TAMANHOS DE TEXTO:**
+       - Notícia 1: Tainá apresenta (TEXTO EXTENSO 80-120s), Iraí comenta (25-35s)
+       - Notícia 2: Iraí apresenta (TEXTO EXTENSO 80-120s), Tainá comenta (25-35s)
+       - Notícia 3: Tainá apresenta (TEXTO EXTENSO 80-120s), Iraí comenta (25-35s)
+       - Notícia 4: Iraí apresenta (TEXTO EXTENSO 80-120s), Tainá comenta (25-35s)
+       - Notícia 5: Tainá apresenta (TEXTO EXTENSO 80-120s), Iraí comenta (25-35s)
     
-    **SEGUNDA NOTÍCIA:**
-    - "A segunda notícia de hoje..."
-    - "Na sequência, temos uma matéria sobre..."
-    - "Agora, vamos para a segunda informação..."
-    - "A próxima notícia fala sobre..."
-    - "Em seguida, trouxemos uma matéria que..."
-    - "A segunda matéria do dia aborda..."
-    - "Continuando, temos uma notícia sobre..."
-    - "Para a segunda matéria, selecionamos..."
-    
-    **TERCEIRA NOTÍCIA:**
-    - "A terceira matéria de hoje fala sobre..."
-    - "Olha essa próxima notícia..."
-    - "Na terceira notícia, vamos abordar..."
-    - "Chegamos à terceira matéria do dia..."
-    - "A próxima informação que trouxemos..."
-    - "Para a terceira notícia, selecionamos..."
-    - "Agora, a terceira matéria fala sobre..."
-    - "Nossa terceira informação trata de..."
-    
-    **QUARTA NOTÍCIA:**
-    - "A quarta notícia de hoje..."
-    - "Chegando à quarta matéria..."
-    - "A próxima informação fala sobre..."
-    - "Na quarta notícia do dia..."
-    - "Continuando com a quarta matéria..."
-    - "A penúltima notícia que trouxemos..."
-    - "Para a quarta matéria, temos..."
-    - "Agora, vamos para a quarta informação..."
-    
-    **QUINTA NOTÍCIA (ÚLTIMA):**
-    - "E para a última matéria de hoje..."
-    - "Para encerrar o noticiário..."
-    - "A quinta e última notícia..."
-    - "Para fechar, trouxemos uma matéria sobre..."
-    - "E por último, vamos falar sobre..."
-    - "A última informação do dia trata de..."
-    - "Para concluir o BubuiA News de hoje..."
-    - "E fechando o nosso noticiário..."
-    
-    **INSTRUÇÕES PARA USO DOS CONTEXTOS:**
-    - Use APENAS UMA frase de contexto por notícia
-    - Respeite EXATAMENTE a ordem: 1ª, 2ª, 3ª, 4ª, 5ª notícia
-    - Varie as frases ao longo do episódio - não repita o mesmo estilo
-    - A frase de contexto deve vir IMEDIATAMENTE antes do texto principal
-    - Mantenha naturalidade e fluidez na transição
-    - NÃO use contexto repetitivo como "a próxima" para todas
-    
-    **GANCHOS NATURAIS PARA TRANSIÇÃO (Use como inspiração variada):**
-    
-    **Chamadas Diretas ao Colega:**
-    - "O que você acha, [Nome]?"
-    - "E aí, [Nome], qual sua opinião?"
-    - "Interessante né, [Nome]?"
-    - "Bacana né, [Nome]?"
-    - "Complicado né, [Nome]?"
-    - "É tenso né, [Nome]?"
-    - "Que massa né, [Nome]?"
-    - "É uma boa né, [Nome]?"
-    - "Preocupante né, [Nome]?"
-    - "Animador né, [Nome]?"
-    
-    **Chamadas à Audiência:**
-    - "Gente, qual a opinião de vocês?"
-    - "E vocês aí, o que acham?"
-    - "Pessoal, comentem aí embaixo!"
-    - "Uma pena né, pessoal?"
-    - "Que alegria né, galera?"
-    - "Complicado isso aí, gente!"
-    - "Importante demais isso, pessoal!"
-    - "Vamos torcer né, galera?"
-    
-    **Reflexões Abertas:**
-    - "Fica a reflexão..."
-    - "É pra pensar né..."
-    - "Bom saber disso..."
-    - "Vamos acompanhar os desdobramentos..."
-    - "Esperamos que dê certo..."
-    - "Tomara que melhore..."
-    - "É aguardar e ver..."
-    - "Vamos ver no que vai dar..."
-    
-    **Conectores Regionais:**
-    - "Aí sim, meu!"
-    - "É isso aí, cabra!"
-    - "Boa, caboclo!"
-    - "Essa é nossa região!"
-    - "Assim que é!"
-    - "Desse jeito mesmo!"
-    
-    **IMPORTANTE SOBRE OS GANCHOS:**
-    - Use APENAS UM gancho por notícia (no final do texto principal)
-    - Varie os tipos de gancho ao longo do episódio
-    - Adapte o tom do gancho ao conteúdo da notícia:
-      * Notícias positivas: "Bacana né", "Que massa", "Animador"
-      * Notícias negativas: "Complicado né", "Uma pena", "Preocupante"
-      * Notícias neutras: "Interessante né", "O que você acha"
-    - Use os nomes dos apresentadores nos ganchos diretos
-    - Mantenha naturalidade e espontaneidade
-    - NÃO force ganchos - use apenas quando soar natural
-    
-    4. **MAPEAMENTO DE TRILHAS POR CATEGORIA:**
-       - ⚫️ (Segurança): trilha_tensao_leve.mp3, -24dB
-       - 🟡 (Política): trilha_politica.mp3, -24dB
-       - 🔴 (Urgente): trilha_tensao_leve.mp3, -24dB
-       - 🚀 (Tecnologia): trilha_tecnologica_upbeat.mp3, -24dB
-       - 🎬 (Entretenimento): trilha_cultural.mp3, -24dB
-       - 🎭 (Cultura): trilha_eventos.mp3, -24dB
-       - 📰 (Geral): trilha_neutra.mp3, -24dB
-    
-    5. **ALTERNÂNCIA DE APRESENTADORES:**
-       - DEVE HAVER ALTERNÂNCIA: um apresentador apresenta uma notícia, o outro comenta
-       - ENTÃO O OUTRO apresenta a próxima notícia, e o primeiro comenta
-       - Continue alternando ao longo das 5 notícias
-       - Não importa quem começa, mas mantenha a alternância consistente
-       - CARDÁPIO: pode ser apresentado por qualquer um dos dois
-       - TAMANHOS: Apresentação (texto extenso), Comentário (texto mais rápido)
-    
-    6. **TEXTOS COMPLETOS E CONTEXTUALIZADOS**: 
+    5. **TEXTOS COMPLETOS E CONTEXTUALIZADOS**: 
        - Cada texto deve ser auto-suficiente para TTS
-       - **INICIAR SEMPRE COM UMA FRASE DE CONTEXTO** específica da posição da notícia
        - TEXTOS PRINCIPAIS devem ser EXTENSOS e INFORMATIVOS (80-120 segundos)
        - Incluir contexto, detalhes, impactos, consequências
        - Explicar siglas e conceitos quando necessário
        - Adicionar informações complementares relevantes
        - Contextualizar historicamente quando aplicável
        - Mencionar próximos passos ou desdobramentos esperados
-       - **TERMINAR COM UM GANCHO NATURAL** para o comentarista
     
-    7. **FORMATAÇÃO ESPECIAL PARA TTS**:
+    6. **FORMATAÇÃO ESPECIAL PARA TTS**:
+       - Use reticências (...) para pausas naturais e respiração
        - Quebras de linha após pontos finais, interrogações e exclamações
        - Números sempre por extenso: "103,14" = "cento e três vírgula quatorze"
        - Percentuais por extenso: "25%" = "vinte e cinco por cento"
@@ -569,87 +441,22 @@ async function gerarRoteiroComIA(noticias: NoticiasParaRoteiro, template: string
        - Horas por extenso: "14h30" = "quatorze horas e trinta minutos"
        - Valores monetários: "R$ 1.500" = "mil e quinhentos reais"
        - Milhões/bilhões: "R$ 2,5 mi" = "dois vírgula cinco milhões de reais"
-       
-       **EXCEÇÕES - MANTER COMO ESTÃO (não converter por extenso):**
-       - Portais de notícias: "G1", "R7", "UOL", "CNN", "BBC"
-       - Siglas governamentais: "IBGE", "CNJ", "STF", "TCE", "MPF", "PF"
-       - Órgãos estaduais: "SSP", "SEDECTI", "SEMULSP", "DEHS"
-       - Canais de TV: "TV Globo", "SBT", "Record TV"
-       - Redes sociais: "Instagram", "Facebook", "Twitter", "WhatsApp"
-       - Tecnologia: "WiFi", "GPS", "USB", "HTML", "API"
-       - Marcas conhecidas: "iPhone", "Android", "Windows"
-       
+       - Siglas conhecidas podem manter: "IBGE", "CNJ", "STF", "TCE"
        - Endereços web: evitar ou simplificar
-       - Use pontuação natural para pausas: vírgulas, pontos, exclamações, interrogações
+       - Para melhor fluidez, use vírgulas e pause adequadas
+       
+       **Exemplo de texto EXTENSO bem formatado para TTS:**
+       "O Tribunal de Justiça do Amazonas anunciou hoje... uma nova medida que vai impactar diretamente o cotidiano dos manauaras.
+       
+       A decisão, que entra em vigor na próxima segunda-feira... dia vinte e seis de julho... estabelece novos prazos para processos administrativos. Segundo o desembargador responsável... o prazo passa de sessenta para noventa dias.
+       
+       Isso representa um aumento de cinquenta por cento no tempo de tramitação! A medida afeta aproximadamente duas mil processos... que estão atualmente em andamento no tribunal.
+       
+       De acordo com a assessoria do TJ-AM... a mudança foi necessária devido ao aumento significativo no volume de processos... que cresceu quarenta por cento nos últimos dois anos. O tribunal também informou que está contratando novos servidores... para lidar com a demanda crescente.
+       
+       Para os cidadãos que têm processos em andamento... a orientação é acompanhar o andamento pelo site oficial... ou procurar a defensoria pública em casos de dúvidas. A nova medida também estabelece... que processos urgentes terão tratamento prioritário... mantendo o prazo original de sessenta dias."
     
-    8. **DIRETRIZES DE LINGUAGEM INFORMAL AMAZÔNICA**:
-       **Contrações e Informalidade:**
-       - Use "tá" no lugar de "está"
-       - Use "tão" no lugar de "estão"
-       - Use "pra" no lugar de "para"
-       - Use "pro" no lugar de "para o"
-       - Use "pros" no lugar de "para os"
-       - Use "pras" no lugar de "para as"
-       - Use "dum" no lugar de "de um"
-       - Use "duma" no lugar de "de uma"
-       - Use "duns" no lugar de "de uns"
-       - Use "dumas" no lugar de "de umas"
-       - Use "vamo" ocasionalmente no lugar de "vamos"
-       
-       **Gírias e Expressões Locais:**
-       - Use "massa" no lugar de "legal", "bacana", "interessante"
-       - Use "da hora" como alternativa para "legal"
-       - Use "tenso" no lugar de "complicado", "difícil"
-       - Use "osso" para situações muito difíceis
-       - Use "eita!" como interjeição de surpresa
-       - Use "rapaz!" ou "meu!" para dar ênfase
-       - Use "mesmo" no lugar de "realmente"
-       - Use "de verdade" no lugar de "realmente"
-       
-       **Conectivos Informais:**
-       - Use "e mais" no lugar de "além disso"
-       - Use "mas aí" no lugar de "por outro lado", "entretanto"
-       - Use "então" no lugar de "portanto"
-       - Use "assim" no lugar de "dessa forma"
-       
-       **Intensificadores Regionais:**
-       - Use "demais" para intensificar: "massa demais", "importante demais"
-       - Use "mesmo" para confirmar: "é bom mesmo", "é sério mesmo"
-       - Use "aí" em expressões: "que massa, né?", "tenso aí!"
-       
-       **Mantenha Sempre:**
-       - "tu" no lugar de "você"
-       - "né?" no final das frases
-       - Linguagem próxima e calorosa típica da região
-       
-       **Exemplo de texto EXTENSO bem formatado para TTS COM CONTEXTO, LINGUAGEM INFORMAL E GANCHO:**
-       "Pra primeira notícia de hoje, o Tribunal de Justiça do Amazonas anunciou uma nova medida que vai impactar diretamente o cotidiano dos manauaras.
-       
-       A decisão, que entra em vigor na próxima segunda-feira, dia vinte e seis de julho, estabelece novos prazos pros processos administrativos. Segundo informações do G1, o prazo passa de sessenta pra noventa dias.
-       
-       Isso representa um aumento de cinquenta por cento no tempo de tramitação! A medida afeta aproximadamente dois mil processos que tão atualmente em andamento no tribunal.
-       
-       De acordo com a assessoria do TJ-AM, a mudança foi necessária devido ao aumento significativo no volume de processos, que cresceu quarenta por cento nos últimos dois anos. O tribunal também informou que tá contratando novos servidores pra lidar com a demanda crescente.
-       
-       Pros cidadãos que têm processos em andamento, a orientação é acompanhar o andamento pelo site oficial ou procurar a defensoria pública em casos de dúvidas. A nova medida também estabelece que processos urgentes vão ter tratamento prioritário, mantendo o prazo original de sessenta dias.
-       
-       Tenso né, Iraí?"
-       
-       **Resposta de comentário (informal e natural):**
-       "Mesmo, Tainá... Mais tempo esperando né? E pra quem já tá com pressa, isso vai ser massa né? Mas pelo menos os casos urgentes vão ter prioridade."
-    
-    **REGRA UNIVERSAL**: Aplique TODAS as formatações de TTS (números por extenso, quebras de linha após pontuação) em TODOS os textos do roteiro - cold open, cardápio, contextos, notícias, ganchos e comentários. PORÉM, mantenha as EXCEÇÕES listadas acima (portais de notícias como G1, siglas governamentais, etc.) sem conversão para preservar a naturalidade da leitura. Use pontuação natural (vírgulas, pontos, exclamações, interrogações) para criar pausas naturais na fala.
-    
-    **IMPORTANTE SOBRE CONTEXTOS**: Cada notícia DEVE começar com uma frase de contexto específica para sua posição (primeira, segunda, terceira, quarta, quinta). Varie sempre as frases de contexto para evitar repetições. Os contextos devem soar naturais e ajudar na fluidez do roteiro.
-    
-    **IMPORTANTE SOBRE GANCHOS**: Os ganchos devem soar naturais e espontâneos, como se os apresentadores tivessem mesmo conversando. VARIE o tipo de gancho baseado no tom da notícia e USE APENAS quando soar natural - nem toda notícia precisa ter gancho. Alterne entre chamadas diretas ao colega, chamadas à audiência e reflexões abertas. Quando usar, coloque apenas UM gancho por notícia, no final do texto principal.
-    
-    **IMPORTANTE SOBRE TOM EMOCIONAL**: Adapte o tom conforme a gravidade da notícia:
-    - **Notícias graves/trágicas**: Tom sério, respeitoso, sem forçar alegria
-    - **Notícias positivas**: Tom animado e otimista, pode usar "que massa!"
-    - **Notícias técnicas/neutras**: Tom didático e explicativo
-    - **Notícias polêmicas**: Tom equilibrado, apresente os fatos sem tomar partido
-    - **SEMPRE mantenha**: Respeito e humanidade em qualquer assunto
+    **REGRA UNIVERSAL**: Aplique TODAS as formatações de TTS (números por extenso, pausas, quebras de linha) em TODOS os textos do roteiro - cold open, cardápio, notícias e comentários.
     
     IMPORTANTE: Retorne APENAS o roteiro preenchido, sem explicações adicionais.
   `;

@@ -414,7 +414,6 @@ export default function Home() {
                       onSelecionar={toggleSelecaoNoticia}
                       isManchete={mancheteSelecionada === noticia.id}
                       onSetManchete={(id) => setMancheteSelecionada(id === mancheteSelecionada ? null : id)}
-                      mostrarResumo={abaSelecionada !== 'selecionadas'}
                     />
                   ))
                 )}

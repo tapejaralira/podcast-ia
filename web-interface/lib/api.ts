@@ -11,7 +11,7 @@
  * @ai-business-impact Data consistency, user experience
  */
 
-import { NoticiasCategorizadas, SelecaoManual, SugestoesAbertura } from './types';
+import { NoticiasCategorizadas, SelecaoManual } from './types';
 
 // Configuração base
 const API_BASE = process.env.NODE_ENV === 'development' ? '/api' : '/api';
@@ -31,25 +31,6 @@ export async function carregarNoticias(): Promise<NoticiasCategorizadas | null> 
     return data as NoticiasCategorizadas;
   } catch (error) {
     console.error('Erro ao carregar notícias:', error);
-    return null;
-  }
-}
-
-/**
- * Carrega sugestões de abertura com efemérides
- * @ai-context Lê arquivo sugestoes-abertura.json gerado pelo sistema
- */
-export async function carregarSugestoesAbertura(): Promise<SugestoesAbertura | null> {
-  try {
-    const response = await fetch(`${API_BASE}/sugestoes-abertura`);
-    if (!response.ok) {
-      throw new Error(`Erro HTTP: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    return data as SugestoesAbertura;
-  } catch (error) {
-    console.error('Erro ao carregar sugestões de abertura:', error);
     return null;
   }
 }
@@ -120,6 +101,21 @@ export function converterFormatoAntigo(dados: unknown): NoticiasCategorizadas | 
         metadados: {
           totalAnalisadas: 0,
           totalRelevantes: 0,
+          fontesProcessadas: [],
+          tempoProcessamento: '0s',
+          versaoAnalise: '1.0-compat',
+        },
+        estatisticas: {
+          distribucaoPorCategoria: {},
+          distribucaoPorRelevancia: {},
+          distribucaoPorPrioridade: {},
+          scoresMedios: {},
+        },
+        sugestaoAutomatica: {
+          manchete: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
+          noticiasRecomendadas: [],
+          justificativa: 'Conversão de formato antigo',
+          confianca: 0.5,
         },
         categorias: {
           politica: [],
@@ -130,6 +126,12 @@ export function converterFormatoAntigo(dados: unknown): NoticiasCategorizadas | 
           geral: [],
         },
         rankingGeral: [],
+        destaquesDoDia: {
+          maisRelevante: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
+          maisAmazonico: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
+          maisBizarro: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
+          maisUrgente: {} as any, // Assuming NoticiaCompleta is replaced by any or needs a placeholder
+        },
       };
       
       return resultado;
