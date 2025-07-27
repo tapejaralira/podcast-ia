@@ -23,7 +23,7 @@
 
 ---
 
-## Bloco 1: Introdução e Cardápio
+## Bloco 1: Cardápio
 
 [AUDIO: introducao_fixa.mp3]
 
