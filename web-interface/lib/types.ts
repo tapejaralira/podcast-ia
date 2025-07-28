@@ -58,6 +58,11 @@ export interface SelecaoManual {
     ids: string[];
     total: number;
   }>;
+  efemerideSelecionada?: {
+    tipo: 'fatosBrasileiros' | 'efemeridesIA' | 'curiosidadesAmazonicas';
+    indice: number;
+    efemeride: Efemeride;
+  };
 }
 
 /**
@@ -74,4 +79,35 @@ export interface EstadoSelecao {
   manchete: string | null;
   noticias: Set<string>;
   observacoes: string;
+}
+
+/**
+ * Representa uma efeméride para abertura do podcast
+ */
+export interface Efemeride {
+  titulo: string;
+  texto: string;
+  gancho?: string;
+  fonte?: string;
+}
+
+/**
+ * Opções de efemérides disponíveis
+ */
+export interface OpcoesEfemerides {
+  fatosBrasileiros: Efemeride[];
+  efemeridesIA: Efemeride[];
+  curiosidadesAmazonicas: Efemeride[];
+  recomendacao?: {
+    tipo: 'fatosBrasileiros' | 'efemeridesIA' | 'curiosidadesAmazonicas';
+    indice: number;
+  };
+}
+
+/**
+ * Sugestões de abertura do podcast
+ */
+export interface SugestoesAbertura {
+  data: string;
+  opcoesEfemerides: OpcoesEfemerides;
 }

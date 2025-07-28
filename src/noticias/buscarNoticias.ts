@@ -18,6 +18,57 @@ interface CollectorModule {
 }
 
 /**
+ * Converte uma data para o horário de Manaus (UTC-4) no formato brasileiro
+ */
+function formatarDataManaus(data: Date): string {
+    // Manaus está no fuso UTC-4 (sem horário de verão)
+    const manausOffset = -4 * 60; // -4 horas em minutos
+    const utc = data.getTime() + (data.getTimezoneOffset() * 60000);
+    const manausTime = new Date(utc + (manausOffset * 60000));
+    
+    // Formato brasileiro: DD/MM/AAAA HH:mm:ss
+    const dia = manausTime.getDate().toString().padStart(2, '0');
+    const mes = (manausTime.getMonth() + 1).toString().padStart(2, '0');
+    const ano = manausTime.getFullYear();
+    const hora = manausTime.getHours().toString().padStart(2, '0');
+    const min = manausTime.getMinutes().toString().padStart(2, '0');
+    const seg = manausTime.getSeconds().toString().padStart(2, '0');
+    
+    return `${dia}/${mes}/${ano} ${hora}:${min}:${seg}`;
+}
+
+/**
+ * Converte horário de Manaus (formato brasileiro) para UTC ISO string
+ * Para uso interno quando necessário comparar com APIs externas
+ */
+function manausParaUTC(dataManausStr: string): string {
+    try {
+        // Parse do formato DD/MM/AAAA HH:mm:ss
+        const [datePart, timePart] = dataManausStr.split(' ');
+        const [dia, mes, ano] = datePart.split('/');
+        const [hora, min, seg] = timePart.split(':');
+        
+        // Criar data local de Manaus
+        const manausTime = new Date(
+            parseInt(ano), 
+            parseInt(mes) - 1, // Mês é 0-indexado
+            parseInt(dia),
+            parseInt(hora),
+            parseInt(min),
+            parseInt(seg || '0')
+        );
+        
+        // Converter para UTC (Manaus é UTC-4)
+        const utcTime = new Date(manausTime.getTime() + (4 * 60 * 60 * 1000));
+        return utcTime.toISOString();
+    } catch (error) {
+        console.error('Erro ao converter data de Manaus para UTC:', error);
+        // Fallback: usar data atual
+        return new Date().toISOString();
+    }
+}
+
+/**
  * @ai-purpose Coleta notícias de fontes locais amazônicas e estrutura dados brutos para análise posterior
  * @ai-input-format Lê estado da última coleta de estado-coleta.json ou usa config.coleta.horasDefault como fallback
  * @ai-output-format Array de NoticiaCrua salvo em noticias-recentes.json com metadados completos de extração
@@ -48,9 +99,17 @@ export async function buscarNoticias() {
     try {
         const estadoContent = await fs.readFile(estadoFile, 'utf-8');
         const estado = JSON.parse(estadoContent);
-        if (estado.ultimaColeta) {
-            startTime = new Date(estado.ultimaColeta).toISOString();
-            console.log(`Última coleta registrada em: ${new Date(startTime).toLocaleString('pt-BR')}. Buscando notícias desde então.`);
+        
+        if (estado.ultimaColetaManaus) {
+            // Novo formato: trabalhar direto com horário de Manaus
+            console.log(`Última coleta registrada: ${estado.ultimaColetaManaus} (horário de Manaus)`);
+            // Converter para UTC apenas para comparação interna com os feeds
+            startTime = manausParaUTC(estado.ultimaColetaManaus);
+        } else if (estado.ultimaColeta) {
+            // Formato antigo: converter de UTC para Manaus
+            const dataLegivel = formatarDataManaus(new Date(estado.ultimaColeta));
+            console.log(`Última coleta (formato antigo): ${dataLegivel} (convertido para Manaus)`);
+            startTime = estado.ultimaColeta;
         } else {
             throw new Error('Formato de estado inválido');
         }
@@ -138,15 +197,17 @@ export async function buscarNoticias() {
         await fs.mkdir(path.dirname(outputFile), { recursive: true });
         await fs.writeFile(outputFile, JSON.stringify(validationResult.valid, null, 2));
         
+        // Salvar apenas a data da última coleta no horário de Manaus
+        const dataManaus = formatarDataManaus(runStartTime);
         await fs.writeFile(estadoFile, JSON.stringify({ 
-            ultimaColeta: runStartTime.toISOString(),
+            ultimaColetaManaus: dataManaus, // Apenas horário de Manaus
             totalArtigos: validationResult.valid.length,
             taxaValidacao: validationResult.summary.successRate
         }, null, 2));
 
         console.log(`
 ✅ Coleta finalizada! ${validationResult.valid.length} artigos únicos e válidos salvos em ${outputFile}`);
-        console.log(`Data da última coleta atualizada para: ${runStartTime.toLocaleString('pt-BR')}`);
+        console.log(`Data da última coleta: ${dataManaus} (horário de Manaus)`);
 
     } catch (error) {
         console.error('🔥 Ocorreu um erro geral no processo de busca:', error);

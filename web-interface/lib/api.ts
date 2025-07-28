@@ -11,7 +11,7 @@
  * @ai-business-impact Data consistency, user experience
  */
 
-import { NoticiasCategorizadas, SelecaoManual } from './types';
+import { NoticiasCategorizadas, SelecaoManual, SugestoesAbertura } from './types';
 
 // Configuração base
 const API_BASE = process.env.NODE_ENV === 'development' ? '/api' : '/api';
@@ -70,6 +70,24 @@ export async function carregarSelecaoExistente(): Promise<SelecaoManual | null> 
     return data as SelecaoManual;
   } catch (error) {
     console.error('Erro ao carregar seleção existente:', error);
+    return null;
+  }
+}
+
+/**
+ * Carrega as sugestões de abertura do podcast
+ */
+export async function carregarSugestoesAbertura(): Promise<SugestoesAbertura | null> {
+  try {
+    const response = await fetch(`${API_BASE}/sugestoes-abertura`);
+    if (!response.ok) {
+      return null;
+    }
+    
+    const data = await response.json();
+    return data as SugestoesAbertura;
+  } catch (error) {
+    console.error('Erro ao carregar sugestões de abertura:', error);
     return null;
   }
 }
