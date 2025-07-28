@@ -20,11 +20,15 @@ interface SelecaoManual {
     titulo: string;
     categoria: string;
   };
+  // Dados completos da manchete selecionada
+  mancheteCompleta: NoticiaCompleta;
   noticiasEscolhidas: Array<{
     categoria: string;
     ids: string[];
     total: number;
   }>;
+  // Array com dados completos de todas as notícias selecionadas
+  noticiasCompletas: NoticiaCompleta[];
   observacoes?: string;
   efemerideSelecionada?: {
     tipo: 'fatosBrasileiros' | 'efemeridesIA' | 'curiosidadesAmazonicas';
@@ -63,6 +67,19 @@ async function verificarSelecaoManual(): Promise<SelecaoManual | null> {
 
 async function aplicarSelecaoManualNoRoteiro(noticias: NoticiaCompleta[], selecao: SelecaoManual): Promise<NoticiaCompleta[]> {
     console.log('📝 Aplicando seleção manual no gerador de roteiro...');
+    
+    // Se a seleção tem dados completos, usar diretamente
+    if (selecao.mancheteCompleta && selecao.noticiasCompletas) {
+        console.log('✅ Usando dados completos da seleção manual');
+        console.log(`   Manchete: ${selecao.mancheteCompleta.titulo}`);
+        console.log(`   Notícias selecionadas: ${selecao.noticiasCompletas.length}`);
+        
+        // Retornar manchete + notícias selecionadas diretamente dos dados salvos
+        return [selecao.mancheteCompleta, ...selecao.noticiasCompletas];
+    }
+    
+    // Fallback para compatibilidade com formato antigo
+    console.log('⚠️ Usando fallback para formato antigo da seleção manual');
     
     // Encontrar a manchete selecionada
     const manchete = noticias.find(n => n.id === selecao.manchete.id);
@@ -884,15 +901,24 @@ async function prepararNoticiasParaRoteiro(dados: NoticiasCategorizadas, selecao
     let noticiasSelecionadas: NoticiaCompleta[];
     
     if (limitarNoticiasSelcionadas && selecaoManual) {
-        // Usar apenas as notícias manualmente selecionadas
-        const totalIdsEscolhidos = selecaoManual.noticiasEscolhidas.reduce((total, categoria) => total + categoria.total, 0);
-        const totalComManchete = totalIdsEscolhidos + 1; // +1 para a manchete
-        
-        console.log(`📊 Seleção manual: ${totalComManchete} notícias (1 manchete + ${totalIdsEscolhidos} selecionadas)`);
-        
-        // As notícias já foram filtradas e ordenadas por aplicarSelecaoManualNoRoteiro
-        // Pegar apenas manchete + notícias selecionadas (que estão nas primeiras posições)
-        noticiasSelecionadas = noticiasParaProcessar.slice(0, totalComManchete);
+        // Usar dados completos da seleção manual se disponíveis
+        if (selecaoManual.mancheteCompleta && selecaoManual.noticiasCompletas) {
+            const totalSelecionadas = selecaoManual.noticiasCompletas.length + 1; // +1 para a manchete
+            console.log(`📊 Seleção manual (dados completos): ${totalSelecionadas} notícias (1 manchete + ${selecaoManual.noticiasCompletas.length} selecionadas)`);
+            
+            // Usar diretamente os dados da seleção - não precisa mais buscar no ranking
+            noticiasSelecionadas = noticiasParaProcessar.slice(0, totalSelecionadas);
+        } else {
+            // Fallback para formato antigo
+            const totalIdsEscolhidos = selecaoManual.noticiasEscolhidas.reduce((total, categoria) => total + categoria.total, 0);
+            const totalComManchete = totalIdsEscolhidos + 1; // +1 para a manchete
+            
+            console.log(`📊 Seleção manual (formato antigo): ${totalComManchete} notícias (1 manchete + ${totalIdsEscolhidos} selecionadas)`);
+            
+            // As notícias já foram filtradas e ordenadas por aplicarSelecaoManualNoRoteiro
+            // Pegar apenas manchete + notícias selecionadas (que estão nas primeiras posições)
+            noticiasSelecionadas = noticiasParaProcessar.slice(0, totalComManchete);
+        }
     } else {
         // Modo automático: pegar 10 notícias
         console.log('📊 Modo automático: 10 notícias (1 manchete + 9 outras)');

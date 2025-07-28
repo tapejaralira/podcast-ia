@@ -157,28 +157,31 @@ export default function Home() {
         return;
       }
       
-      // Agrupar notícias por categoria
-      const noticiasEscolhidas: Array<{categoria: string; ids: string[]; total: number}> = [];
-      const categorias = new Set<string>();
-      
+      // Coletar todas as notícias selecionadas com informações completas
+      const noticiasCompletas: NoticiaCompleta[] = [];
       Array.from(noticiasSelecionadas).forEach(id => {
         const noticia = buscarNoticia(id);
         if (noticia) {
-          categorias.add(noticia.categoria);
+          noticiasCompletas.push(noticia);
         }
       });
       
+      // Agrupar notícias por categoria (mantendo compatibilidade)
+      const noticiasEscolhidas: Array<{categoria: string; ids: string[]; total: number}> = [];
+      const categorias = new Set<string>();
+      
+      noticiasCompletas.forEach(noticia => {
+        categorias.add(noticia.categoria);
+      });
+      
       categorias.forEach(categoria => {
-        const idsCategoria = Array.from(noticiasSelecionadas).filter(id => {
-          const noticia = buscarNoticia(id);
-          return noticia?.categoria === categoria;
-        });
+        const noticiasCategoria = noticiasCompletas.filter(n => n.categoria === categoria);
         
-        if (idsCategoria.length > 0) {
+        if (noticiasCategoria.length > 0) {
           noticiasEscolhidas.push({
             categoria,
-            ids: idsCategoria,
-            total: idsCategoria.length,
+            ids: noticiasCategoria.map(n => n.id),
+            total: noticiasCategoria.length,
           });
         }
       });
@@ -190,7 +193,11 @@ export default function Home() {
           titulo: mancheteNoticia.titulo,
           categoria: mancheteNoticia.categoria,
         },
+        // Adicionar dados completos da manchete
+        mancheteCompleta: mancheteNoticia,
         noticiasEscolhidas,
+        // Adicionar array com dados completos das notícias selecionadas
+        noticiasCompletas: noticiasCompletas,
         efemerideSelecionada: efemerideSelecionada || undefined,
       };
       

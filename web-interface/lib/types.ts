@@ -53,11 +53,15 @@ export interface SelecaoManual {
     titulo: string;
     categoria: string;
   };
+  // Dados completos da manchete selecionada
+  mancheteCompleta: NoticiaCompleta;
   noticiasEscolhidas: Array<{
     categoria: string;
     ids: string[];
     total: number;
   }>;
+  // Array com dados completos de todas as notícias selecionadas
+  noticiasCompletas: NoticiaCompleta[];
   efemerideSelecionada?: {
     tipo: 'fatosBrasileiros' | 'efemeridesIA' | 'curiosidadesAmazonicas';
     indice: number;
