@@ -21,7 +21,7 @@ Thumbs.db
 
 # Pastas com dados gerados pelo pipeline
 # Estes arquivos são criados a cada execução e não devem ser versionados.
-data/
+# data/ - REMOVIDO: agora versionamos todos os arquivos da pasta data
 output/
 episodios/
 episodios_finais/

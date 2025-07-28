@@ -1,0 +1,64 @@
+{
+  "ganchos": [
+    {
+      "tipo": "impactante",
+      "texto": "E aí, meus cabocos e cunhãs! Três dias sem água no Campo Dourado! Três dias! Dá pra acreditar? Enquanto a gente aqui se abana no calor da Amazônia, a galera lá tá virando camelo pra sobreviver. A Águas de Manaus vai ter que explicar essa, viu? Hoje no Bubuia News, a gente vai a fundo nessa história que tá dando o que falar. Segura essa marimba que a gente já volta com todos os detalhes!",
+      "trilha_sugerida": "trilha_tensao_leve.mp3"
+    },
+    {
+      "tipo": "narrativo",
+      "texto": "Imagina só: você acorda no calor de rachar, sonhando com aquele banho gelado pra começar o dia. Abre a torneira... e nada. Silêncio. Desespero! Pois essa é a realidade dos moradores do Campo Dourado, que já completaram três dias sem uma gota d'água. Será que a Águas de Manaus esqueceu que Manaus é banhada por rios gigantes? No Bubuia News de hoje, a gente vai te levar direto pra essa novela da vida real e descobrir o que tá por trás dessa falta d'água.",
+      "trilha_sugerida": "trilha_reflexiva.mp3"
+    },
+    {
+      "tipo": "reflexivo",
+      "texto": "E aí, rapaziada, parando pra pensar um pouquinho: a gente que mora em Manaus, cercado de água por todos os lados, consegue imaginar o que é passar sede? A galera do Campo Dourado não precisa imaginar, eles estão vivendo isso na pele. Será que a Águas de Manaus tá dando a devida atenção pra essa galera? Ou será que a sede do lucro tá falando mais alto? No Bubuia News de hoje, a gente vai mergulhar fundo nessa questão e cobrar explicações. Fica ligado!",
+      "trilha_sugerida": "trilha_informativa_neutra.mp3"
+    }
+  ],
+  "efemeride": {
+    "titulo": "Dia do Agricultor",
+    "texto": "O Dia do Agricultor é celebrado em 28 de julho no Brasil. A data homenageia os profissionais que trabalham na terra, produzindo alimentos e matérias-primas essenciais para a economia e a sociedade brasileira. A agricultura desempenha um papel fundamental no país, especialmente em regiões como a Amazônia, onde a produção sustentável e o manejo adequado dos recursos naturais são cruciais para o desenvolvimento da região e a preservação do meio ambiente.",
+    "fonte": "https://www.gov.br/agricultura/pt-br/assuntos/noticias/dia-do-agricultor-celebrado-nesta-sexta-feira-28"
+  },
+  "opcoesEfemerides": {
+    "fatosBrasileiros": [],
+    "efemeridesIA": [
+      {
+        "titulo": "Dia do Agricultor",
+        "texto": "O Dia do Agricultor é celebrado em 28 de julho no Brasil. A data homenageia os profissionais que trabalham na terra, produzindo alimentos e matérias-primas essenciais para a economia e a sociedade brasileira. A agricultura desempenha um papel fundamental no país, especialmente em regiões como a Amazônia, onde a produção sustentável e o manejo adequado dos recursos naturais são cruciais para o desenvolvimento da região e a preservação do meio ambiente.",
+        "fonte": "https://www.gov.br/agricultura/pt-br/assuntos/noticias/dia-do-agricultor-celebrado-nesta-sexta-feira-28"
+      }
+    ],
+    "curiosidadesAmazonicas": [
+      {
+        "titulo": "Encontro das Águas",
+        "texto": "O famoso Encontro das Águas em Manaus, onde os rios Negro e Solimões correm lado a lado por quilômetros sem se misturar, é causado pela diferença de temperatura, velocidade e densidade das águas dos dois rios.",
+        "fonte": "Instituto Nacional de Pesquisas da Amazônia (INPA)"
+      },
+      {
+        "titulo": "Teatro Amazonas",
+        "texto": "Inaugurado em 1896, o Teatro Amazonas foi construído durante o auge da economia da borracha. Sua cúpula tem 36.000 escamas cerâmicas nas cores da bandeira brasileira, representando a riqueza cultural da região.",
+        "fonte": "Secretaria de Cultura do Amazonas"
+      },
+      {
+        "titulo": "Maior Bacia Hidrográfica do Mundo",
+        "texto": "A Bacia Amazônica cobre cerca de 7 milhões de km², sendo maior que toda a Europa. No Amazonas, esta rede fluvial é a principal via de transporte, conectando comunidades isoladas.",
+        "fonte": "Agência Nacional de Águas (ANA)"
+      }
+    ],
+    "recomendacao": {
+      "tipo": "efemeridesIA",
+      "indice": 0,
+      "motivo": "Data comemorativa brasileira encontrada"
+    }
+  },
+  "instrucoes": {
+    "como_escolher": "Para mudar a efeméride, edite o campo 'efemeride' acima copiando uma das opções de 'opcoesEfemerides'",
+    "categorias": {
+      "fatosBrasileiros": "Eventos históricos reais verificados na base de dados local",
+      "efemeridesIA": "Fatos brasileiros e datas comemorativas encontrados via IA",
+      "curiosidadesAmazonicas": "Curiosidades sobre a Amazônia sempre disponíveis"
+    }
+  }
+}

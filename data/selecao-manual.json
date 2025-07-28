@@ -1,0 +1,37 @@
+{
+  "data": "2025-07-27T21:05:48.969Z",
+  "manchete": {
+    "id": "noticia_1753650348968_r8vhu4ckj",
+    "titulo": "Amazonense de 13 anos supera 7 mil concorrentes e chega à semifinal do 'Pequenos Gênios'",
+    "categoria": "economia"
+  },
+  "noticiasEscolhidas": [
+    {
+      "categoria": "economia",
+      "ids": [
+        "noticia_1753650348967_wvp7uaau3",
+        "noticia_1753650348968_r8vhu4ckj",
+        "noticia_1753650348968_x4efc2kbu",
+        "noticia_1753650348965_shqxed7hi"
+      ],
+      "total": 4
+    },
+    {
+      "categoria": "cidades",
+      "ids": [
+        "noticia_1753650348942_1vujvgy8j"
+      ],
+      "total": 1
+    }
+  ],
+  "efemerideSelecionada": {
+    "tipo": "efemeridesIA",
+    "indice": 0,
+    "efemeride": {
+      "titulo": "Dia Nacional do Motociclista",
+      "texto": "O Dia Nacional do Motociclista é celebrado em 27 de julho no Brasil. A data homenageia todos os motociclistas do país, sejam profissionais ou amadores, reconhecendo a importância da motocicleta como meio de transporte e ferramenta de trabalho. A escolha da data é uma homenagem a Marcos Bernardi, um mecânico e motociclista que faleceu em 1974. A motocicleta tem uma relevância especial em regiões como a Amazônia, onde, em muitos casos, é o principal ou único meio de transporte para acessar áreas remotas e comunidades ribeirinhas.",
+      "fonte": "Lei nº 14.745, de 7 de dezembro de 2023"
+    }
+  },
+  "noticiasCompletas": []
+}
