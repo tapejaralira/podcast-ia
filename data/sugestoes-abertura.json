@@ -2,32 +2,32 @@
   "ganchos": [
     {
       "tipo": "impactante",
-      "texto": "E aí, meus cabocos e cunhãs! Três dias sem água no Campo Dourado! Três dias! Dá pra acreditar? Enquanto a gente aqui se abana no calor da Amazônia, a galera lá tá virando camelo pra sobreviver. A Águas de Manaus vai ter que explicar essa, viu? Hoje no Bubuia News, a gente vai a fundo nessa história que tá dando o que falar. Segura essa marimba que a gente já volta com todos os detalhes!",
+      "texto": "Alô, Bubuia! Se preparem pra tirar o pó da sandália e afinar a garganta, porque a ciranda invadiu o Teatro Amazonas e não é miragem! O festival de 2025 já tá dando o tom e a gente te conta tudo que rolou nesse lançamento que fez o coração do Centro histórico dançar. Aperta o play que o Bubuia News começou!",
       "trilha_sugerida": "trilha_tensao_leve.mp3"
     },
     {
       "tipo": "narrativo",
-      "texto": "Imagina só: você acorda no calor de rachar, sonhando com aquele banho gelado pra começar o dia. Abre a torneira... e nada. Silêncio. Desespero! Pois essa é a realidade dos moradores do Campo Dourado, que já completaram três dias sem uma gota d'água. Será que a Águas de Manaus esqueceu que Manaus é banhada por rios gigantes? No Bubuia News de hoje, a gente vai te levar direto pra essa novela da vida real e descobrir o que tá por trás dessa falta d'água.",
+      "texto": "Imagina só: o sol se pondo no Rio Negro, o Teatro Amazonas imponente e, de repente, o som inconfundível da ciranda ecoando por todos os lados. Não, você não entrou numa máquina do tempo! Foi o lançamento do festival de 2025 que transformou o nosso cartão postal num grande terreiro cultural. Mas, o que rolou de tão especial pra gente já entrar no ritmo da festa? É o que a gente te conta agora no Bubuia News!",
       "trilha_sugerida": "trilha_reflexiva.mp3"
     },
     {
       "tipo": "reflexivo",
-      "texto": "E aí, rapaziada, parando pra pensar um pouquinho: a gente que mora em Manaus, cercado de água por todos os lados, consegue imaginar o que é passar sede? A galera do Campo Dourado não precisa imaginar, eles estão vivendo isso na pele. Será que a Águas de Manaus tá dando a devida atenção pra essa galera? Ou será que a sede do lucro tá falando mais alto? No Bubuia News de hoje, a gente vai mergulhar fundo nessa questão e cobrar explicações. Fica ligado!",
+      "texto": "E aí, Bubuia! Já parou pra pensar como a nossa cultura pulsa, mesmo em espaços tão grandiosos como o Teatro Amazonas? Pois é! A ciranda, um ritmo tão nosso, ocupou o palco principal pra anunciar o festival de 2025. Mas, será que a gente tá dando o devido valor a essas manifestações artísticas que nos conectam com a nossa identidade? Reflita com a gente e fique por dentro de todos os detalhes desse lançamento no Bubuia News!",
       "trilha_sugerida": "trilha_informativa_neutra.mp3"
     }
   ],
   "efemeride": {
-    "titulo": "Dia do Agricultor",
-    "texto": "O Dia do Agricultor é celebrado em 28 de julho no Brasil. A data homenageia os profissionais que trabalham na terra, produzindo alimentos e matérias-primas essenciais para a economia e a sociedade brasileira. A agricultura desempenha um papel fundamental no país, especialmente em regiões como a Amazônia, onde a produção sustentável e o manejo adequado dos recursos naturais são cruciais para o desenvolvimento da região e a preservação do meio ambiente.",
-    "fonte": "https://www.gov.br/agricultura/pt-br/assuntos/noticias/dia-do-agricultor-celebrado-nesta-sexta-feira-28"
+    "titulo": "Dia do Batom",
+    "texto": "O Dia do Batom é celebrado em 29 de julho, uma data dedicada a homenagear este item de maquiagem que é um clássico da beleza. É um dia para celebrar a versatilidade do batom, sua história e sua capacidade de expressão e autoestima. O batom não é apenas um item de maquiagem, mas também uma ferramenta de expressão artística, um símbolo de empoderamento feminino e um clássico que se reinventa a cada temporada. A data é uma oportunidade para as marcas de beleza promoverem seus produtos e para os consumidores explorarem diferentes tipos e texturas de batom.",
+    "fonte": ""
   },
   "opcoesEfemerides": {
     "fatosBrasileiros": [],
     "efemeridesIA": [
       {
-        "titulo": "Dia do Agricultor",
-        "texto": "O Dia do Agricultor é celebrado em 28 de julho no Brasil. A data homenageia os profissionais que trabalham na terra, produzindo alimentos e matérias-primas essenciais para a economia e a sociedade brasileira. A agricultura desempenha um papel fundamental no país, especialmente em regiões como a Amazônia, onde a produção sustentável e o manejo adequado dos recursos naturais são cruciais para o desenvolvimento da região e a preservação do meio ambiente.",
-        "fonte": "https://www.gov.br/agricultura/pt-br/assuntos/noticias/dia-do-agricultor-celebrado-nesta-sexta-feira-28"
+        "titulo": "Dia do Batom",
+        "texto": "O Dia do Batom é celebrado em 29 de julho, uma data dedicada a homenagear este item de maquiagem que é um clássico da beleza. É um dia para celebrar a versatilidade do batom, sua história e sua capacidade de expressão e autoestima. O batom não é apenas um item de maquiagem, mas também uma ferramenta de expressão artística, um símbolo de empoderamento feminino e um clássico que se reinventa a cada temporada. A data é uma oportunidade para as marcas de beleza promoverem seus produtos e para os consumidores explorarem diferentes tipos e texturas de batom.",
+        "fonte": ""
       }
     ],
     "curiosidadesAmazonicas": [

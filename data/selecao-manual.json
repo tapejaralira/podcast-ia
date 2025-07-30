@@ -1,37 +1,158 @@
 {
-  "data": "2025-07-27T21:05:48.969Z",
+  "data": "2025-07-29T08:12:17.385Z",
   "manchete": {
-    "id": "noticia_1753650348968_r8vhu4ckj",
-    "titulo": "Amazonense de 13 anos supera 7 mil concorrentes e chega à semifinal do 'Pequenos Gênios'",
+    "id": "noticia_1753776737379_tv4nnsdkc",
+    "titulo": "Manaus ganha primeiro centro público para atendimento de crianças com autismo",
     "categoria": "economia"
+  },
+  "mancheteCompleta": {
+    "id": "noticia_1753776737379_tv4nnsdkc",
+    "titulo": "Manaus ganha primeiro centro público para atendimento de crianças com autismo",
+    "resumo": "O atendimento oferecido é multidisciplinar, fundamentado no método científico ABA (Análise do Comportamento Aplicada), com planos terapêuticos individualizados que priorizam a evolução, a autonomia e o bem-estar de cada criança.",
+    "fonte": "A Crítica",
+    "link": "https://www.acritica.com/geral/manaus-ganha-primeiro-centro-publico-para-atendimento-de-criancas-com-autismo-1.379625",
+    "links": [
+      "https://www.acritica.com/geral/manaus-ganha-primeiro-centro-publico-para-atendimento-de-criancas-com-autismo-1.379625"
+    ],
+    "fontes": [
+      "A Crítica"
+    ],
+    "categoria": "economia",
+    "relevanceScore": 25,
+    "classification": {
+      "id": "🚀 4",
+      "label": "Tecnologia & Inovação do Igarapé",
+      "isAdequate": true
+    }
   },
   "noticiasEscolhidas": [
     {
       "categoria": "economia",
       "ids": [
-        "noticia_1753650348967_wvp7uaau3",
-        "noticia_1753650348968_r8vhu4ckj",
-        "noticia_1753650348968_x4efc2kbu",
-        "noticia_1753650348965_shqxed7hi"
+        "noticia_1753776737380_n1ixceip1",
+        "noticia_1753776737379_tv4nnsdkc"
       ],
-      "total": 4
+      "total": 2
     },
     {
       "categoria": "cidades",
       "ids": [
-        "noticia_1753650348942_1vujvgy8j"
+        "noticia_1753776737374_a1pjcfrv5",
+        "noticia_1753776737375_kkkphz3xe",
+        "noticia_1753776737365_820mzhgwq"
       ],
-      "total": 1
+      "total": 3
+    }
+  ],
+  "noticiasCompletas": [
+    {
+      "id": "noticia_1753776737380_n1ixceip1",
+      "titulo": "Brasil lidera uso de inteligência artificial e Manaus recebe evento para debater o tema",
+      "resumo": "O dado reforça o avanço da IA no país e coloca o tema no centro de discussões estratégicas, como as que ocorrerão no AATEC DAY 2025, nos dias 22 e 23 de agosto, em Manaus",
+      "fonte": "A Crítica",
+      "link": "https://www.acritica.com/geral/brasil-lidera-uso-de-inteligencia-artificial-e-manaus-recebe-evento-para-debater-o-tema-1.379605",
+      "links": [
+        "https://www.acritica.com/geral/brasil-lidera-uso-de-inteligencia-artificial-e-manaus-recebe-evento-para-debater-o-tema-1.379605"
+      ],
+      "fontes": [
+        "A Crítica"
+      ],
+      "categoria": "economia",
+      "relevanceScore": 30,
+      "classification": {
+        "id": "🚀 4",
+        "label": "Tecnologia & Inovação do Igarapé",
+        "isAdequate": true
+      }
+    },
+    {
+      "id": "noticia_1753776737374_a1pjcfrv5",
+      "titulo": "Amazonas tem aumento de 22% no registro de casos de racismo, aponta estudo",
+      "resumo": "Número representa o crescimento de 62,2% nos casos de injúria racial em um período de um ano, de acordo com o Anuário de Segurança Pública 2025",
+      "fonte": "A Crítica",
+      "link": "https://www.acritica.com/geral/amazonas-tem-aumento-de-22-no-registro-de-casos-de-racismo-aponta-estudo-1.379660",
+      "links": [
+        "https://www.acritica.com/geral/amazonas-tem-aumento-de-22-no-registro-de-casos-de-racismo-aponta-estudo-1.379660"
+      ],
+      "fontes": [
+        "A Crítica"
+      ],
+      "categoria": "cidades",
+      "relevanceScore": 22,
+      "classification": {
+        "id": "⚫️ 1",
+        "label": "Segurança & BOs de Impacto",
+        "isAdequate": true
+      }
+    },
+    {
+      "id": "noticia_1753776737375_kkkphz3xe",
+      "titulo": "Vacinação: Saúde reforça imunização para evitar o retorno de doenças já eliminadas no Brasil",
+      "resumo": "Alerta é para o risco de reintrodução do sarampo e da poliomielite",
+      "fonte": "A Crítica",
+      "link": "https://www.acritica.com/geral/vacinac-o-saude-reforca-imunizac-o-para-evitar-o-retorno-de-doencas-ja-eliminadas-no-brasil-1.379613",
+      "links": [
+        "https://www.acritica.com/geral/vacinac-o-saude-reforca-imunizac-o-para-evitar-o-retorno-de-doencas-ja-eliminadas-no-brasil-1.379613"
+      ],
+      "fontes": [
+        "A Crítica"
+      ],
+      "categoria": "cidades",
+      "relevanceScore": 22,
+      "classification": {
+        "id": "⚫️ 1",
+        "label": "Segurança & BOs de Impacto",
+        "isAdequate": true
+      }
+    },
+    {
+      "id": "noticia_1753776737365_820mzhgwq",
+      "titulo": "Plano do MP prevê retirada gradual de flutuantes do Tarumã-Açu até 2027",
+      "resumo": "Flutuantes no Tarumã em Manaus\nWilliam Duarte/Rede Amazônica\nO Ministério Público do Amazonas (MPAM) informou que elabora, junto com a Defensoria Pública do Estado (DPE-AM), uma proposta com formas mais humanitárias para a retirada dos flutuantes da área do Tarumã-Açu, em Manaus. A ideia é que a desocupação ocorra em três etapas, com ações previstas até 2027.\nO plano começou a ser construído após a Justiça determinar, no último dia 7 de junho, que a Prefeitura de Manaus apresente, no prazo de 30 dias, um cronograma detalhado para a remoção das estruturas irregulares.\nA decisão da Vara do Meio Ambiente exige que o município também comprove a viabilidade financeira da execução. Caso não cumpra a medida, a Prefeitura poderá ser multada em até R$ 500 mil.\n📲 Participe do canal do g1 AM no WhatsApp\nDe acordo com a promotora de Justiça Lílian Maria Pires Stone, da 50ª Promotoria de Meio Ambiente, o plano será dividido em fases, começando pelo combate à poluição e pelo bloqueio à entrada de novos flutuantes — prática que segue ocorrendo, mesmo após decisão judicial proibindo.\n“As etapas seguintes já trabalhariam as remoções de comércios e a propositura de uma lei municipal de organização do Tarumã-Açu, até finalmente a retirada de todas as moradias inadequadas daquela localidade”, explicou a promotora.\nA proposta está sendo construída para garantir soluções efetivas sem maiores impactos para as comunidades ribeirinhas.\n“O objetivo é resolver a situação sem traumas para a população e respeitando a sentença já proferida em favor do MP”, afirmou Stone. A Defensoria foi representada na reunião pelo defensor público Thiago Rosas.\nAlém da Prefeitura, a Justiça também intimou o Governo do Amazonas a informar se existem planos de manejo para as bacias hidrográficas dos rios Tarumã-Açu e Puraquequara. \nO Instituto de Proteção Ambiental do Amazonas (Ipaam) deve apresentar dados atualizados sobre a qualidade da água e a presença de coliformes no Tarumã.\nO Ipaam confirmou que já foi notificado e que irá reunir as informações em parceria com o Programa de Monitoramento de Água, Ar e Solos (ProQAS/AM), coordenado pela Universidade do Estado do Amazonas (UEA). \nSegundo o instituto, o relatório mais recente, de 2023, mostrou redução em alguns parâmetros do Índice de Qualidade da Água (IQA), embora ainda haja pontos críticos de contaminação por coliformes.\nDesde o ano passado, o órgão também suspendeu novos licenciamentos para atividades flutuantes no Tarumã-Açu, intensificou a fiscalização e passou a colaborar na elaboração do plano de gestão da bacia hidrográfica, em parceria com a Secretaria de Estado do Meio Ambiente (Sema) e a UEA.\nJustiça dá 30 dias para Prefeitura apresentar plano de retirada de flutuantes no Tarumã",
+      "fonte": "G1 Amazonas",
+      "link": "https://g1.globo.com/am/amazonas/noticia/2025/07/28/plano-do-mp-preve-retirada-gradual-de-flutuantes-do-taruma-acu-ate-2027.ghtml",
+      "links": [
+        "https://g1.globo.com/am/amazonas/noticia/2025/07/28/plano-do-mp-preve-retirada-gradual-de-flutuantes-do-taruma-acu-ate-2027.ghtml"
+      ],
+      "fontes": [
+        "G1 Amazonas"
+      ],
+      "categoria": "cidades",
+      "relevanceScore": 19,
+      "classification": {
+        "id": "🔴 3",
+        "label": "Perrengues da Cidade",
+        "isAdequate": true
+      }
+    },
+    {
+      "id": "noticia_1753776737379_tv4nnsdkc",
+      "titulo": "Manaus ganha primeiro centro público para atendimento de crianças com autismo",
+      "resumo": "O atendimento oferecido é multidisciplinar, fundamentado no método científico ABA (Análise do Comportamento Aplicada), com planos terapêuticos individualizados que priorizam a evolução, a autonomia e o bem-estar de cada criança.",
+      "fonte": "A Crítica",
+      "link": "https://www.acritica.com/geral/manaus-ganha-primeiro-centro-publico-para-atendimento-de-criancas-com-autismo-1.379625",
+      "links": [
+        "https://www.acritica.com/geral/manaus-ganha-primeiro-centro-publico-para-atendimento-de-criancas-com-autismo-1.379625", "https://www.portaldoholanda.com.br/amazonas/projeto-da-deputada-mayara-sai-do-papel-e-caic-tea-e-inaugurado-em-manaus"
+      ],
+      "fontes": [
+        "A Crítica"
+      ],
+      "categoria": "economia",
+      "relevanceScore": 25,
+      "classification": {
+        "id": "🚀 4",
+        "label": "Tecnologia & Inovação do Igarapé",
+        "isAdequate": true
+      }
     }
   ],
   "efemerideSelecionada": {
     "tipo": "efemeridesIA",
     "indice": 0,
     "efemeride": {
-      "titulo": "Dia Nacional do Motociclista",
-      "texto": "O Dia Nacional do Motociclista é celebrado em 27 de julho no Brasil. A data homenageia todos os motociclistas do país, sejam profissionais ou amadores, reconhecendo a importância da motocicleta como meio de transporte e ferramenta de trabalho. A escolha da data é uma homenagem a Marcos Bernardi, um mecânico e motociclista que faleceu em 1974. A motocicleta tem uma relevância especial em regiões como a Amazônia, onde, em muitos casos, é o principal ou único meio de transporte para acessar áreas remotas e comunidades ribeirinhas.",
-      "fonte": "Lei nº 14.745, de 7 de dezembro de 2023"
+      "titulo": "Dia do Capoeirista",
+      "texto": "O Dia do Capoeirista é celebrado em 29 de julho no Brasil, em homenagem a essa importante manifestação cultural afro-brasileira que mistura arte marcial, esporte, dança e música. A capoeira foi reconhecida como Patrimônio Cultural Imaterial da Humanidade pela UNESCO em 2014, ressaltando sua importância para a identidade brasileira. No Amazonas, a capoeira também possui forte presença, com diversos grupos e mestres que mantêm viva essa tradição, promovendo a cultura e a inclusão social através de seus ensinamentos.",
+      "fonte": "Lei nº 12.084, de 19 de novembro de 2009 (DOU de 20/11/2009)"
     }
-  },
-  "noticiasCompletas": []
+  }
 }

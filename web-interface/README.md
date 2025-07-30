@@ -45,10 +45,7 @@ Interface web moderna e intuitiva para seleção manual de notícias do **Podcas
 
 ### 1. Iniciar a Interface
 
-```bash
-cd web-interface
-npm run dev
-```
+cd "c:\Meu Drive\podcast-ia\web-interface" ; npm run dev  
 
 Acesse: http://localhost:3000
 
