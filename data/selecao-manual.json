@@ -1,124 +1,125 @@
 {
-  "data": "2025-07-29T08:12:17.385Z",
+  "data": "2025-08-06T05:16:34.350Z",
   "manchete": {
-    "id": "noticia_1753776737379_tv4nnsdkc",
-    "titulo": "Manaus ganha primeiro centro público para atendimento de crianças com autismo",
-    "categoria": "economia"
+    "id": "noticia_1754457394346_cfd9gbrr9",
+    "titulo": "Incêndio toma conta de fábrica no Distrito Industrial e assusta Manaus",
+    "categoria": "cidades"
   },
   "mancheteCompleta": {
-    "id": "noticia_1753776737379_tv4nnsdkc",
-    "titulo": "Manaus ganha primeiro centro público para atendimento de crianças com autismo",
-    "resumo": "O atendimento oferecido é multidisciplinar, fundamentado no método científico ABA (Análise do Comportamento Aplicada), com planos terapêuticos individualizados que priorizam a evolução, a autonomia e o bem-estar de cada criança.",
+    "id": "noticia_1754457394346_cfd9gbrr9",
+    "titulo": "Incêndio toma conta de fábrica no Distrito Industrial e assusta Manaus",
+    "resumo": "Ainda não há informações sobre feridos; Corpo de Bombeiros já chegou ao local",
     "fonte": "A Crítica",
-    "link": "https://www.acritica.com/geral/manaus-ganha-primeiro-centro-publico-para-atendimento-de-criancas-com-autismo-1.379625",
+    "link": "https://www.acritica.com/manaus/incendio-toma-conta-de-fabrica-no-distrito-industrial-e-assusta-manaus-1.380286",
     "links": [
-      "https://www.acritica.com/geral/manaus-ganha-primeiro-centro-publico-para-atendimento-de-criancas-com-autismo-1.379625"
+      "https://www.acritica.com/manaus/incendio-toma-conta-de-fabrica-no-distrito-industrial-e-assusta-manaus-1.380286",
+      "https://www.acritica.com/geral/gravida-de-21-anos-e-identificada-como-vitima-de-incendio-em-fabrica-no-distrito-industrial-1.380339"
     ],
     "fontes": [
       "A Crítica"
     ],
-    "categoria": "economia",
-    "relevanceScore": 25,
+    "categoria": "cidades",
+    "relevanceScore": 22,
     "classification": {
-      "id": "🚀 4",
-      "label": "Tecnologia & Inovação do Igarapé",
+      "id": "⚫️ 1",
+      "label": "Segurança & BOs de Impacto",
       "isAdequate": true
     }
   },
   "noticiasEscolhidas": [
     {
-      "categoria": "economia",
-      "ids": [
-        "noticia_1753776737380_n1ixceip1",
-        "noticia_1753776737379_tv4nnsdkc"
-      ],
-      "total": 2
-    },
-    {
       "categoria": "cidades",
       "ids": [
-        "noticia_1753776737374_a1pjcfrv5",
-        "noticia_1753776737375_kkkphz3xe",
-        "noticia_1753776737365_820mzhgwq"
+        "noticia_1754457394347_mfdnp8q5k",
+        "noticia_1754457394349_40o8sp0t3",
+        "noticia_1754457394346_cfd9gbrr9"
       ],
       "total": 3
+    },
+    {
+      "categoria": "politica",
+      "ids": [
+        "noticia_1754457394349_hugedp1rq",
+        "noticia_1754457394349_666yuga27"
+      ],
+      "total": 2
     }
   ],
   "noticiasCompletas": [
     {
-      "id": "noticia_1753776737380_n1ixceip1",
-      "titulo": "Brasil lidera uso de inteligência artificial e Manaus recebe evento para debater o tema",
-      "resumo": "O dado reforça o avanço da IA no país e coloca o tema no centro de discussões estratégicas, como as que ocorrerão no AATEC DAY 2025, nos dias 22 e 23 de agosto, em Manaus",
-      "fonte": "A Crítica",
-      "link": "https://www.acritica.com/geral/brasil-lidera-uso-de-inteligencia-artificial-e-manaus-recebe-evento-para-debater-o-tema-1.379605",
-      "links": [
-        "https://www.acritica.com/geral/brasil-lidera-uso-de-inteligencia-artificial-e-manaus-recebe-evento-para-debater-o-tema-1.379605"
-      ],
-      "fontes": [
-        "A Crítica"
-      ],
-      "categoria": "economia",
-      "relevanceScore": 30,
-      "classification": {
-        "id": "🚀 4",
-        "label": "Tecnologia & Inovação do Igarapé",
-        "isAdequate": true
-      }
-    },
-    {
-      "id": "noticia_1753776737374_a1pjcfrv5",
-      "titulo": "Amazonas tem aumento de 22% no registro de casos de racismo, aponta estudo",
-      "resumo": "Número representa o crescimento de 62,2% nos casos de injúria racial em um período de um ano, de acordo com o Anuário de Segurança Pública 2025",
-      "fonte": "A Crítica",
-      "link": "https://www.acritica.com/geral/amazonas-tem-aumento-de-22-no-registro-de-casos-de-racismo-aponta-estudo-1.379660",
-      "links": [
-        "https://www.acritica.com/geral/amazonas-tem-aumento-de-22-no-registro-de-casos-de-racismo-aponta-estudo-1.379660"
-      ],
-      "fontes": [
-        "A Crítica"
-      ],
-      "categoria": "cidades",
-      "relevanceScore": 22,
-      "classification": {
-        "id": "⚫️ 1",
-        "label": "Segurança & BOs de Impacto",
-        "isAdequate": true
-      }
-    },
-    {
-      "id": "noticia_1753776737375_kkkphz3xe",
-      "titulo": "Vacinação: Saúde reforça imunização para evitar o retorno de doenças já eliminadas no Brasil",
-      "resumo": "Alerta é para o risco de reintrodução do sarampo e da poliomielite",
-      "fonte": "A Crítica",
-      "link": "https://www.acritica.com/geral/vacinac-o-saude-reforca-imunizac-o-para-evitar-o-retorno-de-doencas-ja-eliminadas-no-brasil-1.379613",
-      "links": [
-        "https://www.acritica.com/geral/vacinac-o-saude-reforca-imunizac-o-para-evitar-o-retorno-de-doencas-ja-eliminadas-no-brasil-1.379613"
-      ],
-      "fontes": [
-        "A Crítica"
-      ],
-      "categoria": "cidades",
-      "relevanceScore": 22,
-      "classification": {
-        "id": "⚫️ 1",
-        "label": "Segurança & BOs de Impacto",
-        "isAdequate": true
-      }
-    },
-    {
-      "id": "noticia_1753776737365_820mzhgwq",
-      "titulo": "Plano do MP prevê retirada gradual de flutuantes do Tarumã-Açu até 2027",
-      "resumo": "Flutuantes no Tarumã em Manaus\nWilliam Duarte/Rede Amazônica\nO Ministério Público do Amazonas (MPAM) informou que elabora, junto com a Defensoria Pública do Estado (DPE-AM), uma proposta com formas mais humanitárias para a retirada dos flutuantes da área do Tarumã-Açu, em Manaus. A ideia é que a desocupação ocorra em três etapas, com ações previstas até 2027.\nO plano começou a ser construído após a Justiça determinar, no último dia 7 de junho, que a Prefeitura de Manaus apresente, no prazo de 30 dias, um cronograma detalhado para a remoção das estruturas irregulares.\nA decisão da Vara do Meio Ambiente exige que o município também comprove a viabilidade financeira da execução. Caso não cumpra a medida, a Prefeitura poderá ser multada em até R$ 500 mil.\n📲 Participe do canal do g1 AM no WhatsApp\nDe acordo com a promotora de Justiça Lílian Maria Pires Stone, da 50ª Promotoria de Meio Ambiente, o plano será dividido em fases, começando pelo combate à poluição e pelo bloqueio à entrada de novos flutuantes — prática que segue ocorrendo, mesmo após decisão judicial proibindo.\n“As etapas seguintes já trabalhariam as remoções de comércios e a propositura de uma lei municipal de organização do Tarumã-Açu, até finalmente a retirada de todas as moradias inadequadas daquela localidade”, explicou a promotora.\nA proposta está sendo construída para garantir soluções efetivas sem maiores impactos para as comunidades ribeirinhas.\n“O objetivo é resolver a situação sem traumas para a população e respeitando a sentença já proferida em favor do MP”, afirmou Stone. A Defensoria foi representada na reunião pelo defensor público Thiago Rosas.\nAlém da Prefeitura, a Justiça também intimou o Governo do Amazonas a informar se existem planos de manejo para as bacias hidrográficas dos rios Tarumã-Açu e Puraquequara. \nO Instituto de Proteção Ambiental do Amazonas (Ipaam) deve apresentar dados atualizados sobre a qualidade da água e a presença de coliformes no Tarumã.\nO Ipaam confirmou que já foi notificado e que irá reunir as informações em parceria com o Programa de Monitoramento de Água, Ar e Solos (ProQAS/AM), coordenado pela Universidade do Estado do Amazonas (UEA). \nSegundo o instituto, o relatório mais recente, de 2023, mostrou redução em alguns parâmetros do Índice de Qualidade da Água (IQA), embora ainda haja pontos críticos de contaminação por coliformes.\nDesde o ano passado, o órgão também suspendeu novos licenciamentos para atividades flutuantes no Tarumã-Açu, intensificou a fiscalização e passou a colaborar na elaboração do plano de gestão da bacia hidrográfica, em parceria com a Secretaria de Estado do Meio Ambiente (Sema) e a UEA.\nJustiça dá 30 dias para Prefeitura apresentar plano de retirada de flutuantes no Tarumã",
+      "id": "noticia_1754457394347_mfdnp8q5k",
+      "titulo": "Operação em Manaus mira grupo que transportava drogas para fora do Amazonas",
+      "resumo": "Agente do Gaeco cumprido mandado de busca e apreensão\nDivulgação\nA Operação Véu de Areia deflagada pelo Grupo de Atuação Especial de Combate ao Crime Organizado (Gaeco), investiga uma quadrilha especializada no transporte de drogas do Amazonas para outros estados do país. A ação ocorreu em um condomínio na Zona Norte de Manaus, nesta terça-feira (5). Uma pessoa foi presa.\nOperação foi conduzida pelo Gaeco\nDivulgação\n📲 Participe do canal do g1 AM no WhatsApp\nSegundo o Ministério Público do Amazonas (MPAM), a operação resultou no bloqueio de 18 imóveis e no sequestro de R$ 10 milhões em contas bancárias. De acordo com o Gaeco, as medidas têm como objetivo impedir a dissipação do patrimônio oriundo das atividades ilícitas.\nDe acordo com a instituição, outros dez suspeitos foram denunciados por participação no esquema criminoso.\nO suspeito preso é apontado pela polícia como responsável pelo envio das cargas ilícitas. Segundo apurado pela Rede Amazônica, o homem mantinha contato com empresários pra conseguir mandar drogas de Manaus pra outros estados.\nA promotora do MPAM, Priscila Carvalho Pinto, destacou que além do apoio logístico, as empresas também eram usadas para fazer a lavagem dos valores ilícitos.\n\"Em tese,  a organização utilizava o tráfico para arrecadar os capitais e a lavar capitais por meio de empresas e de terceiras pessoas físicas também\", destacou.\nOs agentes do Gaeco também aprenderam, joias, dinheiro e veículos durante a diligência no condomínio onde morava o suspeito. \nO suspeito apontado como líder do grupo, que teve prisão preventiva decretada e já está custodiado, também foi alvo de mandado de busca e apreensão exclusivamente em sua residência. O objetivo foi coletar provas complementares sobre a forma de atuação da organização criminosa.\nAgentes de segurança apreenderam bens em endereços ligados a suspeitos de tráfico de drogas em Manaus.\nJucélio Paiva/Rede Amazônica\nJoias foram apreendidas durante a operação\nDivulgação\nLEIA TAMBÉM: Policiais civis e militares são presos em operação que investiga milícia suspeita de roubos e extorsões em Manaus\nMilícia com policiais civis e militares é presa em operação do MPAM em Manaus",
       "fonte": "G1 Amazonas",
-      "link": "https://g1.globo.com/am/amazonas/noticia/2025/07/28/plano-do-mp-preve-retirada-gradual-de-flutuantes-do-taruma-acu-ate-2027.ghtml",
+      "link": "https://g1.globo.com/am/amazonas/noticia/2025/08/05/operacao-investiga-grupo-suspeito-de-transportar-drogas-do-am-para-outros-estados-uma-pessoa-e-presa.ghtml",
       "links": [
-        "https://g1.globo.com/am/amazonas/noticia/2025/07/28/plano-do-mp-preve-retirada-gradual-de-flutuantes-do-taruma-acu-ate-2027.ghtml"
+        "https://g1.globo.com/am/amazonas/noticia/2025/08/05/operacao-investiga-grupo-suspeito-de-transportar-drogas-do-am-para-outros-estados-uma-pessoa-e-presa.ghtml"
       ],
       "fontes": [
         "G1 Amazonas"
       ],
       "categoria": "cidades",
-      "relevanceScore": 19,
+      "relevanceScore": 29,
+      "classification": {
+        "id": "⚫️ 1",
+        "label": "Segurança & BOs de Impacto",
+        "isAdequate": true
+      }
+    },
+    {
+      "id": "noticia_1754457394349_hugedp1rq",
+      "titulo": "Prefeitura planeja reabrir ruas do Centro de Manaus durante mutirão de revitalização",
+      "resumo": "Rua Henrique Martins é um dos principais pontos de camelôs em Manaus\nAbinoan Santiago/1\nA Prefeitura de Manaus planeja reabrir ruas do Centro da capital. A informação foi divulgada pelo prefeito David Almeida na segunda-feira (4), durante o lançamento da quinta edição do programa “Mutirão no Bairro”, que tem como foco a recuperação do centro histórico da cidade.\nA operação envolve 16 secretarias municipais e deve durar cerca de 90 dias, com ações de infraestrutura, mobilidade urbana, limpeza, segurança pública, assistência social e reordenamento do espaço urbano. Nesta primeira etapa, 49 ruas serão contempladas.\nSegundo David Almeida, quatro importantes vias devem ser reabertas para o tráfego de veículos: Marcílio Dias, Guilherme Moreira, Dr. Moreira e Henrique Martins. Além disso, está prevista a instalação de quatro banheiros públicos, a revitalização do terminal de ônibus da Matriz e a requalificação da Praça dos Remédios.\nA Prefeitura também vai acolher pessoas em situação de rua que ocupam o Centro. Segundo David Almeida, serão oferecidas 150 vagas em clínicas de reabilitação para quem precisar de tratamento. Quem desejar trabalhar será cadastrado em empresas terceirizadas da Prefeitura, especialmente no setor de limpeza urbana. Um abrigo público também será criado, oferecendo pernoite, banho, alimentação e apoio à reintegração social.\n\"Estamos abrindo um grande abrigo público, onde essas pessoas vão poder dormir, tomar banho, tomar café da manhã, jantar e sair para o trabalho durante o dia. Dessa forma, queremos recuperar o Centro com uma ocupação contínua e organizada\", completou o prefeito.",
+      "fonte": "G1 Amazonas",
+      "link": "https://g1.globo.com/am/amazonas/noticia/2025/08/05/prefeitura-planeja-reabrir-ruas-do-centro-de-manaus-durante-mutirao-de-revitalizacao.ghtml",
+      "links": [
+        "https://g1.globo.com/am/amazonas/noticia/2025/08/05/prefeitura-planeja-reabrir-ruas-do-centro-de-manaus-durante-mutirao-de-revitalizacao.ghtml"
+      ],
+      "fontes": [
+        "G1 Amazonas"
+      ],
+      "categoria": "politica",
+      "relevanceScore": 24,
+      "classification": {
+        "id": "🟡 2",
+        "label": "Política de Baré",
+        "isAdequate": true
+      }
+    },
+    {
+      "id": "noticia_1754457394349_666yuga27",
+      "titulo": "'Enem dos concursos' registra 17,4 mil inscrições no AM; maioria é mulher e busca nível superior",
+      "resumo": "G1 em 1 Minuto: Provas do CNU 2025\nO Amazonas teve 17.493 inscrições na segunda edição do Concurso Público Nacional Unificado (CPNU), conhecido como “Enem dos Concursos”. Os dados foram divulgados pelo Governo Federal nesta segunda-feira (4).\nNo estado, as mulheres representam 60,7% dos inscritos, com 10.624 confirmações. Os homens somam 6.869, equivalentes a 39,2% do total. Nacionalmente, o concurso recebeu 761.528 inscrições.\n📲 Participe do canal do g1 AM no WhatsApp\nO concurso oferece 3.652 vagas: 3.144 para nível superior e 508 para nível intermediário, distribuídas entre 32 órgãos públicos. No Amazonas, o bloco 9 teve o maior número de inscrições, com 5.402 candidatos. O bloco 5 ficou em segundo lugar, com 3.837 inscritos, em vagas de nível médio na área de regulação.\n Veja o ranking de inscrições no estado por cada bloco:\nBloco 9 - Intermediário: 5.402 inscrições homologadas;\nBloco 5 -  Administração : 3.837 inscrições;\nBloco 1 - Seguridade Social: Saúde e Assistência: com 3.124;\nBloco 2 - Cultura e Educação: com 1.359;\nBloco 8 - Intermediário - Saúde: 944; \nBloco 7 - Justiça e Defesa: 828;\nBloco 4 - Engenharia e Arquitetura: com 749; \nBloco 3 - Ciências, Dados e Tecnologia, com 732.\nBloco 6 - Desenvolvimento Socioeconômico: com 608;\n➡️Especialista dá dicas de preparação para concursos públicos previstos no AM\nO concurso teve 761.528 inscritos em todo o Brasil, com participantes de 4.951 municípios. As regiões Sudeste e Nordeste registraram os maiores volumes: 247.838 e 229.436, respectivamente. Em seguida aparecem o Centro-Oeste (150.870), Norte (84.651) e Sul (48.733).\nO g1 ouviu o professor de curso preparatório Matheus Santos, que deu dicas para quem vai enfrentar o CNU. Ele recomenda que iniciantes façam um planejamento com 2 a 3 horas de estudo por dia, sem exageros. Segundo o especialista, é importante começar a estudar antes da publicação do edital.\n\"O primeiro passo é acreditar e ter a mentalidade de que é possível. Tem muita gente que não estuda para concurso por medo, por achar que a aprovação é só para pessoas acima da média. É fundamental trabalhar ali uma rotina de estudos diários com constância, de uma forma profissional. Tem gente que se engana que precisa estudar 10 ou 12 horas por dia, quando na verdade é preciso consistência\" , explicou o especialista.\nPiauí registra mais de 17 mil inscrições no 'Enem dos concursos' e 60% dos candidatos são mulheres\nEduardo Ribeiro Jr./g1\nVeja informações sobre o Concurso Nacional Unificado: vagas, salários, locais de aplicação, e mais\nParticipação por gênero\nAs mulheres representam 60% dos inscritos no país, índice superior ao da primeira edição do CNU (56,2%). O edital trouxe medidas para ampliar a participação feminina.\nSe houver desequilíbrio de gênero na classificação da primeira fase, o edital garante que ao menos 50% das vagas da segunda etapa sejam ocupadas por mulheres com desempenho suficiente.\nO concurso também oferece condições especiais para gestantes e lactantes, como tempo extra para amamentação. Há ainda reserva de vagas:\n25% para pessoas negras\n5% para pessoas com deficiência\n3% para indígenas\n2% para pessoas quilombolas\nCNU 2025 oferta 39 vagas para o Amazonas com salários de até R$ 8 mil; veja quais\nConcurso Público Nacional Unificado no Amazonas tem 133 locais de prova",
+      "fonte": "G1 Amazonas",
+      "link": "https://g1.globo.com/am/amazonas/noticia/2025/08/05/enem-dos-concursos-registra-174-mil-inscricoes-no-am-maioria-e-mulher-e-busca-nivel-superior.ghtml",
+      "links": [
+        "https://g1.globo.com/am/amazonas/noticia/2025/08/05/enem-dos-concursos-registra-174-mil-inscricoes-no-am-maioria-e-mulher-e-busca-nivel-superior.ghtml"
+      ],
+      "fontes": [
+        "G1 Amazonas"
+      ],
+      "categoria": "politica",
+      "relevanceScore": 24,
+      "classification": {
+        "id": "🟡 2",
+        "label": "Política de Baré",
+        "isAdequate": true
+      }
+    },
+    {
+      "id": "noticia_1754457394349_40o8sp0t3",
+      "titulo": "Três linhas de ônibus terão itinerários ampliados a partir de segunda-feira em Manaus; veja mudanças",
+      "resumo": "Três linhas de ônibus terão itinerários ampliados a partir de segunda-feira em Manaus.\nJoão Viana/Semcom\nO Instituto Municipal de Mobilidade Urbana (IMMU) vai alterar o itinerário de três linhas do transporte coletivo de Manaus a partir da próxima segunda-feira (11). A mudança tem como objetivo tornar o serviço mais acessível, com trajetos mais diretos e novas opções de deslocamento para os usuários.\nAs linhas 461, 205 e 223 passam a atender novas regiões da cidade, beneficiando diretamente moradores de bairros como Parque das Garças, Parque Mosaico, Nova Esperança e áreas próximas.\nA ampliação dos trajetos é mais um passo para incluir comunidades que ainda não contavam com cobertura plena do sistema, melhorando a mobilidade e a conexão entre os bairros.\nLinhas que terão o itinerário alterado:\nLinha 461 – Parque das Garças / T2 / André Araújo / T2 / Centro - Terá seu trajeto ajustado para atender melhor os moradores da rua Abraham Benzion, com inclusão das ruas Cedro Branco, Erva Sereno e dos Ciprestes no trajeto de ida, e ruas Cravo da Índia e Cedro Rosa no retorno.\nLinha 205 – Planalto / Versalles / Parque Mosaico / Centro - Passa a operar com nova nomenclatura e terá o trajeto expandido para atender o Parque Mosaico, com passagem pelas ruas Péricles Ramos, Klaus Vianna, José Tavares, Ulisses Tapajós e avenida José Moacir Teberga de Toledo.\nLinha 223 – Augusto Montenegro / Nova Esperança / Centro - Terá extensão de rota para contemplar a rua A (rua Pindaí) e rua Jequié, com ida e volta pela avenida Marginal II (rua Claraval) e avenida Laguna, facilitando o acesso ao transporte público para os moradores da área.\nO IMMU reforça que essas alterações fazem parte de um conjunto de medidas planejadas para garantir mais eficiência ao sistema de transporte, além de promover mais conforto, agilidade e segurança aos passageiros da capital.\nNovas rotas de ônibus entram em vigor nesta quarta em Manaus",
+      "fonte": "G1 Amazonas",
+      "link": "https://g1.globo.com/am/amazonas/noticia/2025/08/05/tres-linhas-de-onibus-terao-itinerarios-ampliados-a-partir-de-segunda-feira-em-manaus-veja-mudancas.ghtml",
+      "links": [
+        "https://g1.globo.com/am/amazonas/noticia/2025/08/05/tres-linhas-de-onibus-terao-itinerarios-ampliados-a-partir-de-segunda-feira-em-manaus-veja-mudancas.ghtml"
+      ],
+      "fontes": [
+        "G1 Amazonas"
+      ],
+      "categoria": "cidades",
+      "relevanceScore": 24,
       "classification": {
         "id": "🔴 3",
         "label": "Perrengues da Cidade",
@@ -126,22 +127,23 @@
       }
     },
     {
-      "id": "noticia_1753776737379_tv4nnsdkc",
-      "titulo": "Manaus ganha primeiro centro público para atendimento de crianças com autismo",
-      "resumo": "O atendimento oferecido é multidisciplinar, fundamentado no método científico ABA (Análise do Comportamento Aplicada), com planos terapêuticos individualizados que priorizam a evolução, a autonomia e o bem-estar de cada criança.",
+      "id": "noticia_1754457394346_cfd9gbrr9",
+      "titulo": "Incêndio toma conta de fábrica no Distrito Industrial e assusta Manaus",
+      "resumo": "Ainda não há informações sobre feridos; Corpo de Bombeiros já chegou ao local",
       "fonte": "A Crítica",
-      "link": "https://www.acritica.com/geral/manaus-ganha-primeiro-centro-publico-para-atendimento-de-criancas-com-autismo-1.379625",
+      "link": "https://www.acritica.com/manaus/incendio-toma-conta-de-fabrica-no-distrito-industrial-e-assusta-manaus-1.380286",
       "links": [
-        "https://www.acritica.com/geral/manaus-ganha-primeiro-centro-publico-para-atendimento-de-criancas-com-autismo-1.379625", "https://www.portaldoholanda.com.br/amazonas/projeto-da-deputada-mayara-sai-do-papel-e-caic-tea-e-inaugurado-em-manaus"
+        "https://www.acritica.com/manaus/incendio-toma-conta-de-fabrica-no-distrito-industrial-e-assusta-manaus-1.380286",
+        "https://www.acritica.com/geral/gravida-de-21-anos-e-identificada-como-vitima-de-incendio-em-fabrica-no-distrito-industrial-1.380339"
       ],
       "fontes": [
         "A Crítica"
       ],
-      "categoria": "economia",
-      "relevanceScore": 25,
+      "categoria": "cidades",
+      "relevanceScore": 22,
       "classification": {
-        "id": "🚀 4",
-        "label": "Tecnologia & Inovação do Igarapé",
+        "id": "⚫️ 1",
+        "label": "Segurança & BOs de Impacto",
         "isAdequate": true
       }
     }
@@ -150,9 +152,9 @@
     "tipo": "efemeridesIA",
     "indice": 0,
     "efemeride": {
-      "titulo": "Dia do Capoeirista",
-      "texto": "O Dia do Capoeirista é celebrado em 29 de julho no Brasil, em homenagem a essa importante manifestação cultural afro-brasileira que mistura arte marcial, esporte, dança e música. A capoeira foi reconhecida como Patrimônio Cultural Imaterial da Humanidade pela UNESCO em 2014, ressaltando sua importância para a identidade brasileira. No Amazonas, a capoeira também possui forte presença, com diversos grupos e mestres que mantêm viva essa tradição, promovendo a cultura e a inclusão social através de seus ensinamentos.",
-      "fonte": "Lei nº 12.084, de 19 de novembro de 2009 (DOU de 20/11/2009)"
+      "titulo": "Dia Nacional dos Profissionais da Educação",
+      "texto": "O Dia Nacional dos Profissionais da Educação, celebrado em 6 de agosto, homenageia todos aqueles que trabalham em prol da educação no Brasil. A data foi instituída pela Lei nº 13.054, de 22 de dezembro de 2014, e reconhece a importância de professores, coordenadores, diretores, merendeiras, auxiliares de limpeza, porteiros e demais funcionários que atuam nas escolas e instituições de ensino. Eles desempenham um papel fundamental no desenvolvimento da sociedade brasileira, contribuindo para a formação de cidadãos mais críticos, conscientes e preparados para o futuro. Em regiões como a Amazônia, onde o acesso à educação pode ser mais desafiador, o trabalho desses profissionais é ainda mais crucial para garantir oportunidades para as comunidades locais.",
+      "fonte": "Lei nº 13.054, de 22 de dezembro de 2014"
     }
   }
 }

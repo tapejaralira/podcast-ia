@@ -2,32 +2,32 @@
   "ganchos": [
     {
       "tipo": "impactante",
-      "texto": "Alô, Bubuia! Se preparem pra tirar o pó da sandália e afinar a garganta, porque a ciranda invadiu o Teatro Amazonas e não é miragem! O festival de 2025 já tá dando o tom e a gente te conta tudo que rolou nesse lançamento que fez o coração do Centro histórico dançar. Aperta o play que o Bubuia News começou!",
+      "texto": "Alô, alô, Manaus! A floresta esconde muito mais que belezas naturais... Nossa cidade virou rota de fuga, de tráfico, de coisa braba! A Polícia Federal botou a boca no trombone e desmantelou um esquema que fazia Manaus de ponte aérea para levar droga pra fora do Amazonas. Quer saber quem tava por trás disso? Cola com a gente no Bubuia News que a fofoca tá quente!",
       "trilha_sugerida": "trilha_tensao_leve.mp3"
     },
     {
       "tipo": "narrativo",
-      "texto": "Imagina só: o sol se pondo no Rio Negro, o Teatro Amazonas imponente e, de repente, o som inconfundível da ciranda ecoando por todos os lados. Não, você não entrou numa máquina do tempo! Foi o lançamento do festival de 2025 que transformou o nosso cartão postal num grande terreiro cultural. Mas, o que rolou de tão especial pra gente já entrar no ritmo da festa? É o que a gente te conta agora no Bubuia News!",
+      "texto": "Imagina só: você ali, navegando no Rio Negro, vendo o sol se pondo, a brisa batendo... Aquele paraíso amazônico, né? Mas, por baixo da beleza, tava rolando um esquema criminoso que usava a nossa terra, nossos rios, pra espalhar droga por aí. É, meu amigo, a notícia é dura, mas a gente vai te contar tintim por tintim como essa operação da Polícia Federal desmantelou essa quadrilha. Se liga no Bubuia News!",
       "trilha_sugerida": "trilha_reflexiva.mp3"
     },
     {
       "tipo": "reflexivo",
-      "texto": "E aí, Bubuia! Já parou pra pensar como a nossa cultura pulsa, mesmo em espaços tão grandiosos como o Teatro Amazonas? Pois é! A ciranda, um ritmo tão nosso, ocupou o palco principal pra anunciar o festival de 2025. Mas, será que a gente tá dando o devido valor a essas manifestações artísticas que nos conectam com a nossa identidade? Reflita com a gente e fique por dentro de todos os detalhes desse lançamento no Bubuia News!",
+      "texto": "Até quando Manaus vai ser manchete por causa de coisa ruim? Tráfico de droga, violência... A gente se pergunta: qual é o futuro da nossa cidade? A Polícia Federal fez mais uma operação, prendeu gente, mas será que isso é suficiente? No Bubuia News de hoje, a gente vai a fundo nessa história e te convida a refletir junto com a gente. Bora entender o que tá acontecendo?",
       "trilha_sugerida": "trilha_informativa_neutra.mp3"
     }
   ],
   "efemeride": {
-    "titulo": "Dia do Batom",
-    "texto": "O Dia do Batom é celebrado em 29 de julho, uma data dedicada a homenagear este item de maquiagem que é um clássico da beleza. É um dia para celebrar a versatilidade do batom, sua história e sua capacidade de expressão e autoestima. O batom não é apenas um item de maquiagem, mas também uma ferramenta de expressão artística, um símbolo de empoderamento feminino e um clássico que se reinventa a cada temporada. A data é uma oportunidade para as marcas de beleza promoverem seus produtos e para os consumidores explorarem diferentes tipos e texturas de batom.",
-    "fonte": ""
+    "titulo": "Dia Nacional dos Profissionais da Educação",
+    "texto": "O Dia Nacional dos Profissionais da Educação, celebrado em 6 de agosto, homenageia todos aqueles que trabalham em prol da educação no Brasil. A data foi instituída pela Lei nº 13.054, de 22 de dezembro de 2014, e reconhece a importância de professores, coordenadores, diretores, merendeiras, auxiliares de limpeza, porteiros e demais funcionários que atuam nas escolas e instituições de ensino. Eles desempenham um papel fundamental no desenvolvimento da sociedade brasileira, contribuindo para a formação de cidadãos mais críticos, conscientes e preparados para o futuro. Em regiões como a Amazônia, onde o acesso à educação pode ser mais desafiador, o trabalho desses profissionais é ainda mais crucial para garantir oportunidades para as comunidades locais.",
+    "fonte": "Lei nº 13.054, de 22 de dezembro de 2014"
   },
   "opcoesEfemerides": {
     "fatosBrasileiros": [],
     "efemeridesIA": [
       {
-        "titulo": "Dia do Batom",
-        "texto": "O Dia do Batom é celebrado em 29 de julho, uma data dedicada a homenagear este item de maquiagem que é um clássico da beleza. É um dia para celebrar a versatilidade do batom, sua história e sua capacidade de expressão e autoestima. O batom não é apenas um item de maquiagem, mas também uma ferramenta de expressão artística, um símbolo de empoderamento feminino e um clássico que se reinventa a cada temporada. A data é uma oportunidade para as marcas de beleza promoverem seus produtos e para os consumidores explorarem diferentes tipos e texturas de batom.",
-        "fonte": ""
+        "titulo": "Dia Nacional dos Profissionais da Educação",
+        "texto": "O Dia Nacional dos Profissionais da Educação, celebrado em 6 de agosto, homenageia todos aqueles que trabalham em prol da educação no Brasil. A data foi instituída pela Lei nº 13.054, de 22 de dezembro de 2014, e reconhece a importância de professores, coordenadores, diretores, merendeiras, auxiliares de limpeza, porteiros e demais funcionários que atuam nas escolas e instituições de ensino. Eles desempenham um papel fundamental no desenvolvimento da sociedade brasileira, contribuindo para a formação de cidadãos mais críticos, conscientes e preparados para o futuro. Em regiões como a Amazônia, onde o acesso à educação pode ser mais desafiador, o trabalho desses profissionais é ainda mais crucial para garantir oportunidades para as comunidades locais.",
+        "fonte": "Lei nº 13.054, de 22 de dezembro de 2014"
       }
     ],
     "curiosidadesAmazonicas": [

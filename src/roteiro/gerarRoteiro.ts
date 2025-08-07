@@ -852,9 +852,40 @@ export async function gerarRoteiro() {
             totalNoticias: noticiasParaRoteiro.noticias.length
         });
         
-        // 4. Gerar roteiro usando IA (agora com o contexto dos personagens)
+        // 4. Salvar SCRAPING das 5 notícias selecionadas
+        await salvarScrapingNoticiasSelecionadas(noticiasParaRoteiro);
+
+        // 5. Gerar roteiro usando IA (agora com o contexto dos personagens)
         const roteiro = await gerarRoteiroComIA(noticiasParaRoteiro, template, fichaPersonagens, sugestoesAbertura);
         console.log('✨ Roteiro gerado com sucesso');
+// Salva o conteúdo de scraping das 5 notícias selecionadas em um arquivo markdown
+async function salvarScrapingNoticiasSelecionadas(noticiasParaRoteiro: NoticiasParaRoteiro) {
+    const dataManaus = getDataManaus();
+    const outputDir = filePaths.roteiroOutputDir;
+    const scrapingPath = path.join(outputDir, `scraping-${dataManaus}.md`);
+
+    const manchete = noticiasParaRoteiro.manchete;
+    const noticias = noticiasParaRoteiro.noticias.slice(0, 5);
+
+    let md = `# SCRAPING - ${dataManaus}\n\n`;
+    md += `## Manchete\n`;
+    md += `### ${manchete.titulo}\n`;
+    md += `Fontes: ${(manchete.fontesUtilizadas || []).join('; ') || manchete.fonte || ''}\n`;
+    md += `\n**Conteúdo:**\n\n`;
+    md += `${manchete.conteudoCompleto || 'Sem conteúdo extraído.'}\n\n`;
+
+    noticias.forEach((n, idx) => {
+        md += `---\n\n## Notícia ${idx + 1}\n`;
+        md += `### ${n.titulo}\n`;
+        md += `Fontes: ${(n.fontesUtilizadas || []).join('; ') || n.fonte || ''}\n`;
+        md += `\n**Conteúdo:**\n\n`;
+        md += `${n.conteudoCompleto || 'Sem conteúdo extraído.'}\n\n`;
+    });
+
+    await fs.mkdir(path.dirname(scrapingPath), { recursive: true });
+    await fs.writeFile(scrapingPath, md, 'utf-8');
+    console.log(`📝 Arquivo de scraping salvo em: ${scrapingPath}`);
+}
         
         // 5. Salvar roteiro
         const outputPath = path.join(filePaths.roteiroOutputDir, formatarDataParaNomeArquivo(new Date()));

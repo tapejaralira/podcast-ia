@@ -34,9 +34,9 @@ function aplicarEfeitos(inputPath: string, outputPath: string, nomeApresentador:
             'aecho=1:0.8:20:0.2'
         ];
         if (nomeApresentador === 'tainá') {
-            filterChain.unshift('volume=2.0');
+            filterChain.unshift('volume=1.9');
         } else if (nomeApresentador === 'iraí') {
-            filterChain.unshift('volume=2.0');
+            filterChain.unshift('volume=2.5');
         }
         const filterString = filterChain.join(',');
         console.log(`   [FX] Aplicando filtros em ${nomeApresentador}...`);
