@@ -12,3 +12,5 @@ Formato: **ID · data · decisão** — contexto, opções, escolha, motivo.
 | D06 | 2026-11-11 | **Personalidade vive no texto curto, não em um texto enorme de perfil.** O que a voz recebe é **configuração por trecho** (uma marca de humor por fala: neutro / sério / leve), decidida pelo roteiro, principalmente nos comentários. Sem dezenas de estilos nem perfis longos (hipótese a confirmar em teste de áudio) | adotada (direção) |
 | D07 | 2026-11-11 | **O episódio antigo é o benchmark de qualidade**: a nova versão busca resultado equivalente com menos complexidade e custo | adotada |
 | D08 | 2026-11-11 | **Cold open fora do Nível 0**; volta depois com efemérides de base verificada (hipótese, falta resposta do Tap à pergunta 20) | proposta |
+| D09 | 2026-11-11 | **Três humores por fala: neutro, sério, leve.** Nada além disso | adotada |
+| D10 | 2026-11-11 | **Sem vinhetas por humor/tema e sem trilha de fundo variável** (a detecção automática de humor/tema para escolher áudio de edição foi complexa demais). Nível 0 usa poucas vinhetas **fixas**; naturalidade do diálogo tem prioridade sobre enfeites de edição | adotada |

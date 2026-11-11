@@ -33,6 +33,8 @@ Pontos a pesquisar nesta etapa (relato do Tap, 2026-11-11; **verificar nas pági
 - Já existem formas de **duas vozes dialogando de forma mais natural** (geração de diálogo multi-locutor)? Em quais provedores, com português do Brasil, a que custo e com que controle de emoção por trecho?
 - Notícias pedem pouca variação emocional; a nuance fica nos comentários (notícia pesada vs. alegre). Medir quanto a configuração por trecho melhora o resultado percebido frente a uma voz fixa.
 
+Hipótese a testar (não decidida): **gerar o diálogo por bloco de notícia**, não fala a fala nem o episódio inteiro. Cada bloco (notícia + comentário) seria um trecho contínuo de duas vozes conversando, com duração conhecida depois de gerado; as vinhetas fixas e a vírgula sonora entram **entre blocos**, que já eram os pontos naturais. Isso tentaria juntar naturalidade (conversa contínua dentro do bloco) com edição simples (cortes só nas fronteiras). Comparar nos testes: (a) fala a fala, (b) diálogo por bloco, (c) episódio inteiro, em naturalidade, custo, facilidade de corrigir um erro (regerar só um bloco) e controle de humor.
+
 ### 6. Mixagem
 Opções: ffmpeg (atual) · biblioteca de áudio em Python (pydub). Provavelmente manter ffmpeg com um único comando/filtro por episódio.
 

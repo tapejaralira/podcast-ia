@@ -40,6 +40,11 @@ Duas apresentadoras/apresentadores: Tainá (energética, gírias locais) e Iraí
 - Ainda vale ter **travas e gatilhos** (poucos caminhos de personalidade que cada um pode tomar), mas simples.
 - **O resultado final do sistema antigo era satisfatório**: vinheta de entrada, bom dia dos dois, apresentação, giro de notícias, tudo "muito bom", exceto o cold open (efeméride): funcionava, mas com alucinação e dificuldade de achar efemérides todos os dias. Portanto o episódio antigo é um **benchmark de qualidade**: o objetivo da nova versão é chegar perto desse resultado com muito menos complexidade e custo.
 
+### Lições sobre voz e edição
+
+- **Edição automática por humor foi complexidade sem retorno**: identificar humor e tema de cada notícia para escolher vinheta, e uma trilha de fundo contínua que mudasse com o humor, ficaram complexos demais. Cortados do plano (D10).
+- **Trade-off central da voz**: gravar **fala a fala** facilita a edição automática (cada duração é conhecida, então o programa sabe onde encaixar vinhetas e vírgulas), mas soa como frases soltas, não como duas pessoas no mesmo lugar. **Naturalidade de conversa é a principal melhoria desejada**, e o Tap abre mão de vinhetas e vírgulas sonoras se for preciso para conseguir um diálogo contínuo.
+
 ### Lições dessa estrutura
 
 - **O cold open foi a parte mais difícil**: fazer a IA trazer um fato do dia só se realmente existir, sem inventar, e cair para curiosidade ou pergunta quando não houver. Cascata de regras + risco de alucinação = muita complexidade para pouco valor.

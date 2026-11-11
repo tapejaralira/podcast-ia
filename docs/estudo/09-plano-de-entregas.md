@@ -28,14 +28,14 @@ Meta: gerar **um episódio curto completo** com um único comando, rodando manua
 | Seleção | o Tap escolhe numa lista simples (arquivo ou terminal); ou as N primeiras |
 | Roteiro | **um** prompt, **uma** chamada de LLM, formato fixo, ~5 min |
 | Voz | **um** provedor, vozes padrão, sem estilos |
-| Mixagem | concatenar falas com uma vinheta (um comando ffmpeg) |
+| Mixagem | concatenar falas com poucas vinhetas **fixas** (abertura, fim); sem trilha de fundo, sem escolha de vinheta por humor (D10) |
 | Publicação | mp3 pronto; feed vem depois |
 
 Pronto quando: um mp3 de ~5 min, ouvível do início ao fim, saiu de um comando. Custo desse episódio medido e anotado.
 
 ### Nível 1 — Primeiro episódio de verdade
 
-Escolher, com base no que doeu no Nível 0, **uma ou duas** melhorias entre: duração 10–15 min, qualidade do roteiro, voz/apresentadores com personalidade, agrupamento de duplicatas, mais fontes. Publicar feed e colocar 1 episódio real no ar.
+Escolher, com base no que doeu no Nível 0, **uma ou duas** melhorias entre: **naturalidade do diálogo (testar geração por bloco, ver `04-ferramentas.md`)**, duração 10–15 min, qualidade do roteiro, voz/apresentadores com personalidade, agrupamento de duplicatas, mais fontes. Publicar feed e colocar 1 episódio real no ar.
 
 ### Nível 2 — Rotina diária
 

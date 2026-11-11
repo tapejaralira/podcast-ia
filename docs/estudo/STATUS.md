@@ -3,7 +3,7 @@
 > Primeiro arquivo a ler em toda sessão nova. Atualizar ao encerrar cada sessão. Manter curto: o detalhe vive nos arquivos 01–09.
 
 **Última atualização:** 2026-11-11
-**Fase:** A — Entender (estudo de viabilidade). Conversa geral por etapa em andamento: etapa 1 (visão/público) e formato do episódio respondidos; respondido: 5–6 notícias, comentários entre apresentadores essenciais, personalidades são parte da identidade (mas enxugar). Próxima: etapa 3 (notícias/fontes/relevância) e perguntas 20–27.
+**Fase:** A — Entender (estudo de viabilidade). Conversa geral por etapa em andamento: etapa 1 (visão/público) e formato do episódio respondidos; respondido: 5–6 notícias, comentários entre apresentadores essenciais, personalidades são parte da identidade (mas enxugar). Naturalidade do diálogo é a melhoria nº 1 desejada (hipótese: diálogo por bloco). Próxima: etapa 3 (notícias/fontes/relevância) e perguntas 20–27.
 **Princípio do Tap:** esqueleto ponta a ponta mínimo primeiro, complexidade depois (ver `09-plano-de-entregas.md` v2, substitui os marcos M0–M9).
 
 ## Resumo do projeto em 5 linhas
@@ -20,7 +20,7 @@ Bubuia News: podcast diário (10–15 min) de notícias do AM/Manaus, com coleta
 ## Decisões tomadas
 
 - D01: estudo versionado em `docs/estudo/` (ver `07-decisoes.md`).
-- D06/D07 (adotadas): personalidade no texto curto + configuração de voz por trecho com poucos humores; episódio antigo = benchmark de qualidade. D08 (cold open fora do Nível 0) proposta.
+- D06/D07 (adotadas): personalidade no texto curto + configuração de voz por trecho com poucos humores; episódio antigo = benchmark de qualidade. D08 (cold open fora do Nível 0) proposta. D09 (3 humores) e D10 (sem vinhetas por humor nem trilha variável) adotadas.
 
 Nenhuma decisão de ferramenta ou custo ainda.
 
