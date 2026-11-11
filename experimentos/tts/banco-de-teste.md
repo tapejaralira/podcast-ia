@@ -72,3 +72,31 @@ Iraí: Quem mora perto desses lugares pode ficar de olho nos avisos da Defesa Ci
 
 Observar: as marcas ficam naturais ou exageradas? A **ponte** (Iraí: "vamos respirar um pouco") soa bem após o bloco sério? A voz mantém o ritmo até o fim? Alguma marca foi **lida em voz alta** em vez de interpretada?
 
+## Teste 8: conversa informal entre os dois (4 blocos, com marcas no meio/fim)
+
+Objetivo: ouvir como soa **conversa** (não leitura de notícia) e se a transição entre blocos fica natural. Texto fictício e casual. **As marcas ficam no meio ou no fim da fala, não no começo**, porque no Teste 7 a marca no início de uma fala destoou da fala anterior do outro locutor. Cada fala reage ao que o outro acabou de dizer.
+
+Speaker 1 = Tainá, Speaker 2 = Iraí. Para comparar, rode também uma versão **sem as marcas** (apague as partes entre `< >`). No campo **Style** de cada bloco, experimente: "conversa descontraída e rápida entre amigos, sem pausas longas entre as falas".
+
+**Bloco 1, Tainá**
+```
+Gente, eu juro que hoje o calor em Manaus tava de outro mundo. Saí de casa onze horas e parecia que eu tava andando dentro de um forno, sabe? Aí eu pensei: ou chove daqui a pouco, ou eu viro tacacá derretido. E tu, Iraí, sobreviveu como? <laugh>
+```
+
+**Bloco 2, Iraí**
+```
+Sobrevivi no ar-condicionado, Tai, sem vergonha nenhuma. <breath> Mas olha, aí começou a armar aquele céu escuro lá pras duas da tarde, e eu falei: pronto, vai cair o mundo. E caiu mesmo! Só que aí o trânsito virou aquela loucura na Djalma Batista, né? Chuva em Manaus e engarrafamento são praticamente irmãos.
+```
+
+**Bloco 3, Tainá**
+```
+Pois é! Eu fiquei quarenta minutos parada no mesmo lugar, <argh> só olhando a chuva. Mas aí, vou te falar, saí do ônibus e a primeira coisa que eu fiz foi tomar um tacacá bem quentinho. Parece loucura com esse calor todo, mas é um dos melhores momentos do dia, né? Tu não concorda?
+```
+
+**Bloco 4, Iraí**
+```
+Concordo cem por cento! <laugh> Tacacá com pimenta, jambu deixando a língua formigando... é o tipo de coisa que só quem é daqui entende. Bom, falando em coisa boa da nossa terra, bora ver o que rolou de notícia hoje? Tem coisa importante pra contar pro pessoal.
+```
+
+**Observar:** a conversa soa como duas pessoas? A passagem de um bloco para o outro fica natural? As marcas no meio/fim soam melhor que no começo? O Style "conversa descontraída" muda o ritmo?
+
