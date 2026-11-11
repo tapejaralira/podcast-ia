@@ -133,3 +133,8 @@ Novas perguntas:
 61. Os episódios eram **agendados** para a madrugada (1h–2h30 em Manaus) ou saíam quando você enviava? Qual horário é o ideal para o ouvinte (manhã cedo)?
 62. Algum episódio (ou todos) foi divulgado em redes sociais ou a amigos? Você sabe quantas reproduções teve cada um (o Spotify for Creators mostra)? Isso responde "tem público existente?".
 63. Você tem os mp3 desses 9 episódios? Se colocar 1 ou 2 no Drive, eu posso medir (volume, silêncios, pausas) com ferramenta própria, mesmo sem ouvir.
+
+- Resposta à 59/61: o Tap publicava **à mão**, quando o episódio ficava pronto, geralmente depois das 23h, sem regra fixa. Quer pensar no melhor horário; teme o "atraso" de notícias se publicar de manhã.
+64. Você prefere **escolher as notícias à noite** (por volta das 21h–23h) ou **de manhã cedo**? Qual desses horários combina mais com a sua rotina?
+65. O painel do Spotify for Creators mostra **em que horários** o pessoal ouvia os 9 episódios? Se puder anotar (ou tirar print) os horários de pico, decidimos com dado.
+66. O Spotify for Creators tem a opção de **agendar** a publicação de um episódio? Você chegou a usar?

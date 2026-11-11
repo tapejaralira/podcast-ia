@@ -73,3 +73,24 @@ Inclinação inicial: **Telegram** (ou similar) no M8; a interface web atual do 
 - **Consequência de desenho:** ouvir um episódio de ~10 min já consome a metade ou mais do orçamento. A revisão diária precisa ser **parcial**: (1) seleção/vetos em ≤ 5–8 min; (2) conferir o **roteiro em texto** (leitura rápida, muito mais rápida que ouvir) e os alertas das checagens automáticas; (3) ouvir só trechos marcados (blocos com alerta, a transição de maior salto de humor) ou ouvir em velocidade maior; (4) escuta completa por amostragem semanal (D21).
 - **Feed e publicação:** o Tap já tem contas e um feed antigo com alguns episódios publicados; falta descobrir plataforma, endereço do feed e como foi publicado (pergunta 54).
 
+## Janela de notícias e horário de publicação (rascunho, 2026-11-11)
+
+**Dúvida do Tap:** de manhã seria o ideal para o ouvinte, mas então as notícias seriam do dia anterior (atraso). Qual o intervalo entre pegar as notícias e publicar?
+
+**Como era (reconstruído do feed e do scraping):** o Tap publicava **à mão, normalmente depois das 23h**, sem regra fixa. O feed mostra episódios datados do dia seguinte com horário de 1h–2h30 em Manaus, e o episódio "07/08" usava matérias publicadas em 06/08. Ou seja, na prática já era **"notícias de ontem, entregues de madrugada, para ouvir de manhã"**.
+
+**Conceito para o desenho:** três horários configuráveis, não fixos no código: **corte** (até que hora entram notícias), **geração** (quando o pipeline roda) e **publicação** (quando o episódio sai). Cada episódio cobre a **janela** entre o corte anterior e o corte atual, o que evita repetir notícias entre dias (continuações são marcadas como atualização).
+
+| Opção | Corte → publicação | Vantagem | Desvantagem |
+|-------|-------------------|----------|-------------|
+| A. Madrugada (como era) | corte ~21h–22h → publica 1h–2h | pronto antes de acordar; combina com o hábito noturno do Tap | notícia "de ontem"; Tap revisa à noite |
+| B. Manhã bem cedo | corte ~5h30 → publica ~7h | notícias mais frescas, inclusive o que rolou de madrugada | Tap precisa revisar às 6h–7h; pipeline roda de manhã com pouca folga se algo falhar |
+| C. Híbrida (recomendada para começar) | corte ~21h → Tap seleciona à noite (5 min) → pipeline gera de madrugada → **publicação agendada ~6h30** | revisão no horário que o Tap já usava, entrega de manhã, folga para refazer se algo falhar | notícia continua "de ontem" no conteúdo |
+
+**Como reduzir a sensação de atraso (sem mudar o horário):**
+- Enquadrar o episódio como **"o que aconteceu ontem e o que importa hoje"**.
+- Dar peso à **utilidade pública voltada ao dia que começa** (falta de água/energia, desvios de trânsito, prazos que vencem hoje, eventos de hoje): essas notícias são, por natureza, "de hoje".
+- Se, depois, o corte puder ser ~5h30 e a publicação automática (degraus 2–3 da escada de autonomia), a opção B vira viável sem o Tap acordar cedo.
+
+**Os dados que decidem:** (1) em que horário o público realmente ouve (o painel do Spotify for Creators mostra); (2) quando o Tap quer/consegue revisar; (3) se a plataforma permite **agendar** o episódio (verificar).
+
