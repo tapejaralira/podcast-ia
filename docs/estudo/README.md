@@ -2,6 +2,8 @@
 
 Documento vivo. Objetivo: decidir **o que construir, com quais ferramentas, a que custo e como operar**, *antes* de escrever ou reformular código.
 
+> **Retomando o trabalho?** Comece por [STATUS.md](STATUS.md) (ou use o comando `/retomar`).
+
 ## Como este estudo funciona
 
 Cada arquivo responde a uma pergunta. A ordem importa: não avançamos para a próxima sem fechar a anterior (ou registrar a dúvida em `08-perguntas-abertas.md`).
