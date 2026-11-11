@@ -82,3 +82,9 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 
 39. Você aceitaria marcar o humor (sério/neutro/leve) de cada notícia com um toque ao selecionar, com sugestão pré-preenchida por regra? Ou prefere que o sistema decida sozinho, mesmo errando às vezes?
 40. Existe uma "curva" que você achava ideal para o episódio (ex.: começar com utilidade pública, notícias pesadas no meio, fechar leve)?
+
+## Ordem e autonomia (2026-11-11)
+
+41. Em 07/08 a manchete foi a última notícia do roteiro, mas em 06/08 foi a primeira. Você reordenou pela interface nesses dias, ou a ordem final vinha da IA?
+42. A primeira notícia deveria ser sempre a mais importante, ou a mais útil, ou a mais "gostosa de ouvir"? Isso muda a regra de gancho.
+43. Qual grau de autonomia te agrada como destino: (1) você escolhe, ordem automática; (2) sistema escolhe, você só veta; (3) tudo automático, você só veta até um horário?

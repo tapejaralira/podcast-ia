@@ -95,3 +95,21 @@ Contexto: IA no roteiro é inevitável (D17); o resto antes dela é código (D16
 
 **O que NÃO fazer (lições da tentativa anterior):** classificar humor e tema de cada notícia com chamadas de IA, escolher vinheta por humor, trilha de fundo variável. Esses itens custaram complexidade sem resolver a naturalidade.
 
+## Ordem dos blocos e grau de intervenção (proposta, 2026-11-11)
+
+**Objetivo do Tap:** menos interferência manual; o que der, automático e sem IA.
+
+**Ordem automática por regras (código):**
+1. **Primeiro**, a notícia de maior pontuação entre as de humor neutro ou sério e de utilidade pública (o "gancho" do episódio). Se a manchete for muito pesada, entra em segundo, depois de uma neutra.
+2. **Meio**: as demais por pontuação, **agrupadas por clima** (D18) e por afinidade (mesmo assunto, mesma categoria ou mesma cobertura), para as ligações "por falar nisso" saírem naturais.
+3. **Fim**: leve ou neutra (D18).
+4. Notícia de **continuação** (assunto já coberto ontem) vem marcada como atualização.
+
+**Intervenção humana por exceção:** a lista chega já ordenada. O Tap só mexe se discordar, com controles mínimos no celular: "tornar principal", subir/descer um lugar e "tirar da lista". Sem arrastar nem redesenhar tudo.
+
+**Escada de autonomia** (cada degrau só depois de o anterior se provar):
+- *Degrau 1 (Nível 0/1):* o Tap escolhe as 5–6 notícias (D13); a **ordem é automática**.
+- *Degrau 2:* o sistema também **escolhe** as 5–6 por regras; o Tap só veta ou troca (aprovação por exceção).
+- *Degrau 3:* sem ação do Tap salvo se ele vetar até um horário; o histórico de trocas do Tap ajusta as regras.
+Registrar o que o Tap muda é o dado que mostra se o degrau seguinte já compensa.
+

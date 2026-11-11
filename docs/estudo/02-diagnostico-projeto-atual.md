@@ -106,6 +106,12 @@ Números por extenso e "G um"/"I,M,M,U," para forçar leitura certa; reticência
 - Efemérides conferidas de memória: Selo Postal (01/08), Amizade (30/07), Capoeirista (03/08) e Lei Maria da Penha (07/08) parecem corretas. A de 06/08 ("Dia Nacional dos Profissionais da Educação", com número de lei) **não consegui confirmar**; checar.
 - Linha editorial: 06/08 tem tráfico de drogas, incêndio com vítima descrita em detalhe (queimaduras, gravidez) e 07/08 tem o médico preso, ou seja, **conteúdo policial/gráfico entrou** em episódios recentes.
 
+## Ordem das notícias no sistema antigo (código + dados, 2026-11-11)
+
+- A seleção manual salvava **uma manchete + ids agrupados por categoria** (`data/selecao-manual.json`: p.ex. cidades×3, política×2), **sem uma ordem explícita** de leitura. O código montava a lista como "manchete primeiro, depois as escolhidas, depois as restantes" e o prompt mandava "respeitar EXATAMENTE a ordem".
+- Na prática a ordem final variou: em **06/08** a manchete (operação contra o tráfico) foi a **primeira**; em **07/08** a manchete (médico preso) foi a **última**. Não sei se foi reordenação na interface ou a IA ter reorganizado; vale confirmar com o Tap.
+- O Tap lembra de reordenar manualmente pela interface e de haver uma notícia principal que, "se não me engano", era a primeira.
+
 ## O que vale aproveitar (hipóteses)
 
 - Os 4 coletores (pequenos, 50–110 linhas) e a lógica de fontes.
