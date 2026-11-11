@@ -140,6 +140,16 @@ Fonte: o Tap salvou o XML do feed `https://anchor.fm/s/107ba8788/podcast/rss` em
 - Fontes realmente citadas nos 3 episódios lidos: **G1 Amazonas e A Crítica** em todos, **Portal do Holanda** em 05/08.
 - **Parou em 07/08/2025.** Por quê? (pergunta 60).
 
+## Como a coleta incremental funcionava (código + estado, 2026-11-11)
+
+- O estado ficava em `data/estado_coleta.json` (`ultimaColetaManaus: "06/08/2025 01:14:51"`). Cada coleta lia essa data e buscava as notícias **publicadas depois dela**; na falta do estado, usava um padrão de X horas. Havia também um conjunto de URLs já vistas para não duplicar.
+- Isso confirma o relato do Tap: a próxima varredura ia da última coleta até agora.
+- **Fragilidades prováveis (a confirmar):**
+  1. O filtro usa a **data de publicação informada pelo site**, e o coletor **descarta o item se não achar data**. Em `d24am.ts` o código converte só dia/mês/ano (sem hora), o que daria meia-noite e derrubaria o item de qualquer coleta feita depois: **provável explicação de o D24am quase não aparecer** nos dados.
+  2. **Um único relógio para todas as fontes:** se um site falhava numa coleta, as notícias dele daquele intervalo se perdiam, porque o relógio avançava para todos.
+  3. Notícia publicada antes do horário da coleta mas só "indexada" depois (atraso do site) podia ficar de fora.
+  4. A hora salva parece ser a do fim da coleta; qualquer notícia publicada durante a própria coleta corre o risco de cair no vão.
+
 ## O que vale aproveitar (hipóteses)
 
 - Os 4 coletores (pequenos, 50–110 linhas) e a lógica de fontes.

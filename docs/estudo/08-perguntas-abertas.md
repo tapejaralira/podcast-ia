@@ -138,3 +138,5 @@ Novas perguntas:
 64. Você prefere **escolher as notícias à noite** (por volta das 21h–23h) ou **de manhã cedo**? Qual desses horários combina mais com a sua rotina?
 65. O painel do Spotify for Creators mostra **em que horários** o pessoal ouvia os 9 episódios? Se puder anotar (ou tirar print) os horários de pico, decidimos com dado.
 66. O Spotify for Creators tem a opção de **agendar** a publicação de um episódio? Você chegou a usar?
+
+67. **Reaproveitar notícias:** se uma notícia boa não foi usada hoje (por falta de espaço), pode entrar amanhã se continuar relevante? Por quantos dias, no máximo?

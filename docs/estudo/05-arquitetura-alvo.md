@@ -138,3 +138,15 @@ Hipótese do Tap: se o código não bastar para dar confiança, entra **uma cham
 - **Limites a registrar:** o revisor pode errar para os dois lados (deixar passar erro, reprovar sem motivo) e não é garantia. Por isso entra na **calibração**: comparar os vereditos dele com os julgamentos do Tap numa amostra e medir acertos antes de confiar.
 - **Quando entra:** não no Nível 0. É candidato ao Nível 2, quando o objetivo passa a ser reduzir a revisão humana. Antes, medir quantos erros as checagens de código já pegam e quais passam batido; o revisor só vale se cobrir uma lacuna real.
 
+## Coleta incremental sem perder notícia (proposta, 2026-11-11)
+
+Mantém a ideia do Tap (cada coleta cobre do último horário registrado até agora) e fecha as brechas do sistema antigo:
+
+1. **Marca d'água por fonte**, não global: cada fonte guarda o horário do seu último sucesso. Se uma fonte falha, a janela dela não avança e a próxima coleta recupera tudo.
+2. **Registrar o início da coleta**, não o fim, como novo horário da marca d'água.
+3. **Margem de sobreposição** (ex.: 2–3 h, configurável): cada coleta olha um pouco antes da marca d'água e **remove duplicatas pela URL normalizada** (sem parâmetros de rastreio). Uma notícia entre dois horários pode entrar em qualquer das duas coletas, mas nunca em duas vezes nem em nenhuma.
+4. **Não depender só da data de publicação do site:** guardar também **quando o sistema viu a notícia pela primeira vez** (`visto_em`). Se o site não dá hora (só o dia), ou dá errado, vale o `visto_em`. **Nenhum item é descartado por falta de data.**
+5. **Banco simples (arquivo JSON ou SQLite) de tudo que foi visto**, com situação: candidata, escolhida, usada no episódio da data X, descartada (e por quê). Serve para: não repetir assunto, marcar continuação ("atualização"), reaproveitar boa notícia não usada, e guardar o histórico de seleções do Tap que alimenta as regras (D19).
+6. **Fuso fixo America/Manaus** em todo o sistema (como já havia).
+7. **Reaproveitamento (carry-over):** notícia boa não usada hoje pode ficar elegível por N dias (curiosidade e utilidade com prazo longo); notícia com prazo vencido sai da lista.
+
