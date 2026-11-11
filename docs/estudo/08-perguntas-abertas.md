@@ -107,3 +107,5 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 
 52. No experimento do Google, você usou só o texto do roteiro ou também deu instruções de personalização (foco, tom)? O áudio respeitou o conteúdo ou reinterpretou? Ainda tem algum desses áudios salvos para eu medir duração?
 53. Para eu conferir preço e idiomas do TTS do Gemini nas páginas oficiais, o domínio `ai.google.dev` precisa ser liberado na rede desta sessão. Você autoriza isso quando eu pedir?
+
+- Resposta à 52: o Tap não lembra como fez o experimento no Google; o áudio não está à mão. A decisão sobre liberar `ai.google.dev` (pergunta 53) está em aberto: Tap pediu explicação; sugerido deixar para a fase de teste de vozes.
