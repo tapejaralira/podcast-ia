@@ -34,6 +34,12 @@ Duas apresentadoras/apresentadores: Tainá (energética, gírias locais) e Iraí
 - **Apresentadores com contexto e personalidade amazonense** (Tainá e Iraí) são parte da identidade desde o início. O Tap reconhece que o arquivo de personalidades (`data/personagens.json`) ficou complexo demais.
 - Exemplo de áudio antigo: o Tap pode enviar. Ver limites de análise em `08-perguntas-abertas.md` (nº 25).
 
+### O que o Tap aprendeu na prática (2026-11-11)
+
+- **A personalidade complexa dos apresentadores quase não aparecia no áudio final.** O que importa é o **texto que cada um vai falar**; a voz sintetizada (ElevenLabs, português) não conseguiu carregar timbre jovem, entonação e personalidade imaginados. Foco do esforço: o texto.
+- Ainda vale ter **travas e gatilhos** (poucos caminhos de personalidade que cada um pode tomar), mas simples.
+- **O resultado final do sistema antigo era satisfatório**: vinheta de entrada, bom dia dos dois, apresentação, giro de notícias, tudo "muito bom", exceto o cold open (efeméride): funcionava, mas com alucinação e dificuldade de achar efemérides todos os dias. Portanto o episódio antigo é um **benchmark de qualidade**: o objetivo da nova versão é chegar perto desse resultado com muito menos complexidade e custo.
+
 ### Lições dessa estrutura
 
 - **O cold open foi a parte mais difícil**: fazer a IA trazer um fato do dia só se realmente existir, sem inventar, e cair para curiosidade ou pergunta quando não houver. Cascata de regras + risco de alucinação = muita complexidade para pouco valor.

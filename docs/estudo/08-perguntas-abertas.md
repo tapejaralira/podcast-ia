@@ -52,3 +52,8 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 25. Se enviar um episódio antigo: eu não consigo *ouvir* áudio. Posso medir objetivamente (duração, volume, silêncios, estrutura) com ffmpeg e analisar a transcrição/roteiro, mas naturalidade, emoção e "cara de robô" só você julga. Você topa julgar com uma ficha de escuta que eu monto? Existe o roteiro (texto) do episódio?
 26. Dos traços da Tainá e do Iraí, quais são inegociáveis (ex.: idade/origem, gírias, jeito de reagir)? O resto pode ser cortado.
 27. Os 5–6 itens do dia incluem notícias leves/curiosidades locais ou só "hard news"?
+
+## Voz (2026-11-11)
+
+28. Das vozes ElevenLabs que você usou, alguma ficou boa o suficiente para manter (Tainá/Iraí atuais)? O que faltava: idade jovem, sotaque, ritmo?
+29. Aceita voz mais neutra/madura se o texto for bom, ou o timbre jovem é inegociável?

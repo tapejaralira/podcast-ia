@@ -20,8 +20,9 @@ Bubuia News: podcast diário (10–15 min) de notícias do AM/Manaus, com coleta
 ## Decisões tomadas
 
 - D01: estudo versionado em `docs/estudo/` (ver `07-decisoes.md`).
+- D06/D07 (adotadas): personalidade no texto, voz fixa sem presets; episódio antigo = benchmark de qualidade. D08 (cold open fora do Nível 0) proposta.
 
-Nenhuma decisão de ferramenta, custo ou arquitetura ainda.
+Nenhuma decisão de ferramenta ou custo ainda.
 
 ## Hipóteses ainda não validadas
 
