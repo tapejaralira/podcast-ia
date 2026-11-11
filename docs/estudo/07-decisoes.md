@@ -26,4 +26,5 @@ Formato: **ID · data · decisão** — contexto, opções, escolha, motivo.
 | D20 | 2026-11-11 | **O destino é o ecossistema completo da visão original**, construído por degraus. **Descrição do episódio, capa e numeração por template/contador, sem IA**; redes sociais só no Nível 3, depois de a rotina rodar estável | proposta (aguarda confirmação do Tap) |
 | D21 | 2026-11-11 | **Meta final: operação sem revisão humana**, alcançada por degraus; subir de degrau só com critério medido (taxa de intervenção) e redes de segurança automáticas com disjuntor (na dúvida, não publica) | adotada (direção); limiares a definir |
 | D22 | 2026-11-11 | **Emenda à D17**: IA no roteiro e, **se os testes mostrarem lacuna nas checagens de código**, também num revisor de IA com papel estreito (apontar problemas, não reescrever), uma chamada por episódio, máximo 2 regerações. Fora do Nível 0 | proposta |
+| D23 | 2026-11-11 | **Custo: sem teto fixo agora; buscar a alternativa mais barata por etapa que atenda a qualidade mínima**, medindo custo por episódio. TTS aberto/local entra na lista de testes (ver 04), com ressalvas de GPU, licença e consentimento de voz | adotada |
 

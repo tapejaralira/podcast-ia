@@ -47,6 +47,25 @@ Pontos a pesquisar nesta etapa (relato do Tap, 2026-11-11; **verificar nas pági
 
 Hipótese a testar (não decidida): **gerar o diálogo por bloco de notícia**, não fala a fala nem o episódio inteiro. Cada bloco (notícia + comentário) seria um trecho contínuo de duas vozes conversando, com duração conhecida depois de gerado; as vinhetas fixas e a vírgula sonora entram **entre blocos**, que já eram os pontos naturais. Isso tentaria juntar naturalidade (conversa contínua dentro do bloco) com edição simples (cortes só nas fronteiras). Comparar nos testes: (a) fala a fala, (b) diálogo por bloco, (c) episódio inteiro, em naturalidade, custo, facilidade de corrigir um erro (regerar só um bloco) e controle de humor.
 
+#### Pesquisa preliminar: TTS de código aberto/local (2026-11-11, **não verificado, só para a lista de testes**)
+
+Origem: duas buscas na web. Os dados vêm de páginas de modelos e de agregadores; **nada foi ouvido nem confirmado em português do Brasil**. Cada item precisa de teste curto de qualidade, checagem de licença para uso comercial e de requisito de hardware.
+
+| Candidato | O que a fonte diz | Dúvidas a resolver |
+|-----------|-------------------|--------------------|
+| [Coqui XTTS-v2](https://sol.sbc.org.br/index.php/stil/article/download/44625/44388/) | modelo multilíngue de clonagem de voz, comparado com ElevenLabs num artigo brasileiro (STIL) | manutenção atual; licença; qualidade pt-BR |
+| [PodVoice](https://awesome.ecosyste.ms/projects/github.com%2Faman179102%2Fpodvoice) | CLI local que transforma roteiro em Markdown em áudio multi-locutor usando XTTS v2 | qualidade pt-BR; naturalidade do diálogo |
+| [VibeVoice (Microsoft)](https://www.kdnuggets.com/top-5-text-to-speech-open-source-models) | feito para conversas longas com vários locutores | suporta português? versão em tempo real é de um só locutor |
+| [FireRedTTS-2](https://theresanaiforthat.com/company/fireredteam/repository/FireRedTTS2) | diálogo multi-locutor longo, Apache-2.0 | português? |
+| [SoulX-Podcast 1.7B](https://www.sourcepulse.org/projects/17732759) | multi-turno, multi-locutor, pensado para podcast | português? |
+| [Dia (Nari Labs)](https://awesome.ecosyste.ms/api/v1/projects/github.com%2Fdevnen%2Fdia-tts-server) | diálogo entre locutores, Apache-2.0, existe servidor próprio | português? |
+| [Rápido TTS](https://huggingface.co/edwixx/rapido-tts), [Kitsune-TTS](https://huggingface.co/Heitorkk2/Kitsune-TTS-V1), [Phonon-40m pt](https://huggingface.co/gradium/phonon-40m-pt) | modelos pequenos com português; Rápido tem 1 voz e a clonagem ainda é plano | só uma voz? qualidade para notícia? |
+| [Fish Audio S2 Pro](https://fish.audio/pt/blog/text-to-speech-multiple-voices/) | multi-locutor, mas licença de pesquisa; uso comercial exige licença paga | provavelmente fora |
+
+**Ponto estrutural:** rodar modelo aberto exige **GPU**. Isso conflita com "não depender do meu computador": ou o PC do Tap tem GPU e fica ligado, ou se **aluga GPU por minutos** na nuvem só para gerar o áudio do dia (custo por uso, a levantar). Comparar no arquivo 03: TTS pago por caractere × GPU alugada × GPU própria.
+
+**Ressalvas:** clonar voz de pessoa real levanta questão de consentimento e legal; vozes dos apresentadores devem ser sintéticas ou de uso autorizado. Os candidatos de diálogo (VibeVoice, SoulX, Dia, FireRed) também precisam provar **português** antes de qualquer outra coisa.
+
 ### 6. Mixagem
 Opções: ffmpeg (atual) · biblioteca de áudio em Python (pydub). Provavelmente manter ffmpeg com um único comando/filtro por episódio.
 

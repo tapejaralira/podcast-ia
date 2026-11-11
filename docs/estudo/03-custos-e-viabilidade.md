@@ -2,6 +2,10 @@
 
 > **Nenhum preço aqui é definitivo.** Preencher a coluna "preço" a partir da página oficial de cada fornecedor, anotando data e URL. Este arquivo define o *modelo de cálculo*; os números entram na Fase B.
 
+## Postura de custo (Tap, 2026-11-11)
+
+**Sem teto mensal fechado por enquanto.** Regra de trabalho: **para cada etapa, buscar a alternativa mais barata que atenda a qualidade mínima**, medir o custo por episódio em cada teste e decidir com números. O maior custo antigo era o TTS (ElevenLabs).
+
 ## Metas (a definir com o Tap)
 
 | Item | Valor |
