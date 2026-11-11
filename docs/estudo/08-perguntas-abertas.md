@@ -140,3 +140,9 @@ Novas perguntas:
 66. O Spotify for Creators tem a opção de **agendar** a publicação de um episódio? Você chegou a usar?
 
 67. **Reaproveitar notícias:** se uma notícia boa não foi usada hoje (por falta de espaço), pode entrar amanhã se continuar relevante? Por quantos dias, no máximo?
+
+## Sprint de TTS (2026-11-11)
+
+68. Os critérios de passagem de `11-sprint-tts.md` estão bons? Em especial: tempo máximo para gerar 10 min de áudio, e o que você chama de custo aceitável (degrau 2: centavos; degrau 3: valor atual).
+69. Você tem Python instalado no Windows (versão?) e o driver da NVIDIA/CUDA atualizado? Aceita usar WSL ou Docker se precisar? Isso decide como eu escrevo as instruções dos testes locais.
+70. Você tem chave de API de algum serviço de voz ou de IA (Google AI Studio, Azure, OpenAI)? Contas gratuitas servem. Nunca cole chaves aqui no chat: quando chegar a hora, uso o formulário seguro.
