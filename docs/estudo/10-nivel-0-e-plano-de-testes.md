@@ -18,7 +18,7 @@ Fecha o estudo: define o que é o primeiro esqueleto ponta a ponta e como testam
 | Voz | **um** candidato escolhido no teste T-A, dois locutores, por bloco |
 | Montagem | vinheta de abertura + introdução fixa + blocos + encerramento fixo (ffmpeg, um comando) |
 | Saída | `episodio-N.mp3` + `roteiro.md` + `custos.json` (tokens, caracteres/segundos de áudio, custo estimado) |
-| Numeração | contador em arquivo |
+| Numeração/título | título do episódio = data (DD/MM) + 3 manchetes, como no feed antigo; contador só se o Tap quiser número |
 
 **Fora do Nível 0:** cold open, trilha de fundo, vinheta por humor, capa, descrição, feed, redes, aprovação pelo celular, agendamento, nuvem, revisor de IA.
 

@@ -112,6 +112,34 @@ Números por extenso e "G um"/"I,M,M,U," para forçar leitura certa; reticência
 - Na prática a ordem final variou: em **06/08** a manchete (operação contra o tráfico) foi a **primeira**; em **07/08** a manchete (médico preso) foi a **última**. Não sei se foi reordenação na interface ou a IA ter reorganizado; vale confirmar com o Tap.
 - O Tap lembra de reordenar manualmente pela interface e de haver uma notícia principal que, "se não me engano", era a primeira.
 
+## O feed antigo no ar (Anchor / Spotify for Creators), lido em 2026-11-11
+
+Fonte: o Tap salvou o XML do feed `https://anchor.fm/s/107ba8788/podcast/rss` em PDF (o domínio não abre pela rede da sessão). **9 episódios publicados, de 28/07 a 07/08/2025; nenhum depois.**
+
+**Programa:** "BubuiA News"; descrição "Resumo diário de notícias direto e leve, focado no que realmente importa para quem vive em Manaus e no Amazonas."; idioma pt-br; categoria News > Daily News; não explícito; capa única hospedada pelo Anchor; gerador "Anchor Podcasts".
+
+| Episódio (título no feed) | Publicado | Duração | Arquivo |
+|---------------------------|-----------|---------|---------|
+| 28/07 - Complexo Hípico Pioneiro em Manaus e Vagas na Ufam no Interior | 28/07 | 9:31 | 9,1 MB |
+| 29/07 - Manaus ganha primeiro centro público para atendimento de crianças com autismo | 29/07 | 9:59 | 9,6 MB |
+| 30/07 - Falta d'água em Manaus, o Fim do Samba Manaus e Vagas de Estágio! | 30/07 | 8:46 | 8,4 MB |
+| 31/07 - Evasão Escolar no AM, Festa do Cupuaçu e Empreendedorismo local! | 31/07 | 6:14 | 6,0 MB |
+| 01/08 - Alerta no PIM, Cheia no AM e Último Dia para a UEA! | 03/08 | 6:23 | 5,9 MB |
+| 04/08 - Educação em Alerta e Direitos do Consumidor | 04/08 | 5:50 | 5,5 MB |
+| 05/08 - Estiagem Moderada, Obras e Cultura | 05/08 | 7:15 | 6,8 MB |
+| 06/08 - Incêndio no Distrito, Operação e Revitalização do Centro | 06/08 | 6:33 | 6,4 MB |
+| 07/08 - Médico Preso, Rescaldo de Incêndio e Show dos Bois | 07/08 | 7:08 | 6,8 MB |
+
+**Achados**
+- **Duração real média ≈ 7:30** (5:50 a 9:59), **não 8–9 min** como eu estimara pelo texto. Os três primeiros tinham 9–10 min; **depois de 31/07 ficaram em ~6–7 min**. Meta de ~10 min (D27) exige mais conteúdo ou ritmo mais lento do que o episódio publicado.
+- Arquivo MP3 de ~128 kbps (inferido de tamanho ÷ duração); referência para a saída da mixagem.
+- **Títulos do feed usam data (DD/MM) + 3 manchetes**, não número de episódio. A numeração caótica dos roteiros (12, 112, 82…) nunca foi para o ouvinte: para o feed, **data basta**.
+- O episódio de "01/08" saiu em **03/08** (atraso de 2 dias); só há episódios em dias úteis, sem fim de semana, de 28/07 a 07/08 (um dia, 01/08, saiu depois).
+- Horário de publicação no feed: ~05:00–06:30 GMT, ou seja **1h–2h30 da manhã em Manaus**: provavelmente agendado ou enviado na madrugada.
+- **Descrição de cada episódio (padrão):** frase de abertura com dia da semana e efeméride ("Quinta-feira com as principais notícias… no dia em que a Lei Maria da Penha completa mais um ano…"), 2–3 frases de chamada, **um parágrafo curto por notícia com título em negrito**, lista **"Fontes das notícias" com links** para as matérias (G1 Amazonas, A Crítica, Portal do Holanda) e hashtags (#Notícias #Podcast #BubuiaNews #Manaus…), com emojis. Isso já era a citação de fontes (D30) publicada.
+- Fontes realmente citadas nos 3 episódios lidos: **G1 Amazonas e A Crítica** em todos, **Portal do Holanda** em 05/08.
+- **Parou em 07/08/2025.** Por quê? (pergunta 60).
+
 ## O que vale aproveitar (hipóteses)
 
 - Os 4 coletores (pequenos, 50–110 linhas) e a lógica de fontes.
