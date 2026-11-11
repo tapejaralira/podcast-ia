@@ -14,7 +14,7 @@ Bubuia News: podcast diário (10–15 min) de notícias do AM/Manaus, com coleta
 
 - Estrutura do estudo criada em `docs/estudo/` (arquivos 01–09).
 - Diagnóstico inicial do repositório antigo (arquivo 02) — baseado só em leitura de código, sem faturas nem medições.
-- Plano de entregas em rascunho (M0–M9) e requisito de operação nuvem/celular (arquivo 06).
+- Plano de entregas em rascunho v2 (níveis 0–3, esqueleto ponta a ponta) e requisito de operação nuvem/celular (arquivo 06).
 - `CLAUDE.md` e comandos `/retomar` e `/encerrar` para continuidade entre sessões.
 
 ## Decisões tomadas

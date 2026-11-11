@@ -19,7 +19,7 @@ Atualize `docs/estudo/STATUS.md` (o que mudou, decisões novas, próximos passos
 ## Regras do projeto
 
 - **Simplicidade é requisito.** Nenhuma funcionalidade ou módulo novo sem entrega mínima que o exija, conforme `docs/estudo/09-plano-de-entregas.md`. Um marco só começa quando o anterior funciona.
-- **Nada de código novo antes do M0** (estudo fechado) sem o Tap pedir explicitamente.
+- **Nada de código novo até o estudo chegar ao suficiente para o Nível 0** (ver `docs/estudo/09-plano-de-entregas.md`) sem o Tap pedir explicitamente. Princípio: esqueleto ponta a ponta mínimo primeiro, complexidade depois.
 - **Custo é critério de decisão.** Nenhuma chamada paga (TTS, LLM) em teste sem estimar o custo antes e avisar o Tap.
 - **Preços e versões de ferramentas só entram nos documentos verificados em fonte oficial, com data e URL.** Nunca de memória.
 - **Decisões** vão para `docs/estudo/07-decisoes.md` (ID, data, contexto, opções, escolha, motivo). Não reabrir decisão registrada sem motivo novo.
