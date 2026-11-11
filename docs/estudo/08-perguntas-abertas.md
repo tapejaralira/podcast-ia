@@ -148,3 +148,5 @@ Novas perguntas:
 70. Você tem chave de API de algum serviço de voz ou de IA (Google AI Studio, Azure, OpenAI)? Contas gratuitas servem. Nunca cole chaves aqui no chat: quando chegar a hora, uso o formulário seguro.
 
 - Respostas à 69/70 (2026-11-11): o Tap tem conta **OpenAI temporária** (limites perto do fim); tem conta **Google, mas só para o Google Chat** (a conta do feed do podcast é uma conta Google/Gmail normal, ainda sem uso de AI Studio); **não conhece o Azure**. Python/driver NVIDIA: ainda não respondeu.
+
+71. No AI Studio, você conseguiu adicionar um **segundo bloco com outra voz** (Speaker 2)? Se não, o que aparece (erro, limite, botão desativado)? Se foi só trabalhoso no celular, vale tentar no computador.

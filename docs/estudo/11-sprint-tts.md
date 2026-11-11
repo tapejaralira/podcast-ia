@@ -83,4 +83,7 @@ Tamanho do banco de teste: **~2.000 caracteres** nos testes 1 a 5 (~605 + 445 + 
 
 | Data | Candidato | Config | Naturalidade voz | Naturalidade diálogo | pt-BR/pronúncia | Automação? | Tempo p/ 10 min | Custo | Licença | Veredito |
 |------|-----------|--------|------------------|----------------------|-----------------|------------|-----------------|-------|---------|----------|
-| | | | | | | | | | | |
+| 2026-11-11 | Gemini TTS (AI Studio, gratuito, playground) | voz padrão Aoede, 1 locutor, Teste 1 (bloco sério, sem marcas) | **bom** (voz de mulher adulta, não jovem) | não avaliado (1 voz) | **sem sotaque estranho; leu direito** | manual por ora (playground); API a confirmar | não medido | gratuito no playground | a verificar | **positivo; seguir testando** |
+
+**Observações do Tap sobre o primeiro teste (2026-11-11):** o resultado foi "bem bom"; as expressões ficaram ótimas; leu "direitinho, sem sotaque"; timbre mais adulto que o desejado (aceitável, D26). Por ora só consegue testar com **uma voz** (verificar se o segundo locutor exige algo na conta gratuita ou se foi dificuldade no celular).
+
