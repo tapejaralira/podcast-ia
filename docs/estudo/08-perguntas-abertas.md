@@ -38,3 +38,11 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 ## Legal
 
 15. Já pensou em como lidar com direitos dos portais de notícia (apenas resumo + link/atribuição)?
+
+## Formato do episódio (levantadas em 2026-11-11)
+
+20. Nível 0 sem cold open (começa direto na abertura e cardápio) é aceitável? Se quiser algo no início, serve uma pergunta/curiosidade fixa de uma lista curada?
+21. Quantas notícias por episódio? O bate-bola (comentário do outro apresentador) é essencial desde o início?
+22. As duas vozes são essenciais já no Nível 0, ou uma voz só no começo?
+23. O pedido de seguir/compartilhar e a despedida podem ser texto fixo gravado uma vez, sem passar pela IA?
+24. A vinheta de abertura, a de transição e a vírgula sonora já existem em áudio pronto (só há `virgula_sonora.mp3` no repositório)?

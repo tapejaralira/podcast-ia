@@ -15,6 +15,24 @@ Podcast diário de notícias do Amazonas/Manaus, **Bubuia News**, 10–15 min po
 - **Princípio de desenvolvimento definido pelo Tap:** primeiro fazer *todas* as etapas funcionarem juntas no nível mínimo; só depois aumentar a complexidade. O erro do projeto anterior foi construir cada etapa já na forma final imaginada.
 - ❓ Público existente ou projeto novo? Meta de sucesso em 6 meses? (perguntas em aberto)
 
+## Formato do episódio (versão antiga, relatado pelo Tap e conferido em `assets/templates/roteiro-template.md`)
+
+Duas apresentadoras/apresentadores: Tainá (energética, gírias locais) e Iraí (calmo, analítico).
+
+1. **Cold open** (0–20 s): trivia/curiosidade/pergunta. Prioridade em cascata: fato histórico do dia (efeméride) → curiosidade → pergunta para puxar conversa.
+2. **Vinheta de abertura** (áudio pré-gravado).
+3. **Apresentação** dos dois e **cardápio** de notícias (um deles resume o que vem).
+4. "Bora para as notícias" + **vinheta de transição**.
+5. **Giro de notícias**: um apresentador conta a notícia, o outro comenta (bate-bola). Entre as notícias, uma **vírgula sonora**.
+6. **Vinheta** ao fim das notícias.
+7. **Encerramento**: pedido para seguir e compartilhar, despedida.
+
+### Lições dessa estrutura
+
+- **O cold open foi a parte mais difícil**: fazer a IA trazer um fato do dia só se realmente existir, sem inventar, e cair para curiosidade ou pergunta quando não houver. Cascata de regras + risco de alucinação = muita complexidade para pouco valor.
+- Hipótese para o Nível 0: **sem cold open** (ou só pergunta/curiosidade fixa de uma lista curada, nunca gerada). Reintroduzir depois, com efemérides vindas de uma base de dados verificada e não da memória da IA. ❓ Confirmar com o Tap.
+- A estrutura em si (abertura → cardápio → notícias em bate-bola → encerramento) é simples e pode ser um template fixo; a complexidade veio das variações.
+
 ## Papel humano (alvo)
 
 - Escolher/aprovar as notícias do dia.

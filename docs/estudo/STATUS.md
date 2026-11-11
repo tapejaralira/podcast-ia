@@ -3,7 +3,7 @@
 > Primeiro arquivo a ler em toda sessão nova. Atualizar ao encerrar cada sessão. Manter curto: o detalhe vive nos arquivos 01–09.
 
 **Última atualização:** 2026-11-11
-**Fase:** A — Entender (estudo de viabilidade). Conversa geral por etapa em andamento: etapa 1 (visão/público) respondida; próxima: etapa 2 (formato do episódio).
+**Fase:** A — Entender (estudo de viabilidade). Conversa geral por etapa em andamento: etapa 1 (visão/público) e formato do episódio respondidos; próxima: continuar etapa 2 (nº de notícias, tom, 2 vozes no Nível 0?) e etapa 3 (notícias).
 **Princípio do Tap:** esqueleto ponta a ponta mínimo primeiro, complexidade depois (ver `09-plano-de-entregas.md` v2, substitui os marcos M0–M9).
 
 ## Resumo do projeto em 5 linhas
