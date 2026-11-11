@@ -42,7 +42,7 @@ Nenhuma decisão de ferramenta ou custo ainda.
 
 ## Pendências com o Tap
 
-- Feed antigo lido (PDF): 9 episódios 28/07–07/08/2025, ~7:30 em média, descrição com fontes. Publicava à mão, ~23h; horário ideal em estudo (D31 proposta: corte 21h, publicação agendada ~6h30). D32 (proposta): coleta incremental por fonte com sobreposição e dedupe. Faltam respostas 60, 62–67 (como publicava, por que parou, horário, audiência, mp3s).
+- Feed antigo lido (PDF): 9 episódios 28/07–07/08/2025, ~7:30 em média, descrição com fontes. Publicava à mão, ~23h; horário ideal em estudo (D31 proposta: corte 21h, publicação agendada ~6h30). D32 (adotada): coleta incremental por fonte com sobreposição e dedupe. Faltam respostas 60, 62–67 (como publicava, por que parou, horário, audiência, mp3s).
 
 - Google Drive conectado (leitura); pasta `scripts` com ~25 roteiros de jun–ago/2025; 8 lidos e analisados em `02-diagnostico` (seção "Estrutura real dos episódios" = padrão as-is, 5 mais recentes + scraping de 07/08) (episódios de ~8–9 min, bate-bola rígido nos mais recentes, invenções no cold open). Faltam áudios e logs de coleta.
 - Tap vai procurar arquivos locais antigos (roteiros, notícias brutas, logs de coleta, áudios) e enviar se achar; sem pressa (pergunta 36).
