@@ -16,6 +16,7 @@ Cada arquivo responde a uma pergunta. A ordem importa: não avançamos para a pr
 | 06 | [operacao](06-operacao.md) | Como rodar todo dia, monitorar, revisar e publicar? | esqueleto |
 | 07 | [decisoes](07-decisoes.md) | O que foi decidido, quando e por quê? | vazio |
 | 08 | [perguntas-abertas](08-perguntas-abertas.md) | O que preciso do Tap para avançar? | preenchido |
+| 09 | [plano-de-entregas](09-plano-de-entregas.md) | Em que ordem e com que entregas mínimas construir? | rascunho |
 
 ## Regras de trabalho
 

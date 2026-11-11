@@ -26,6 +26,8 @@ Todo o resto automático.
 | F6 | Sintetizar vozes dos 2 apresentadores | essencial |
 | F7 | Montar episódio (vozes + vinhetas/trilha) | essencial |
 | F8 | Publicar (feed RSS → plataformas) | essencial |
+| F10 | Rodar na nuvem, sem o PC do Tap ligado | desejado ❓ viabilidade (ver 06) |
+| F11 | Aprovar seleção e áudio pelo celular | desejado ❓ viabilidade (ver 06) |
 | F9 | Distribuição em redes sociais, YouTube, chatbots, analytics | ❓ adiado (v2+) |
 
 ## Requisitos não funcionais

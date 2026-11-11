@@ -28,6 +28,13 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 13. Aceita trocar de linguagem se for vantajoso, ou prefere manter TypeScript?
 14. Já tem hospedagem/feed definido, ou isso ainda está aberto?
 
+## Operação pelo celular e na nuvem
+
+16. Você usa Telegram (ou WhatsApp) no dia a dia? Receber a lista de notícias e o áudio por lá seria confortável?
+17. Quanto você aceita gastar por mês só com a infraestrutura (servidor/agendador)?
+18. Você prefere zero manutenção de servidor, mesmo que menos flexível, ou aceita cuidar de um servidor pequeno?
+19. Em que horário você consegue decidir? A resposta pode chegar horas depois do aviso?
+
 ## Legal
 
 15. Já pensou em como lidar com direitos dos portais de notícia (apenas resumo + link/atribuição)?
