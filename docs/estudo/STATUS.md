@@ -30,7 +30,8 @@ Nenhuma decisão de ferramenta, custo ou arquitetura ainda.
 
 ## Próximos passos (em ordem)
 
-1. Tap responder `08-perguntas-abertas.md` (especialmente orçamento, faturas, preferência por Telegram/servidor).
+0. **Combinado com o Tap (2026-11-11):** nenhum teste ou liberação de rede até concluirmos uma conversa geral sobre o projeto: como cada etapa funciona, como desenvolver e o que o Tap espera. Os testes (T1 etc.) ficam adiados, não descartados.
+1. Conversa guiada por etapa, registrando as respostas no estudo (arquivos 01, 05, 06) e em `08-perguntas-abertas.md`.
 2. Teste T1 (coletores a partir da nuvem): tentado, inconclusivo — a rede da sessão do Claude não alcança os portais e o Tap não quis liberar hosts. Refazer num workflow de GitHub Actions (script mínimo de curl/fetch nos 4 endereços, sem IA paga) ou no PC do Tap.
 3. Pesquisar preços atuais com fonte e data → preencher `03-custos-e-viabilidade.md`.
 4. Comparar opções de voz e LLM com teste pequeno (custo estimado antes).
