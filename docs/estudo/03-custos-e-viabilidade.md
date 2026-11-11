@@ -63,3 +63,8 @@ custo_episodio = coleta + classificação_LLM + agrupamento + roteiro_LLM + TTS 
 ## Critério de viabilidade
 
 O projeto é viável se existir um cenário com **custo/mês ≤ orçamento** *e* qualidade ≥ mínima aceitável (definida em 01), com esforço de manutenção ≤ ❓ h/semana.
+
+## Cenário ilustrativo (não verificado): TTS de diálogo via API do Gemini
+
+Só para ordem de grandeza, a partir de números de agregadores (ver `04-ferramentas.md`): ~18.000 tokens de áudio por episódio de 12 min × US$ 20/1M ≈ **US$ 0,36/episódio**, ~**US$ 11/mês**. Comparar com o custo real antigo da ElevenLabs (faturas ainda pendentes) e com GPU alugada para modelo aberto. **Conferir na tabela oficial antes de usar.**
+

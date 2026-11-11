@@ -104,3 +104,6 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 50. Que tipos de erro mais te preocupariam num episódio publicado sem você ouvir (fato errado, tom inadequado, nome/pronúncia, notícia pesada demais, voz falhando)? Isso define o que o revisor precisa pegar.
 
 51. **Monetização:** o Bubuia News pode vir a ter anúncio, patrocínio ou outra receita? Isso decide se modelos de voz com licença "não comercial" (como o padrão do VoiceStudio/OmniVoice) podem ser usados.
+
+52. No experimento do Google, você usou só o texto do roteiro ou também deu instruções de personalização (foco, tom)? O áudio respeitou o conteúdo ou reinterpretou? Ainda tem algum desses áudios salvos para eu medir duração?
+53. Para eu conferir preço e idiomas do TTS do Gemini nas páginas oficiais, o domínio `ai.google.dev` precisa ser liberado na rede desta sessão. Você autoriza isso quando eu pedir?
