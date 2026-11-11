@@ -57,3 +57,5 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 
 28. Das vozes ElevenLabs que você usou, alguma ficou boa o suficiente para manter (Tainá/Iraí atuais)? O que faltava: idade jovem, sotaque, ritmo?
 29. Aceita voz mais neutra/madura se o texto for bom, ou o timbre jovem é inegociável?
+
+30. Nos trechos de comentário, quantos "humores" distintos você sentia necessidade (ex.: neutro, sério/pesado, leve/alegre)? Mais que isso era exagero?

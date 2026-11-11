@@ -36,7 +36,7 @@ Fonte: leitura do repositório (commit `70891c2`). Observações factuais; julga
 
 - **Personalidades (`data/personagens.json`, ~11,6 mil caracteres)**: cada apresentador tem perfil, tom, expressões, especialidades, estilo de interação e ~40 frases de exemplo de reações em 6 emoções. Se isso entra inteiro em cada chamada de IA, é custo repetido de tokens em todo episódio, e as frases de exemplo tendem a ser copiadas. Hipótese: um "cartão" de ~10 linhas por apresentador + 2–3 falas de exemplo basta para o Nível 0. Medir isso depois.
 - **Volume de notícias (amostra antiga, só 2 dias de agosto/2025)**: 43 itens coletados (G1 Amazonas 17, A Crítica 16, Portal do Holanda 10; D24am não aparece), ~20/dia. É uma amostra pequena e antiga; não prova que há 5–6 notícias *relevantes* por dia. Precisa de coleta de pelo menos 2–4 semanas para responder.
-- **Estilos de voz (`data/tts-config.json`)**: 5 presets de `stability`/`style` do ElevenLabs. O Tap relata que a personalidade quase não chegava ao áudio; os presets são candidatos fortes a corte (comparar em teste cego: voz fixa vs. presets).
+- **Estilos de voz (`data/tts-config.json`)**: 5 presets de `stability`/`style` do ElevenLabs, aplicados por trecho. O Tap relata que a configuração *por trecho* funcionava e importava (notícia pesada vs. alegre, sobretudo nos comentários), enquanto as "marcas no texto" não funcionavam bem e o texto longo de personalidade atrapalhava. Hipótese: reduzir para ~3 humores por fala, escolhidos pelo roteiro. Validar em teste cego.
 - **Efemérides (`data/efemerides-brasileiras.json`, 689 bytes)**: contém só uma data (05-08). Não é uma base utilizável ainda.
 
 ## O que vale aproveitar (hipóteses)

@@ -28,6 +28,11 @@ Teste: mesmo conjunto de notícias → comparar fidelidade aos fatos, naturalida
 Opções: ElevenLabs (atual) · outros TTS comerciais · TTS open-source · modelos de diálogo multi-locutor.
 Teste: mesmo trecho de 1 min, 2 vozes, avaliado às cegas; registrar custo por minuto.
 
+Pontos a pesquisar nesta etapa (relato do Tap, 2026-11-11; **verificar nas páginas oficiais, nada confirmado aqui**):
+- Hoje a voz é gerada **por trecho** (fala a fala), com configuração própria por trecho. Funcionava; as marcas de entonação dentro do texto funcionavam pouco.
+- Já existem formas de **duas vozes dialogando de forma mais natural** (geração de diálogo multi-locutor)? Em quais provedores, com português do Brasil, a que custo e com que controle de emoção por trecho?
+- Notícias pedem pouca variação emocional; a nuance fica nos comentários (notícia pesada vs. alegre). Medir quanto a configuração por trecho melhora o resultado percebido frente a uma voz fixa.
+
 ### 6. Mixagem
 Opções: ffmpeg (atual) · biblioteca de áudio em Python (pydub). Provavelmente manter ffmpeg com um único comando/filtro por episódio.
 
