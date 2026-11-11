@@ -59,6 +59,7 @@ Tamanho do banco de teste: **~2.000 caracteres** nos testes 1 a 5 (~605 + 445 + 
 2. **Demonstrações no navegador** de modelos abertos (ex.: XTTS, F5-TTS, Kokoro em páginas de demonstração gratuitas, como as do Hugging Face), **só para ouvir a qualidade**, sem instalar nada. Não testam automação.
 3. **ElevenLabs** (referência): se a conta antiga ainda tiver créditos, gerar só os testes 1 a 3 com as mesmas falas para ter o "teto".
 4. **OpenAI**: só se ainda houver crédito; é voz única por chamada (sem diálogo), prioridade baixa.
+**Achado (2026-11-11, prints do Tap no celular):** o **Google AI Studio tem um playground de fala** (modelo "Gemini 3.8 Flash" aparece na tela inicial). A tela de fala funciona por **blocos de fala**: cada bloco tem um locutor com voz própria (ex.: "Speaker 1 - Aoede"), um seletor **Style**, o botão **+ Expression**, "Add speech block", "Run", player e download. Já abre com um áudio de exemplo em inglês de 28 s. Isso confirma que dá para montar diálogo de dois locutores e configurar estilo/expressão **por trecho**. Ainda não testado em pt-BR.
 5. **Azure/Microsoft**: deixar para depois (exige cadastro com cartão); não é necessário agora.
 
 ## Ordem sugerida
