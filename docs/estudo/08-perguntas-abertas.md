@@ -94,3 +94,9 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 44. A descrição do episódio, para você, é só a lista das notícias do dia (com links) ou precisa de texto "chamativo" escrito? Se for lista, o template resolve sem IA.
 45. Capa: identidade visual fixa com a numeração, ou uma imagem diferente por episódio? Você já tem a arte/thumbnail (há `thumbnail01/02.png` no repositório)?
 46. Você já tem hospedagem ou conta em plataforma de podcast (Spotify for Creators etc.)? O feed de antes chegou a ser publicado em algum lugar?
+
+## Confiança e publicação sem revisão (2026-11-11)
+
+47. Para você confiar a ponto de não revisar, qual seria o critério? Ex.: "14 dias seguidos sem eu precisar mudar nada".
+48. Se o sistema achar que algo está duvidoso, prefere que ele **pule o episódio do dia** ou publique uma versão reduzida (menos notícias)?
+49. Aceita ouvir por amostragem (ex.: 1 episódio por semana) mesmo no modo automático?

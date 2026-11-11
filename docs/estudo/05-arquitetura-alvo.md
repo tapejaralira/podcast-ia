@@ -113,3 +113,17 @@ Contexto: IA no roteiro é inevitável (D17); o resto antes dela é código (D16
 - *Degrau 3:* sem ação do Tap salvo se ele vetar até um horário; o histórico de trocas do Tap ajusta as regras.
 Registrar o que o Tap muda é o dado que mostra se o degrau seguinte já compensa.
 
+## Meta de longo prazo: confiança suficiente para não revisar (2026-11-11)
+
+O Tap quer chegar a um ponto em que **confia tanto no processo que não precisa revisar nada**. Para isso a confiança tem que ser **medida**, não sentida. Rascunho de critérios (limiares ❓ a definir com o Tap):
+
+- **Métrica base:** taxa de intervenção do Tap = fração de episódios/blocos em que ele trocou, reordenou, vetou ou reprovou algo. O sistema registra cada mudança.
+- **Subir um degrau da escada (D19)** só quando, por N dias seguidos (❓ ex.: 14), a intervenção ficou abaixo de um limite (❓ ex.: ≤ 1 pequena troca por semana) e nenhuma reprovação por erro factual ou de áudio ocorreu.
+- **Redes de segurança antes de publicar sem humano** (sempre automáticas, no código):
+  1. validação de fatos do bloco contra o briefing (números, nomes, datas);
+  2. checagem do áudio (duração dentro da faixa, sem trechos vazios, volume dentro do padrão);
+  3. checagem de conteúdo (nada policial/gráfico fora das regras, nenhum termo de uma lista de bloqueio);
+  4. **disjuntor**: se qualquer checagem falhar, o episódio **não publica** e avisa o Tap; melhor pular o dia do que publicar erro.
+- **Amostragem:** mesmo em modo automático, o Tap pode ouvir por amostragem (ex.: 1 episódio por semana) para recalibrar, em vez de revisar todos.
+- **Responsabilidade editorial:** publicar sem revisão humana significa que erros factuais vão ao ar; as redes de segurança precisam ser bem mais estritas que as de hoje. Isso entra na avaliação legal/ética do estudo.
+
