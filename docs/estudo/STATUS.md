@@ -3,7 +3,8 @@
 > Primeiro arquivo a ler em toda sessão nova. Atualizar ao encerrar cada sessão. Manter curto: o detalhe vive nos arquivos 01–09.
 
 **Última atualização:** 2026-11-11
-**Fase:** A — Entender (estudo de viabilidade). Marco atual: M0 (estudo fechado).
+**Fase:** A — Entender (estudo de viabilidade). Conversa geral por etapa em andamento: etapa 1 (visão/público) respondida; próxima: etapa 2 (formato do episódio).
+**Princípio do Tap:** esqueleto ponta a ponta mínimo primeiro, complexidade depois (ver `09-plano-de-entregas.md` v2, substitui os marcos M0–M9).
 
 ## Resumo do projeto em 5 linhas
 

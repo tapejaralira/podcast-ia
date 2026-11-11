@@ -6,6 +6,15 @@
 
 Podcast diário de notícias do Amazonas/Manaus, **Bubuia News**, 10–15 min por episódio, produzido de forma quase totalmente automática (coleta → seleção → roteiro → vozes → edição), com intervenção humana mínima.
 
+## Origem, público e propósito (palavras do Tap, 2026-11-11)
+
+- A ideia nasceu de o Tap ouvir podcasts de notícias nacionais e de política internacional e sentir falta de algo equivalente sobre o Amazonas/Manaus. Praticamente não existe um podcast assim.
+- **Público principal: jovens** que querem se informar rápido sobre as principais notícias de Manaus e do Amazonas.
+- **Estilo:** 10–15 min, direto, sem enrolação, dinâmico e fácil de ouvir; conteúdo não extenso.
+- **Apresentadores (ideia original):** dois, um homem e uma mulher, com personalidade e trejeitos amazônicos. ❓ Ainda é requisito da primeira versão ou pode vir depois (ver princípio abaixo)?
+- **Princípio de desenvolvimento definido pelo Tap:** primeiro fazer *todas* as etapas funcionarem juntas no nível mínimo; só depois aumentar a complexidade. O erro do projeto anterior foi construir cada etapa já na forma final imaginada.
+- ❓ Público existente ou projeto novo? Meta de sucesso em 6 meses? (perguntas em aberto)
+
 ## Papel humano (alvo)
 
 - Escolher/aprovar as notícias do dia.
