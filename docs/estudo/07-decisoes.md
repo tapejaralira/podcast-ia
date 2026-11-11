@@ -15,3 +15,4 @@ Formato: **ID · data · decisão** — contexto, opções, escolha, motivo.
 | D09 | 2026-11-11 | **Três humores por fala: neutro, sério, leve.** Nada além disso | adotada |
 | D10 | 2026-11-11 | **Sem vinhetas por humor/tema e sem trilha de fundo variável** (a detecção automática de humor/tema para escolher áudio de edição foi complexa demais). Nível 0 usa poucas vinhetas **fixas**; naturalidade do diálogo tem prioridade sobre enfeites de edição | adotada |
 | D11 | 2026-11-11 | **Cada notícia é um bloco de conversa**, com diálogo mais solto e variável dentro do bloco, em vez do revezamento rígido "um fala, o outro comenta". Direção adotada; **geração das vozes por bloco** ainda é hipótese a testar (ver 04) | adotada (direção) |
+| D12 | 2026-11-11 | **Todo bloco serve a informar sobre a notícia**: apresentadores podem opinar, perguntar e dar contrapontos, sempre atrelados à notícia e sem inventar fatos | adotada |

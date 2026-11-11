@@ -40,6 +40,8 @@ Cada bloco recebe da pipeline um *briefing* pequeno:
 - um **padrão de conversa** escolhido entre poucos: (1) um conta, o outro reage; (2) um conta, o outro pergunta, o primeiro explica; (3) os dois completam um ao outro; (4) leve discordância/opinião diferente; (5) notícia curta, só uma frase de reação.
 - duração-alvo do bloco.
 
+**Regra de ouro (Tap): o ponto central de todo bloco é informar o ouvinte sobre a notícia.** Opinião, pergunta e contraponto são permitidos, mas sempre atrelados à notícia; nunca viram conversa solta ou assunto próprio.
+
 **Travas (a liberdade de conversa não pode virar liberdade de fatos):**
 - Os apresentadores podem reagir, opinar com cautela, perguntar e explicar; **não podem acrescentar fatos, números, nomes ou datas que não estejam no briefing**.
 - Validação automática barata: números, nomes próprios e datas citados no bloco precisam aparecer no briefing; se não, o bloco é regerado antes de pagar pela voz.
