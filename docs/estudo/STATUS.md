@@ -42,6 +42,8 @@ Nenhuma decisão de ferramenta ou custo ainda.
 
 ## Pendências com o Tap
 
+- Feed antigo: https://anchor.fm/s/107ba8788/podcast/rss (Anchor/Spotify for Creators); conteúdo não lido, pedir ao Tap para colar/anexar o XML (pergunta 54) e responder se publicava à mão (59).
+
 - Google Drive conectado (leitura); pasta `scripts` com ~25 roteiros de jun–ago/2025; 8 lidos e analisados em `02-diagnostico` (seção "Estrutura real dos episódios" = padrão as-is, 5 mais recentes + scraping de 07/08) (episódios de ~8–9 min, bate-bola rígido nos mais recentes, invenções no cold open). Faltam áudios e logs de coleta.
 - Tap vai procurar arquivos locais antigos (roteiros, notícias brutas, logs de coleta, áudios) e enviar se achar; sem pressa (pergunta 36).
 

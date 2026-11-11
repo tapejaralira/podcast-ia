@@ -124,3 +124,6 @@ Novas perguntas:
 56. **Texto fixo:** a introdução ("Bem-vindos ao BubuiA News…") e o encerramento ("sigam e compartilhem…") podem ser textos fixos gravados uma vez?
 57. **Nível 0 com 3 notícias** (~5 min) para validar o esqueleto antes de subir para 5–6: concorda?
 58. **Direitos autorais:** posso registrar como ponto a verificar com fonte oficial (ou advogado) o seu entendimento de que resumir e comentar citando a fonte é permitido?
+
+- Resposta à 54: feed antigo informado pelo Tap: https://anchor.fm/s/107ba8788/podcast/rss (hospedagem Anchor, hoje integrada ao Spotify for Creators). **Não consegui abrir** daqui: `anchor.fm` está fora da rede permitida desta sessão. Pedido: o Tap abrir o endereço no navegador e colar o conteúdo (ou salvar o XML e anexar/colocar no Drive), para eu ver nome, descrição, capa, episódios, durações e como a hospedagem entrega os arquivos.
+59. **Publicação automática:** você publicava pelo site/app do Anchor (Spotify for Creators), enviando o mp3 à mão? Chegou a usar alguma automação? (Isso define se dá para publicar sem você.)

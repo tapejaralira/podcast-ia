@@ -100,6 +100,9 @@ Fontes: [repositório](https://github.com/debpalash/VoiceStudio), [README](https
 Opções: ffmpeg (atual) · biblioteca de áudio em Python (pydub). Provavelmente manter ffmpeg com um único comando/filtro por episódio.
 
 ### 7. Hospedagem e publicação
+
+**Situação atual (Tap, 2026-11-11):** existe um feed no **Anchor (hoje Spotify for Creators)**: `https://anchor.fm/s/107ba8788/podcast/rss`, com alguns episódios antigos publicados. Conteúdo do feed ainda não lido (domínio fora da rede da sessão). **A verificar:** se o Spotify for Creators oferece forma oficial de enviar episódios por programa/API (não confirmei; se não houver, a publicação seria manual no site/app, o que limita o Nível 2), quais plataformas já foram conectadas ao feed (Spotify, Apple, outras) e como **migrar sem perder ouvintes** caso se prefira um feed próprio (redirecionamento oficial do feed antigo para o novo). Alternativas a comparar: continuar no Anchor com upload manual no começo; hospedar feed próprio (arquivos em hospedagem simples + `feed.xml` gerado pelo código); outros hosts de podcast com API.
+
 Opções: host de podcast (gratuito/pago) · bucket de objetos + RSS próprio · GitHub Pages/Releases para o feed.
 Teste: aceitação do feed por Spotify/Apple/YouTube Music; custo de armazenamento/banda.
 
