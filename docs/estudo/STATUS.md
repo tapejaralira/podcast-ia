@@ -41,6 +41,8 @@ Nenhuma decisão de ferramenta ou custo ainda.
 
 ## Pendências com o Tap
 
+- Tap vai procurar arquivos locais antigos (roteiros, notícias brutas, logs de coleta, áudios) e enviar se achar; sem pressa (pergunta 36).
+
 Ver `08-perguntas-abertas.md` (19 perguntas; as de maior impacto: 1, 5, 6, 12, 16–18).
 
 ## Histórico de sessões

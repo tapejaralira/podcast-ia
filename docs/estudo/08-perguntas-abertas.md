@@ -67,3 +67,8 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 33. Concorda com a proposta D13: o sistema só filtra e pontua por regra, e você escolhe? Quantos minutos por dia você aceita gastar nisso?
 34. Lista de palavras/temas a evitar e a priorizar: você consegue listar 10–15 de cada, para começarmos as regras?
 35. A fusão da mesma notícia de várias fontes é essencial já na primeira versão ou pode esperar?
+
+## Arquivos locais do projeto antigo (2026-11-11)
+
+36. **Pendente, sem pressa:** o Tap vai procurar no computador (e em outros lugares onde possa ter salvo) os arquivos não versionados do podcast-ia: roteiros gerados, notícias brutas, logs da coleta, áudios de episódios. Usar só como pesquisa, nunca como direção. Observação: a pasta `podcast-app` do Remote Control **não** é este projeto; a pasta do podcast-ia não está na lista de pastas compartilhadas.
+- Resposta à pergunta 31 (fontes que funcionavam): o Tap não lembra, o processo era automático. Só se descobre com os logs ou testando de novo.
