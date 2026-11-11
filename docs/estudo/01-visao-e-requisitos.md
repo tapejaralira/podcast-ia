@@ -58,6 +58,12 @@ Duas apresentadoras/apresentadores: Tainá (energética, gírias locais) e Iraí
 **Na prática anterior:** o sistema dava uma nota de relevância e mostrava as melhores primeiro, mas o Tap acabava **escolhendo a dedo** as notícias. Isso é o papel humano previsto e deve continuar sendo (curadoria humana), só que com a lista de candidatas já filtrada.
 **Fontes:** a ideia era muitas fontes, com a mesma notícia mesclada de vários sites para dar mais informação dentro do limite do episódio. Na prática só 2 ou 3 fontes funcionavam automaticamente.
 
+## Destino final: o ecossistema completo (visão original do Tap, 2026-11-11)
+
+Um sistema que faz **todas as etapas sozinho**: buscar as notícias do dia → extrair os textos → IA classifica e escreve o roteiro → gera os áudios → edição automática dentro das regras (músicas, vinhetas) → monta o episódio → gera a **descrição do episódio** para o feed → **gera a capa** (template fixo; só muda a numeração/título) → **publica nos feeds de podcast** → mais adiante, **publica nas redes sociais**.
+
+A intervenção do Tap (escolher notícias, revisar áudio) surgiu porque a seleção/classificação automática **não funcionava direito** e porque a complexidade cresceu. Hoje a visão é: esse destino continua válido, mas é construído **por degraus**, só complicando o que já funciona (ver `09-plano-de-entregas.md` e a escada de autonomia em `05`).
+
 ## Papel humano (alvo)
 
 - Escolher/aprovar as notícias do dia.

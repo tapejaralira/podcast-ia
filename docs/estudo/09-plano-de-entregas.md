@@ -54,3 +54,29 @@ O estudo (arquivos 01–08) precisa só do suficiente para escolher as ferrament
 - Nível 0 inteiro: meta de ≤ ~500 linhas de código ❓ (ajustar).
 - Nenhum arquivo acima de ~250 linhas sem justificativa.
 - Dependência nova exige uma linha em `07-decisoes.md`.
+
+## Mapa do ecossistema: etapa × onde a IA é necessária (rascunho, 2026-11-11)
+
+Todas as etapas da visão original, com a forma mais simples de cada uma. **IA só onde o código não resolve** (D17).
+
+| Etapa | Forma simples (hipótese) | Precisa de IA? | Nível sugerido |
+|-------|--------------------------|----------------|----------------|
+| Buscar notícias | feeds/RSS e, onde preciso, scraping de 1–2 fontes estáveis | não | 0 |
+| Extrair e limpar texto | regras de limpeza por código (D16) | não | 0 |
+| Filtrar (policial, "veja o vídeo") | regras de palavras/seções | não | 0 |
+| Agrupar a mesma notícia | similaridade de título/texto por código | não (testar) | 1 |
+| Classificar humor (3) | palavras-chave + toque do Tap | não | 0–1 |
+| Ordenar blocos | regras (D19) | não | 1 |
+| **Roteiro** | prompt por bloco/plano, com briefing e validação | **sim** | 0 |
+| Vozes | TTS por trecho/bloco, com cache | serviço de voz | 0 |
+| Edição/mixagem | poucas vinhetas fixas, 1 comando ffmpeg | não | 0 |
+| **Descrição do episódio** | **template** preenchido com os títulos das notícias do dia (+ fontes/links) | não (IA opcional depois) | 1 |
+| **Capa** | **template fixo**; o código só troca a numeração/título | não | 1 |
+| **Numeração do episódio** | contador salvo em arquivo (resolve a numeração caótica 12/112/17/82/16) | não | 0 |
+| Publicar no feed RSS | gerar `feed.xml` e subir arquivos para hospedagem; plataformas leem o feed (a verificar como cada uma atualiza) | não | 1 |
+| Aprovação pelo celular | bot/página simples | não | 2 |
+| Agendamento na nuvem | CI agendado ou servidor pequeno | não | 2 |
+| **Redes sociais** | texto por template + áudio/imagem da capa; só depois de rodar estável | opcional | 3 |
+
+**Leitura do mapa:** de ~15 etapas da visão original, **apenas o roteiro exige IA de texto**. O resto é código, template ou serviço de voz. É isso que torna o destino viável sem repetir a complexidade: a "automação total" é uma soma de etapas pequenas e determinísticas, com uma única chamada inteligente no meio.
+

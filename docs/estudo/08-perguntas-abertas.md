@@ -88,3 +88,9 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 41. Em 07/08 a manchete foi a última notícia do roteiro, mas em 06/08 foi a primeira. Você reordenou pela interface nesses dias, ou a ordem final vinha da IA?
 42. A primeira notícia deveria ser sempre a mais importante, ou a mais útil, ou a mais "gostosa de ouvir"? Isso muda a regra de gancho.
 43. Qual grau de autonomia te agrada como destino: (1) você escolhe, ordem automática; (2) sistema escolhe, você só veta; (3) tudo automático, você só veta até um horário?
+
+## Descrição, capa e feed (2026-11-11)
+
+44. A descrição do episódio, para você, é só a lista das notícias do dia (com links) ou precisa de texto "chamativo" escrito? Se for lista, o template resolve sem IA.
+45. Capa: identidade visual fixa com a numeração, ou uma imagem diferente por episódio? Você já tem a arte/thumbnail (há `thumbnail01/02.png` no repositório)?
+46. Você já tem hospedagem ou conta em plataforma de podcast (Spotify for Creators etc.)? O feed de antes chegou a ser publicado em algum lugar?
