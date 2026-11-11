@@ -71,3 +71,27 @@ Contexto: IA no roteiro é inevitável (D17); o resto antes dela é código (D16
 
 **4. Itens decididos que valem para qualquer variante:** texto falado (números por extenso, siglas lidas), citação da fonte, nenhum fato fora do briefing, sem papéis fixos.
 
+## Transições de clima entre notícias (proposta, 2026-11-11)
+
+**Problema (Tap):** passar de uma notícia séria direto para uma leve, "com o astral lá em cima", soa esquisito. A tentativa anterior não ficou natural.
+
+**Exemplo real do sistema antigo (roteiro 07/08/2025):** N3 "moradores com problemas respiratórios por causa do incêndio" → N4 "Google libera Gemini grátis para estudantes", com reação "Que massa, né?". Nos 5 roteiros mais recentes as "transições" eram só ordinais ("Na sequência…", "Chegando à quarta…"), sem nenhuma ponte de clima. Hipótese: cada bloco era escrito sem conhecer o vizinho, e a ordem seguia a seleção, não o clima.
+
+**Solução em três camadas, da mais simples à mais elaborada. Nenhuma exige IA extra.**
+
+1. **Ordenar pelo clima (código).** Cada notícia selecionada tem um humor entre os três da D09 (sério, neutro, leve). O código ordena para evitar saltos sério→leve ou leve→sério: usa o neutro como degrau, agrupa os sérios, deixa os leves juntos. Meta de curva: começar com utilidade pública/neutra, concentrar os sérios no meio, terminar leve ou neutro. Quando o grupo selecionado não permitir (p.ex. 1 leve e 4 sérias), aceita-se 1 salto e entra a camada 2.
+   - *Como saber o humor sem IA:* regras por palavra-chave e seção (acidente, morte, incêndio, cheia → sério; festival, show, estreia, curiosidade → leve; resto neutro) já vêm pré-marcadas na lista de candidatas; o Tap corrige com um toque ao selecionar.
+2. **Ponte de transição só quando há salto (parte do bloco seguinte).** O briefing do bloco inclui `humor_anterior` e `humor_atual`. Uma tabela de 3×3 dá o tipo de ponte:
+   - mesmo humor → só um conector curto ("e por falar em…" quando houver ligação, ou nada);
+   - sério→neutro ou leve→neutro → ponte curta de mudança de assunto;
+   - sério→leve → "respiro": uma frase reconhecendo o peso da anterior e virando a chave com calma, sem festa imediata;
+   - neutro/leve→sério → aviso de mudança de tom, sem choque.
+   A IA escreve a ponte no estilo dos apresentadores, dentro do bloco (1–2 frases no início), então **continua sendo uma chamada por bloco**, sem etapa nova.
+3. **Voz e áudio acompanham sem complicar.** A fala de ponte usa a configuração de voz "neutro" (degrau entre sério e leve); a primeira fala do bloco leve após um sério pode ser neutra e subir. Uma pausa levemente maior entre blocos depois de notícia séria. Sem vinheta/trilha variável (D10).
+
+**Regra extra:** o último bloco antes do encerramento não deve ser o mais pesado; se for, o encerramento abre com uma frase neutra de fechamento, não com animação.
+
+**Teste barato:** pegar as notícias de 07/08 (ou de outro dia do Drive), gerar a ordem por clima, comparar com a ordem original e ouvir/ler as pontes; o Tap avalia na ficha de escuta se o salto ficou natural.
+
+**O que NÃO fazer (lições da tentativa anterior):** classificar humor e tema de cada notícia com chamadas de IA, escolher vinheta por humor, trilha de fundo variável. Esses itens custaram complexidade sem resolver a naturalidade.
+

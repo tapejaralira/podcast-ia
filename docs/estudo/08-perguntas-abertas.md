@@ -77,3 +77,8 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 
 37. Nas notícias que você descartava por depender de imagem/vídeo: lembra expressões típicas além de "veja o vídeo" e "olhe as imagens"? Quantas por dia isso derrubava?
 38. Para o roteiro, prefere que testemos primeiro uma chamada por bloco (mais controle) ou uma só para o episódio (mais fluido)? Pode ser decidido depois do teste.
+
+## Transições (2026-11-11)
+
+39. Você aceitaria marcar o humor (sério/neutro/leve) de cada notícia com um toque ao selecionar, com sugestão pré-preenchida por regra? Ou prefere que o sistema decida sozinho, mesmo errando às vezes?
+40. Existe uma "curva" que você achava ideal para o episódio (ex.: começar com utilidade pública, notícias pesadas no meio, fechar leve)?
