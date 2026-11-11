@@ -72,3 +72,8 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 
 36. **Pendente, sem pressa:** o Tap vai procurar no computador (e em outros lugares onde possa ter salvo) os arquivos não versionados do podcast-ia: roteiros gerados, notícias brutas, logs da coleta, áudios de episódios. Usar só como pesquisa, nunca como direção. Observação: a pasta `podcast-app` do Remote Control **não** é este projeto; a pasta do podcast-ia não está na lista de pastas compartilhadas.
 - Resposta à pergunta 31 (fontes que funcionavam): o Tap não lembra, o processo era automático. Só se descobre com os logs ou testando de novo.
+
+## Diálogo e filtros (2026-11-11)
+
+37. Nas notícias que você descartava por depender de imagem/vídeo: lembra expressões típicas além de "veja o vídeo" e "olhe as imagens"? Quantas por dia isso derrubava?
+38. Para o roteiro, prefere que testemos primeiro uma chamada por bloco (mais controle) ou uma só para o episódio (mais fluido)? Pode ser decidido depois do teste.

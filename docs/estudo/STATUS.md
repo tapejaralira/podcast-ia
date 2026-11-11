@@ -20,7 +20,7 @@ Bubuia News: podcast diário (10–15 min) de notícias do AM/Manaus, com coleta
 ## Decisões tomadas
 
 - D01: estudo versionado em `docs/estudo/` (ver `07-decisoes.md`).
-- D06/D07 (adotadas): personalidade no texto curto + configuração de voz por trecho com poucos humores; episódio antigo = benchmark de qualidade. D08 (cold open fora do Nível 0) proposta. D09 (3 humores) e D10 (sem vinhetas por humor nem trilha variável) adotadas. D13/D14 (propostas): relevância por regras + curadoria humana; Nível 0 com 1–2 fontes estáveis. D11/D12: cada notícia é um bloco de conversa solta (ver 05, seção roteiro).
+- D06/D07 (adotadas): personalidade no texto curto + configuração de voz por trecho com poucos humores; episódio antigo = benchmark de qualidade. D08 (cold open fora do Nível 0) proposta. D09 (3 humores) e D10 (sem vinhetas por humor nem trilha variável) adotadas. D13/D14 (propostas): relevância por regras + curadoria humana; Nível 0 com 1–2 fontes estáveis. D15 (sem papéis fixos), D16 (filtro/limpeza por código), D17 (IA só no roteiro) adotadas; como alimentar a IA do roteiro está em estudo (05). D11/D12: cada notícia é um bloco de conversa solta (ver 05, seção roteiro).
 
 Nenhuma decisão de ferramenta ou custo ainda.
 

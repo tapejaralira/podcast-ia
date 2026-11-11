@@ -48,3 +48,26 @@ Cada bloco recebe da pipeline um *briefing* pequeno:
 - O formato de saída precisa ser simples e compatível com a geração de voz (falas marcadas por locutor).
 
 **Consequências a estudar:** conversas mais soltas tendem a ficar mais longas e a ter mais risco de alucinação; precisamos medir tamanho médio por bloco, custo de tokens e taxa de reprovação na validação. Cinco padrões de conversa provavelmente bastam para o Nível 1; no Nível 0 pode haver só um.
+
+## Imprevisibilidade controlada (2026-11-11)
+
+O Tap quer um episódio com "cara de imprevisível", sem papéis fixos. Hipótese de desenho: **a variação vem do código, não do acaso da IA**. Antes de cada bloco, o código sorteia parâmetros (quem puxa, padrão de conversa entre os 5 do rascunho acima, tamanho-alvo, se há comentário do outro, quantas trocas) e os coloca no briefing. Vantagens: variação garantida e reproduzível, custo zero, fácil de testar ("este bloco saiu com padrão 3 e Iraí puxando"). A personalidade entra no briefing como tendência ("Tainá costuma ser mais animada"), não como regra.
+
+## Como alimentar a IA do roteiro (estudo, nada decidido)
+
+Contexto: IA no roteiro é inevitável (D17); o resto antes dela é código (D16). Perguntas em aberto e opções:
+
+**1. O que a IA recebe de cada notícia**
+- (a) texto bruto integral (caro, sujo, convida a copiar frases);
+- (b) texto limpo e cortado por código em ~1.000–1.500 caracteres, mantendo o início e as frases com números/nomes (hipótese preferida a testar);
+- (c) uma "ficha" com quem/o quê/quando/onde/números extraída antes (por regra onde der; por IA barata só se necessário).
+
+**2. Quantas chamadas**
+- (A) uma chamada com todas as notícias → fluxo mais contínuo e ligações entre notícias, mas saída longa, risco maior de invenção, e erro obriga a regerar tudo;
+- (B) uma chamada por bloco → controle, regeração isolada, custo previsível, mas perde continuidade (mitigar passando um resumo de 1–2 linhas do bloco anterior);
+- (C) híbrido: uma chamada curta de *plano do episódio* (ordem, transições, parâmetros sorteados, ganchos entre notícias) e depois uma chamada por bloco seguindo o plano.
+
+**3. Como medir** (mesmos 5 dias de notícias, três variantes): fidelidade aos fatos (checagem automática de números/nomes + leitura humana), naturalidade (ficha de escuta do Tap), tamanho e duração, custo de tokens, taxa de reprovação na validação, esforço para corrigir um erro.
+
+**4. Itens decididos que valem para qualquer variante:** texto falado (números por extenso, siglas lidas), citação da fonte, nenhum fato fora do briefing, sem papéis fixos.
+

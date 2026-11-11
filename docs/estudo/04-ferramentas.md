@@ -21,6 +21,8 @@ Teste: precisão num conjunto de 1 semana rotulado à mão.
 ### 3. Ranqueamento/seleção
 
 **Proposta (a validar) para não depender de IA para decidir relevância:** o sistema propõe, o Tap decide.
+0. **Normalização por código (D16)**: tirar legendas de foto ("Foto:"), títulos repetidos, listas coladas, texto cortado; juntar fontes da mesma notícia.
+0b. **Descartar por código notícias que dependem de imagem/vídeo**: expressões como "veja o vídeo", "confira as fotos", "assista", "veja imagens", "clique para ver", textos curtíssimos que só legendam mídia.
 1. **Filtro de exclusão por regra** (custo zero): corta policial/criminalidade por seção do site, palavras-chave e lista de termos.
 2. **Pontuação simples por regra** (custo zero): bônus para palavras de utilidade pública (água, energia, transporte, saúde, clima, vagas/concursos, benefícios), tecnologia e cultura; bônus por quantas fontes cobriram o mesmo fato; bônus por recência; menção explícita a Manaus/Amazonas.
 3. **Lista curta (15–20 candidatas) para o Tap escolher 5–6** em poucos minutos, pelo celular.
