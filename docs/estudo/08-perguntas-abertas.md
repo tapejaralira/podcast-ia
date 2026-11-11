@@ -46,3 +46,9 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 22. As duas vozes são essenciais já no Nível 0, ou uma voz só no começo?
 23. O pedido de seguir/compartilhar e a despedida podem ser texto fixo gravado uma vez, sem passar pela IA?
 24. A vinheta de abertura, a de transição e a vírgula sonora já existem em áudio pronto (só há `virgula_sonora.mp3` no repositório)?
+
+## Áudio de referência e apresentadores (2026-11-11)
+
+25. Se enviar um episódio antigo: eu não consigo *ouvir* áudio. Posso medir objetivamente (duração, volume, silêncios, estrutura) com ffmpeg e analisar a transcrição/roteiro, mas naturalidade, emoção e "cara de robô" só você julga. Você topa julgar com uma ficha de escuta que eu monto? Existe o roteiro (texto) do episódio?
+26. Dos traços da Tainá e do Iraí, quais são inegociáveis (ex.: idade/origem, gírias, jeito de reagir)? O resto pode ser cortado.
+27. Os 5–6 itens do dia incluem notícias leves/curiosidades locais ou só "hard news"?

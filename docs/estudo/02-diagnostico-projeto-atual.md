@@ -32,6 +32,12 @@ Fonte: leitura do repositório (commit `70891c2`). Observações factuais; julga
 2. **LLM**: classificação de cada notícia + roteiro + sugestões de abertura; quanto de contexto é enviado por chamada?
 3. **Retrabalho**: quantas regenerações por episódio acontecem hoje? ❓
 
+## Achados adicionais (2026-11-11)
+
+- **Personalidades (`data/personagens.json`, ~11,6 mil caracteres)**: cada apresentador tem perfil, tom, expressões, especialidades, estilo de interação e ~40 frases de exemplo de reações em 6 emoções. Se isso entra inteiro em cada chamada de IA, é custo repetido de tokens em todo episódio, e as frases de exemplo tendem a ser copiadas. Hipótese: um "cartão" de ~10 linhas por apresentador + 2–3 falas de exemplo basta para o Nível 0. Medir isso depois.
+- **Volume de notícias (amostra antiga, só 2 dias de agosto/2025)**: 43 itens coletados (G1 Amazonas 17, A Crítica 16, Portal do Holanda 10; D24am não aparece), ~20/dia. É uma amostra pequena e antiga; não prova que há 5–6 notícias *relevantes* por dia. Precisa de coleta de pelo menos 2–4 semanas para responder.
+- **Efemérides (`data/efemerides-brasileiras.json`, 689 bytes)**: contém só uma data (05-08). Não é uma base utilizável ainda.
+
 ## O que vale aproveitar (hipóteses)
 
 - Os 4 coletores (pequenos, 50–110 linhas) e a lógica de fontes.

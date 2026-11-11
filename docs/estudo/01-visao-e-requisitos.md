@@ -27,6 +27,13 @@ Duas apresentadoras/apresentadores: Tainá (energética, gírias locais) e Iraí
 6. **Vinheta** ao fim das notícias.
 7. **Encerramento**: pedido para seguir e compartilhar, despedida.
 
+### Respostas do Tap sobre o formato (2026-11-11)
+
+- **5–6 notícias por episódio.** ❓ A ser estudado: existe conteúdo suficiente, todo dia, só de Manaus/Amazonas para um feed diário? (Ver `02-diagnostico` e teste de volume na Fase B.)
+- **Comentários/reações entre os apresentadores são essenciais para o programa ser aceitável**: a ideia é soar como duas pessoas reais num jornal dinâmico, não dois robôs lendo notícias. Não precisam estar em *todas* as notícias, mas são o que faz o podcast parecer "vivo". Logo, entram já no Nível 0, na forma mais simples (um comentário curto do outro apresentador em algumas notícias).
+- **Apresentadores com contexto e personalidade amazonense** (Tainá e Iraí) são parte da identidade desde o início. O Tap reconhece que o arquivo de personalidades (`data/personagens.json`) ficou complexo demais.
+- Exemplo de áudio antigo: o Tap pode enviar. Ver limites de análise em `08-perguntas-abertas.md` (nº 25).
+
 ### Lições dessa estrutura
 
 - **O cold open foi a parte mais difícil**: fazer a IA trazer um fato do dia só se realmente existir, sem inventar, e cair para curiosidade ou pergunta quando não houver. Cascata de regras + risco de alucinação = muita complexidade para pouco valor.
