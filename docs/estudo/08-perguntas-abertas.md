@@ -109,3 +109,5 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 53. Para eu conferir preço e idiomas do TTS do Gemini nas páginas oficiais, o domínio `ai.google.dev` precisa ser liberado na rede desta sessão. Você autoriza isso quando eu pedir?
 
 - Resposta à 52: o Tap não lembra como fez o experimento no Google; o áudio não está à mão. A decisão sobre liberar `ai.google.dev` (pergunta 53) está em aberto: Tap pediu explicação; sugerido deixar para a fase de teste de vozes.
+
+- Pergunta 53: o Tap disse "pode liberar", mas o pedido de aprovação na tela foi **negado** (2026-11-11). `ai.google.dev` segue fora da rede da sessão. Alternativa: o Tap cola o texto das páginas de preço e de geração de fala do Gemini, ou refazemos o pedido mais tarde.
