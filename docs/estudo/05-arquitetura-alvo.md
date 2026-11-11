@@ -26,3 +26,23 @@ fontes → [coletar] → [agrupar+ranquear] → (humano: aprova) → [roteiro LL
 - Linguagem (manter TypeScript ou não) — ver 07.
 - Refatorar vs. recomeçar — ver 07.
 - Onde roda a pipeline (máquina local vs. agendado na nuvem).
+
+## Roteiro: o bloco como unidade (rascunho, 2026-11-11)
+
+**Problema do projeto antigo:** o roteiro era certinho demais: um apresenta, o outro comenta, próxima notícia, o outro apresenta, o primeiro comenta. Funcionava, mas soava roteirizado.
+
+**Ideia:** a unidade do roteiro é o **bloco de uma notícia**, escrito como uma conversa curta, não como dois monólogos.
+
+Cada bloco recebe da pipeline um *briefing* pequeno:
+- fatos da notícia (somente o que está nas fontes);
+- humor do bloco: neutro, sério ou leve (D09);
+- quem puxa o assunto (alternado ou sorteado, não sempre o mesmo);
+- um **padrão de conversa** escolhido entre poucos: (1) um conta, o outro reage; (2) um conta, o outro pergunta, o primeiro explica; (3) os dois completam um ao outro; (4) leve discordância/opinião diferente; (5) notícia curta, só uma frase de reação.
+- duração-alvo do bloco.
+
+**Travas (a liberdade de conversa não pode virar liberdade de fatos):**
+- Os apresentadores podem reagir, opinar com cautela, perguntar e explicar; **não podem acrescentar fatos, números, nomes ou datas que não estejam no briefing**.
+- Validação automática barata: números, nomes próprios e datas citados no bloco precisam aparecer no briefing; se não, o bloco é regerado antes de pagar pela voz.
+- O formato de saída precisa ser simples e compatível com a geração de voz (falas marcadas por locutor).
+
+**Consequências a estudar:** conversas mais soltas tendem a ficar mais longas e a ter mais risco de alucinação; precisamos medir tamanho médio por bloco, custo de tokens e taxa de reprovação na validação. Cinco padrões de conversa provavelmente bastam para o Nível 1; no Nível 0 pode haver só um.
