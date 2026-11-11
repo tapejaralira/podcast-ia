@@ -100,3 +100,5 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 47. Para você confiar a ponto de não revisar, qual seria o critério? Ex.: "14 dias seguidos sem eu precisar mudar nada".
 48. Se o sistema achar que algo está duvidoso, prefere que ele **pule o episódio do dia** ou publique uma versão reduzida (menos notícias)?
 49. Aceita ouvir por amostragem (ex.: 1 episódio por semana) mesmo no modo automático?
+
+50. Que tipos de erro mais te preocupariam num episódio publicado sem você ouvir (fato errado, tom inadequado, nome/pronúncia, notícia pesada demais, voz falhando)? Isso define o que o revisor precisa pegar.

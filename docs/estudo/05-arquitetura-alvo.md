@@ -127,3 +127,14 @@ O Tap quer chegar a um ponto em que **confia tanto no processo que não precisa 
 - **Amostragem:** mesmo em modo automático, o Tap pode ouvir por amostragem (ex.: 1 episódio por semana) para recalibrar, em vez de revisar todos.
 - **Responsabilidade editorial:** publicar sem revisão humana significa que erros factuais vão ao ar; as redes de segurança precisam ser bem mais estritas que as de hoje. Isso entra na avaliação legal/ética do estudo.
 
+## Camada de revisão com IA (opção, 2026-11-11)
+
+Hipótese do Tap: se o código não bastar para dar confiança, entra **uma chamada de IA que ajuda a revisar**. Desenho proposto, mantendo a camada pequena e barata:
+
+- **Ordem das defesas:** primeiro as checagens de código (números/nomes/datas contra o briefing, duração, lista de bloqueio, filtros). Só o que passou chega ao revisor de IA.
+- **Papel estreito do revisor:** recebe o briefing (fatos da notícia) e o bloco gerado, e devolve um veredito estruturado: `ok` ou `reprovado` + lista curta de problemas (afirmação sem base no briefing, humor que não bate com o bloco, trecho policial/gráfico, repetição, ponte de clima ausente). Não reescreve; só aponta.
+- **Independência:** idealmente outro modelo (ou outra configuração) que o do roteirista, para não repetir os mesmos vícios.
+- **Controle de custo:** uma chamada **por episódio** (briefing de todos os blocos + roteiro) em vez de por bloco, se a qualidade for equivalente; saída curta; **limite de 2 regerações** por bloco reprovado para evitar laço caro; se reprovar de novo, o disjuntor (D21) pula/avisa.
+- **Limites a registrar:** o revisor pode errar para os dois lados (deixar passar erro, reprovar sem motivo) e não é garantia. Por isso entra na **calibração**: comparar os vereditos dele com os julgamentos do Tap numa amostra e medir acertos antes de confiar.
+- **Quando entra:** não no Nível 0. É candidato ao Nível 2, quando o objetivo passa a ser reduzir a revisão humana. Antes, medir quantos erros as checagens de código já pegam e quais passam batido; o revisor só vale se cobrir uma lacuna real.
+
