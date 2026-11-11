@@ -62,6 +62,50 @@ Fonte: leitura do repositório (commit `70891c2`). Observações factuais; julga
 - Linha editorial: o episódio de 07/08 inclui **três notícias de caráter policial/sinistro** (incêndio, moradores afetados, médico preso), apesar de o Tap relatar que evitava policiais. Pode ser que a regra tenha vindo depois ou que a seleção automática tenha sido menos filtrada nesse dia.
 - Cada episódio tem número e título sugerido (ep. 14 em 26/07, ep. 16 em 07/08).
 
+## Estrutura real dos episódios (as-is): 5 roteiros mais recentes, 30/07 a 07/08/2025
+
+Fonte: Drive do Tap, `roteiro-2025-07-30`, `08-01`, `08-03`, `08-06`, `08-07`, mais `scraping-2025-08-07` (notícias brutas). Descrição do que existia, **sem juízo sobre o que queremos**. Leitura corta o final dos arquivos (encerramento não visto).
+
+### Esqueleto fixo (igual nos 5)
+
+| Parte | Como era |
+|-------|----------|
+| Cabeçalho | Nº do episódio + título sugerido pela IA |
+| Bloco 0, cold open | Sempre **efeméride** (5 de 5), Tainá puxa (~100 palavras) e Iraí reage (~40). Frase de ligação regional ("ainda mais aqui na Amazônia") em todos |
+| Áudio | `vinheta_abertura.mp3` |
+| Bloco 1 | `introducao_fixa.mp3` + **Iraí** lê o cardápio (sempre ele): 5 chamadas numa frase corrida |
+| Bloco 2 | **5 notícias**, cada uma entre `[TRILHA_INICIO: arquivo.mp3, -24dB]` e `[TRILHA_FIM]` |
+| Bloco 3 | `encerramento_*.mp3` (texto não visto) |
+
+### Dentro de cada notícia (padrão rígido)
+
+1. **Quem lê alterna sempre**: N1 Tainá, N2 Iraí, N3 Tainá, N4 Iraí, N5 Tainá (5 de 5 episódios).
+2. Abertura numerada e formulaica: "Pra primeira notícia de hoje…", "Na sequência…", "A terceira matéria…", "Chegando à quarta…", "E pra última matéria…".
+3. **Monólogo** de ~120–250 palavras parafraseando a matéria, em geral com atribuição ("Segundo o G1 / A Crítica / Portal do Holanda").
+4. **Pergunta-gancho** do leitor ("Que massa, né, Iraí?", "Complicado, né?", "Importante, né?").
+5. **Reação** do outro, de 1 a 3 frases: concorda + generaliza + fecha com esperança ("vamo torcer", "tomara que…"). Estimativa visual: ~85% do texto do bloco é monólogo, ~15% reação.
+6. Categoria de trilha por humor (`tensao_leve`, `eventos`, `politica`, `neutra`, `tecnologica_upbeat`, `cultural`).
+
+### Estilo de texto (marcas de "fala para TTS")
+
+Números por extenso e "G um"/"I,M,M,U," para forçar leitura certa; reticências para pausas; "tá/pra/vamo". Gírias regionais bem mais contidas que no roteiro de junho. Maiúsculas ocasionais para ênfase.
+
+### Notícias brutas versus roteiro (07/08)
+
+- O `scraping` traz **efeméride + manchete + 5 notícias**, cada uma com URL e texto integral (1 a 3 mil caracteres) por fonte, **sujo**: legendas de foto, títulos repetidos, listas coladas, uma letra faltando ("●emini").
+- Mesmo trecho aparece duplicado em fontes diferentes quando a notícia tem duas fontes (a do boi tinha A Crítica + G1: boa base para fusão).
+- **A "manchete" do dia (médico preso) virou a última notícia do roteiro**, e duas das 5 notícias eram o mesmo incêndio (agrupamento não funcionou).
+- O roteiro é **fiel à fonte** nos fatos conferidos; acrescenta pouco, p.ex. "o link na descrição do podcast", que não está na matéria.
+
+### Fatos que já estavam fora do padrão
+
+- **Numeração de episódios inconsistente**: 12 (30/07), 112 (01/08), 17 (03/08), 82 (06/08), 16 (07/08).
+- Notícia de 01/08 sobre a cheia: **um único parágrafo** com ~10 números (534.829 pessoas, 133 mil famílias, 62 municípios, toneladas, lei nº…), difícil de ouvir; mistura número por extenso e algarismos.
+- Episódio de 30/07: notícias 4 e 5 (câmara/estágio) têm texto **genérico e vago** ("Secretaria do Amazonas"), com detalhes que **não consegui conferir** (parece completado a partir de um título); verificar com o `scraping` de 30/07 se existir.
+- Chamadas como "comentem aí embaixo" (06/08), sem canal de comentários definido.
+- Efemérides conferidas de memória: Selo Postal (01/08), Amizade (30/07), Capoeirista (03/08) e Lei Maria da Penha (07/08) parecem corretas. A de 06/08 ("Dia Nacional dos Profissionais da Educação", com número de lei) **não consegui confirmar**; checar.
+- Linha editorial: 06/08 tem tráfico de drogas, incêndio com vítima descrita em detalhe (queimaduras, gravidez) e 07/08 tem o médico preso, ou seja, **conteúdo policial/gráfico entrou** em episódios recentes.
+
 ## O que vale aproveitar (hipóteses)
 
 - Os 4 coletores (pequenos, 50–110 linhas) e a lógica de fontes.
