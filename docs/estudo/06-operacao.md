@@ -48,6 +48,8 @@ Inclinação inicial: **Telegram** (ou similar) no M8; a interface web atual do 
 ### Testes de viabilidade (antes de decidir)
 
 - [ ] T1: os 4 coletores funcionam a partir de IP de nuvem/CI, sem bloqueio?
+  - **Tentativa em 2026-11-11: inconclusiva.** No ambiente de sessão do Claude a rede é restrita por lista de hosts permitidos (nenhum dos 4 portais está nela): as conexões a g1.globo.com, acritica.com, d24am.com e portaldoholanda.com.br foram recusadas pelo proxy (HTTP 403 no CONNECT). Isso é política do ambiente, **não** bloqueio dos sites, então não diz nada sobre os IPs de nuvem/CI.
+  - O Tap optou por não liberar os hosts. Alternativas: rodar o teste num workflow de GitHub Actions (que é o ambiente alvo de verdade e tem rede aberta) ou a partir do computador do Tap.
 - [ ] T2: ffmpeg + geração de um episódio cabe no tempo e na memória do ambiente escolhido?
 - [ ] T3: um bot recebe aprovação do celular e retoma a pipeline? Latência aceitável?
 - [ ] T4: o áudio de 12 min é entregue e tocável no celular?

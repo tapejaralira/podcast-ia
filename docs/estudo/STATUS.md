@@ -31,7 +31,7 @@ Nenhuma decisão de ferramenta, custo ou arquitetura ainda.
 ## Próximos passos (em ordem)
 
 1. Tap responder `08-perguntas-abertas.md` (especialmente orçamento, faturas, preferência por Telegram/servidor).
-2. Rodar o teste T1 (coletores a partir da nuvem).
+2. Teste T1 (coletores a partir da nuvem): tentado, inconclusivo — a rede da sessão do Claude não alcança os portais e o Tap não quis liberar hosts. Refazer num workflow de GitHub Actions (script mínimo de curl/fetch nos 4 endereços, sem IA paga) ou no PC do Tap.
 3. Pesquisar preços atuais com fonte e data → preencher `03-custos-e-viabilidade.md`.
 4. Comparar opções de voz e LLM com teste pequeno (custo estimado antes).
 5. Fechar metas (orçamento, qualidade mínima) → registrar decisões D02–D06.
