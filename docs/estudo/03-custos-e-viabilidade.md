@@ -12,7 +12,7 @@
 |------|-------|
 | Orçamento mensal máximo | ❓ R$ |
 | Custo máximo por episódio | ❓ R$ (= orçamento ÷ ~30) |
-| Receita esperada (se houver) | ❓ |
+| Receita esperada (se houver) | nenhuma prevista no curto prazo (D29) |
 
 ## Volumes de partida
 

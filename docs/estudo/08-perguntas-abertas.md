@@ -111,3 +111,16 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 - Resposta à 52: o Tap não lembra como fez o experimento no Google; o áudio não está à mão. A decisão sobre liberar `ai.google.dev` (pergunta 53) está em aberto: Tap pediu explicação; sugerido deixar para a fase de teste de vozes.
 
 - Pergunta 53: o Tap disse "pode liberar", mas o pedido de aprovação na tela foi **negado** (2026-11-11). `ai.google.dev` segue fora da rede da sessão. Alternativa: o Tap cola o texto das páginas de preço e de geração de fala do Gemini, ou refazemos o pedido mais tarde.
+
+## Respostas do Tap (2026-11-11)
+
+- Confirmou OK nas 8 propostas (D08, D13, D14, D18, D19, D20, D22, D24).
+- Hardware: RTX 4060. Tempo: 10–20 min/dia, 5 dias/semana na operação. Prioridade: naturalidade. Sem patrocínio no curto prazo. Frequência 5 dias úteis (cai para 2x/1x se não valer). Duração ~10 min com folga.
+- Já tem contas e um feed antigo com alguns episódios no ar; não lembra como foi publicado.
+
+Novas perguntas:
+54. **Feed antigo:** em que plataforma você publicou (Spotify for Creators, outra)? Você lembra do nome do programa lá e do endereço do feed? Consegue abrir a conta e me dizer o que aparece (nome, nº de episódios)?
+55. **Assets de áudio:** você tem prontos a vinheta de abertura, a introdução fixa, o encerramento e a vírgula sonora? Onde estão (Drive, PC)? Só `virgula_sonora.mp3` está no repositório.
+56. **Texto fixo:** a introdução ("Bem-vindos ao BubuiA News…") e o encerramento ("sigam e compartilhem…") podem ser textos fixos gravados uma vez?
+57. **Nível 0 com 3 notícias** (~5 min) para validar o esqueleto antes de subir para 5–6: concorda?
+58. **Direitos autorais:** posso registrar como ponto a verificar com fonte oficial (ou advogado) o seu entendimento de que resumir e comentar citando a fonte é permitido?

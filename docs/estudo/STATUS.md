@@ -3,7 +3,8 @@
 > Primeiro arquivo a ler em toda sessão nova. Atualizar ao encerrar cada sessão. Manter curto: o detalhe vive nos arquivos 01–09.
 
 **Última atualização:** 2026-11-11
-**Fase:** A — Entender (estudo de viabilidade). Conversa geral por etapa em andamento: etapa 1 (visão/público) e formato do episódio respondidos; respondido: 5–6 notícias, comentários entre apresentadores essenciais, personalidades são parte da identidade (mas enxugar). Naturalidade do diálogo é a melhoria nº 1 desejada (hipótese: diálogo por bloco). Próxima: etapa 3 (notícias/fontes/relevância) e perguntas 20–27.
+**Fase:** A — Entender, quase fechada. OK do Tap em D08/D13/D14/D18/D19/D20/D22/D24; novas D25–D30 (PC local primeiro, naturalidade, 5 dias úteis, ~10 min, 10–20 min/dia, sem patrocínio, postura legal). Próximo: `10-nivel-0-e-plano-de-testes.md`.
+**Fase (anterior):** A — Entender (estudo de viabilidade). Conversa geral por etapa em andamento: etapa 1 (visão/público) e formato do episódio respondidos; respondido: 5–6 notícias, comentários entre apresentadores essenciais, personalidades são parte da identidade (mas enxugar). Naturalidade do diálogo é a melhoria nº 1 desejada (hipótese: diálogo por bloco). Próxima: etapa 3 (notícias/fontes/relevância) e perguntas 20–27.
 **Princípio do Tap:** esqueleto ponta a ponta mínimo primeiro, complexidade depois (ver `09-plano-de-entregas.md` v2, substitui os marcos M0–M9).
 
 ## Resumo do projeto em 5 linhas

@@ -93,6 +93,10 @@ Todo o resto automático.
 - **Custo**: meta de custo por episódio e por mês ❓ (definir no arquivo 03).
 - **Manutenibilidade**: um único desenvolvedor deve entender o sistema inteiro em poucas horas.
 - **Qualidade editorial**: fatos fiéis às fontes; sem alucinação; atribuição de fonte ❓.
+- **Prioridade nº 1 (Tap):** soar **natural**, nas vozes e no texto (D26).
+- **Frequência:** 5 dias úteis; pode cair para 2x ou 1x/semana se as notícias ou o custo não sustentarem (D27).
+- **Duração:** ~10 min, com folga para mais ou menos (D27).
+- **Tempo do Tap na operação:** 10–20 min por dia útil (D28).
 - **Qualidade de áudio**: voz natural em português brasileiro, sotaque/ritmo aceitável ❓ (nível mínimo aceitável?).
 - **Tempo de pipeline**: do início ao áudio pronto em até ❓ minutos.
 

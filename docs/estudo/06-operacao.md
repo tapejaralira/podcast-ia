@@ -65,3 +65,11 @@ Inclinação inicial: **Telegram** (ou similar) no M8; a interface web atual do 
 - **Backup**: dados e episódios.
 - **Checklist editorial** de revisão (fatos, nomes, pronúncia de termos locais, conteúdo sensível).
 - **Pronúncia**: dicionário de termos manauaras/indígenas/siglas para o TTS.
+
+## Decisões de operação (2026-11-11)
+
+- **Onde roda:** Nível 0 e 1 no PC do Tap (RTX 4060); nuvem no Nível 2 (D25). A RTX 4060 costuma ter 8 GB de memória de vídeo (confirmar o modelo exato); isso pode limitar modelos de voz grandes, a verificar por modelo.
+- **Orçamento de tempo do Tap:** 10–20 min por dia útil (D28).
+- **Consequência de desenho:** ouvir um episódio de ~10 min já consome a metade ou mais do orçamento. A revisão diária precisa ser **parcial**: (1) seleção/vetos em ≤ 5–8 min; (2) conferir o **roteiro em texto** (leitura rápida, muito mais rápida que ouvir) e os alertas das checagens automáticas; (3) ouvir só trechos marcados (blocos com alerta, a transição de maior salto de humor) ou ouvir em velocidade maior; (4) escuta completa por amostragem semanal (D21).
+- **Feed e publicação:** o Tap já tem contas e um feed antigo com alguns episódios publicados; falta descobrir plataforma, endereço do feed e como foi publicado (pergunta 54).
+
