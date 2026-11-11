@@ -59,3 +59,11 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 29. Aceita voz mais neutra/madura se o texto for bom, ou o timbre jovem é inegociável?
 
 30. Nos trechos de comentário, quantos "humores" distintos você sentia necessidade (ex.: neutro, sério/pesado, leve/alegre)? Mais que isso era exagero?
+
+## Notícias e fontes (2026-11-11)
+
+31. Quais 2–3 fontes funcionavam de verdade? E quais falharam (D24am, outras)?
+32. Que outras fontes você gostaria de ter (órgãos públicos, rádios, blogs, redes)?
+33. Concorda com a proposta D13: o sistema só filtra e pontua por regra, e você escolhe? Quantos minutos por dia você aceita gastar nisso?
+34. Lista de palavras/temas a evitar e a priorizar: você consegue listar 10–15 de cada, para começarmos as regras?
+35. A fusão da mesma notícia de várias fontes é essencial já na primeira versão ou pode esperar?

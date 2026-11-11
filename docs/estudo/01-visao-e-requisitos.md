@@ -51,6 +51,13 @@ Duas apresentadoras/apresentadores: Tainá (energética, gírias locais) e Iraí
 - Hipótese para o Nível 0: **sem cold open** (ou só pergunta/curiosidade fixa de uma lista curada, nunca gerada). Reintroduzir depois, com efemérides vindas de uma base de dados verificada e não da memória da IA. ❓ Confirmar com o Tap.
 - A estrutura em si (abertura → cardápio → notícias em bate-bola → encerramento) é simples e pode ser um template fixo; a complexidade veio das variações.
 
+## Linha editorial (relato do Tap, 2026-11-11)
+
+**Prioridade:** utilidade pública (o que afeta o dia a dia de quem ouve), curiosidades que interessam ao povo, tecnologia, cultura pop. Sempre com ligação a Manaus/Amazonas.
+**Evitar:** notícias policiais, criminalidade, crimes explícitos ou chocantes.
+**Na prática anterior:** o sistema dava uma nota de relevância e mostrava as melhores primeiro, mas o Tap acabava **escolhendo a dedo** as notícias. Isso é o papel humano previsto e deve continuar sendo (curadoria humana), só que com a lista de candidatas já filtrada.
+**Fontes:** a ideia era muitas fontes, com a mesma notícia mesclada de vários sites para dar mais informação dentro do limite do episódio. Na prática só 2 ou 3 fontes funcionavam automaticamente.
+
 ## Papel humano (alvo)
 
 - Escolher/aprovar as notícias do dia.
