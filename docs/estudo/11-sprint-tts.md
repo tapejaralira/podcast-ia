@@ -51,6 +51,16 @@
 - **Tap (no PC com RTX 4060 ou nos sites):** executa os testes seguindo as instruções, salva os áudios e os coloca no Drive (`testes de audio/` já existe) ou aqui; ouve às cegas e preenche a ficha.
 - **Registro:** cada teste anota candidato, versão, configuração, tempo de geração, custo, notas e o arquivo gerado, na tabela abaixo.
 
+## Testes rápidos possíveis agora (sem programar)
+
+Tamanho do banco de teste: **~2.000 caracteres** nos testes 1 a 5 (~605 + 445 + 424 + 396 + 157), ou seja, bem pequeno: custo de teste muito baixo em qualquer serviço pago. (Estimativa de custo antes de cada chamada paga: regra do projeto.)
+
+1. **Playground de fala do Google AI Studio** (M, não verificado): interface web com Gmail, sem chave, para testar voz com dois locutores colando o texto. Usar uma conta Google normal (ex.: a do feed do podcast, não a do Chat se for conta de trabalho/escola).
+2. **Demonstrações no navegador** de modelos abertos (ex.: XTTS, F5-TTS, Kokoro em páginas de demonstração gratuitas, como as do Hugging Face), **só para ouvir a qualidade**, sem instalar nada. Não testam automação.
+3. **ElevenLabs** (referência): se a conta antiga ainda tiver créditos, gerar só os testes 1 a 3 com as mesmas falas para ter o "teto".
+4. **OpenAI**: só se ainda houver crédito; é voz única por chamada (sem diálogo), prioridade baixa.
+5. **Azure/Microsoft**: deixar para depois (exige cadastro com cartão); não é necessário agora.
+
 ## Ordem sugerida
 
 1. **Tap define os critérios** (a tabela acima, ajustando os ❓).
