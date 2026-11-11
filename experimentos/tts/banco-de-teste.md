@@ -50,3 +50,25 @@ Concatenar os testes 1, 2 e 3 em sequência, com a ponte entre o 1 e o 2, e gera
 ## O que observar em cada áudio
 
 Usar a ficha de escuta de `docs/estudo/10-nivel-0-e-plano-de-testes.md`. Além dela: o locutor A e o B soam como pessoas diferentes durante todo o áudio? Há cortes, ecos, respiração artificial, sílabas engolidas? Números e siglas foram lidos corretamente?
+
+## Teste 7: bloco longo com marcas de expressão (~1 min 45 s)
+
+Use **no máximo 1 marca a cada 2 ou 3 falas**, só em reação/comentário, nunca no meio dos fatos. Se só houver **uma voz**, apague "Tainá:" e "Iraí:" e cole tudo num bloco.
+
+```
+Tainá: Pra primeira notícia de hoje, a Prefeitura de Manaus informou que três linhas de ônibus vão mudar de itinerário a partir da próxima segunda-feira, onze de agosto.
+Iraí: As linhas quatrocentos e sessenta e um, duzentos e cinco e duzentos e vinte e três passam a atender o Parque das Garças e a Nova Esperança, segundo o IMMU.
+Tainá: <breath> Olha, pra quem pega ônibus todo dia, vale ficar atento. O Instituto disse que vai ter agentes nos pontos pra orientar o pessoal.
+Iraí: E o recado é: confere o novo trajeto antes de sair de casa, pra não perder o horário.
+Tainá: Isso é sério, gente. Mudança de linha mexe com a rotina de muita gente.
+Iraí: <breath> Bom, vamos respirar um pouco e mudar de assunto, que a próxima é mais animada.
+Tainá: <cheer> Isso! A Mostra de Teatro Águas de Manaus vai ter um show gratuito com itens do Caprichoso e do Garantido, neste domingo, no Anfiteatro da Ponta Negra!
+Iraí: Começa às vinte horas, e antes tem a peça "Tucumã e Buriti", do Grupo Jurubebas, às dezessete horas. <laugh> É pra quem sente saudade de Parintins.
+Tainá: <gasp> Eu vou! E vocês? Conta pra gente se vão levar a família.
+Iraí: Mudando de novo, agora uma de utilidade pública: a Aleam aprovou um projeto sobre a distribuição de água em áreas atingidas pela cheia.
+Tainá: Segundo o G um, o texto prevê caminhões-pipa e estações móveis de tratamento em municípios do interior, como Manicoré e Humaitá.
+Iraí: Quem mora perto desses lugares pode ficar de olho nos avisos da Defesa Civil.
+```
+
+Observar: as marcas ficam naturais ou exageradas? A **ponte** (Iraí: "vamos respirar um pouco") soa bem após o bloco sério? A voz mantém o ritmo até o fim? Alguma marca foi **lida em voz alta** em vez de interpretada?
+

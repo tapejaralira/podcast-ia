@@ -87,3 +87,5 @@ Tamanho do banco de teste: **~2.000 caracteres** nos testes 1 a 5 (~605 + 445 + 
 
 **Observações do Tap sobre o primeiro teste (2026-11-11):** o resultado foi "bem bom"; as expressões ficaram ótimas; leu "direitinho, sem sotaque"; timbre mais adulto que o desejado (aceitável, D26). Por ora só consegue testar com **uma voz** (verificar se o segundo locutor exige algo na conta gratuita ou se foi dificuldade no celular).
 
+**Resultados dos testes A–D com uma voz (Tap, 2026-11-11):** "bem positivos". Dá para notar **leve sotaque nos R**, que o Tap atribui à voz ser originalmente em inglês. A **voz masculina gratuita ficou boa**; as **femininas gratuitas ainda precisam de uma melhor**. **Sem marcas** já há nuances; **com marcas** ficou "bem melhor, mais expressivo": o modelo realizou o que a marca pedia. Próximo: texto mais longo com marcas (Teste 7 do banco). Pendentes: lista completa de marcas, resposta à pergunta 71 (segundo locutor), áudios no Drive, lista de erros de pronúncia do teste A.
+
