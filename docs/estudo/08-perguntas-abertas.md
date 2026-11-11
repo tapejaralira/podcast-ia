@@ -102,3 +102,5 @@ Preciso das respostas do Tap (ou de dados do computador dele) para avançar.
 49. Aceita ouvir por amostragem (ex.: 1 episódio por semana) mesmo no modo automático?
 
 50. Que tipos de erro mais te preocupariam num episódio publicado sem você ouvir (fato errado, tom inadequado, nome/pronúncia, notícia pesada demais, voz falhando)? Isso define o que o revisor precisa pegar.
+
+51. **Monetização:** o Bubuia News pode vir a ter anúncio, patrocínio ou outra receita? Isso decide se modelos de voz com licença "não comercial" (como o padrão do VoiceStudio/OmniVoice) podem ser usados.
